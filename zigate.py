@@ -55,21 +55,24 @@ def setup(hass, config):
     def permit_join(service):
         z.permit_join()
 
-    hass.services.register(DOMAIN, 'reset', zigate_reset)
-    hass.services.register(DOMAIN, 'permit_join', permit_join)
-
-    def start_zigate(event):
+    def start_zigate(service_event):
         z.autoStart()
+        z.start_auto_save()
         # firt load
         for device in z.devices:
             device_added(device=device)
 
-    def stop_zigate(event):
+    def stop_zigate(service_event):
         z.save_state()
         z.close()
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
+    
+    hass.services.register(DOMAIN, 'reset', zigate_reset)
+    hass.services.register(DOMAIN, 'permit_join', permit_join)
+    hass.services.register(DOMAIN, 'start_zigate', start_zigate)
+    hass.services.register(DOMAIN, 'stop_zigate', stop_zigate)
 
     return True
 
@@ -80,13 +83,15 @@ class ZiGateDeviceEntity(Entity):
     def __init__(self, device):
         """Initialize the sensor."""
         self._device = device
-        self._name = str(self._device)
-        self._state = None
+        self.registry_name = str(device)
         import zigate
 
         def _do_update(**kwargs):
             if kwargs['device'] == self._device:
                 self.hass.async_add_job(self.async_update_ha_state)
+                if self._device.need_refresh():
+                    self._device.refresh_device()
+                
                 
         zigate.dispatcher.connect(_do_update, zigate.ZIGATE_DEVICE_UPDATED, weak=False)
         zigate.dispatcher.connect(_do_update, zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
@@ -100,7 +105,7 @@ class ZiGateDeviceEntity(Entity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name
+        return self._device.addr
 
     @property
     def state(self):
@@ -110,10 +115,6 @@ class ZiGateDeviceEntity(Entity):
     @property
     def unique_id(self)->str:
         return self._device.ieee
-        
-    @property
-    def entity_id(self):
-        return 'zigate.{}'.format(self._device.addr)
 
     @property
     def device_state_attributes(self):
@@ -123,6 +124,7 @@ class ZiGateDeviceEntity(Entity):
                  'rssi_percent': int(self._device.rssi_percent),
                  'type': self._device.get_property_value('type'),
                  'manufacturer': self._device.get_property_value('manufacturer'),
+                 'receiver_on_when_idle': self._device.receiver_on_when_idle()
                  }
         attrs.update(self._device.info)
         return attrs
