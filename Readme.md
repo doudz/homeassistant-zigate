@@ -12,7 +12,6 @@ zigate:
 
 ```
 or
-```
 
 ```
 # Enable ZiGate
