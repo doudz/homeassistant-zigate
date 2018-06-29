@@ -6,26 +6,26 @@ Created on 3 févr. 2018
 import logging
 import voluptuous as vol
 
-# Import the device class from the component that you want to support
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import EntityComponent
-from homeassistant.const import CONF_PORT
+from homeassistant.helpers.discovery import load_platform
+from homeassistant.const import (ATTR_BATTERY_LEVEL, CONF_PORT,
+                                 EVENT_HOMEASSISTANT_START, EVENT_HOMEASSISTANT_STOP) 
 import homeassistant.helpers.config_validation as cv
-from homeassistant.const import (
-    ATTR_ENTITY_ID, EVENT_HOMEASSISTANT_START, EVENT_HOMEASSISTANT_STOP)
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.16.3']
+REQUIREMENTS = ['zigate==0.16.4']
 
 DOMAIN = 'zigate'
+DATA_ZIGATE_DEVICES = 'zigate_devices'
+DATA_ZIGATE_ATTRS = 'zigate_attributes'
 
 CONFIG_SCHEMA = vol.Schema({
     vol.Optional(CONF_PORT): cv.string,
 }, extra=vol.ALLOW_EXTRA)
 
 
-# def setup_platform(hass, config, add_devices, discovery_info=None):
 def setup(hass, config):
     """Setup zigate platform."""
     import zigate
@@ -33,22 +33,26 @@ def setup(hass, config):
     port = config.get(CONF_PORT)
     z = zigate.ZiGate(port, auto_start=False)
     z.start_mqtt_broker()
-    hass.data['zigate'] = z
+    hass.data[DOMAIN] = z
+    hass.data[DATA_ZIGATE_DEVICES] = {}
+    hass.data[DATA_ZIGATE_ATTR] = {}
+    
     component = EntityComponent(_LOGGER, DOMAIN, hass)
-
-    def callback(**kwargs):
-        signal = kwargs['signal']
-        if signal in (zigate.ZIGATE_DEVICE_ADDED, zigate.ZIGATE_DEVICE_UPDATED):
-            device = kwargs['device']
 
     def device_added(**kwargs):
         device = kwargs['device']
-        entity = ZiGateDeviceEntity(device)
-        component.add_entities([entity])
+        if device.addr not in hass.data[DATA_ZIGATE_DEVICES]:
+            entity = ZiGateDeviceEntity(device)
+            hass.data[DATA_ZIGATE_DEVICES][device.addr] = entity
+            component.add_entities([entity])
+            
+    def device_removed(**kwargs):
+        # component.async_remove_entity
+        pass
 
     zigate.dispatcher.connect(device_added, zigate.ZIGATE_DEVICE_ADDED)
-    zigate.dispatcher.connect(callback, zigate.ZIGATE_DEVICE_REMOVED)
-
+    zigate.dispatcher.connect(device_removed, zigate.ZIGATE_DEVICE_REMOVED)
+    
     def zigate_reset(service):
         z.reset()
 
@@ -84,19 +88,40 @@ class ZiGateDeviceEntity(Entity):
         """Initialize the sensor."""
         self._device = device
         self.registry_name = str(device)
+        
         import zigate
 
         def _do_update(**kwargs):
             if kwargs['device'] == self._device:
                 self.hass.async_add_job(self.async_update_ha_state)
-                if self._device.need_refresh():
-                    self._device.refresh_device()
-                
                 
         zigate.dispatcher.connect(_do_update, zigate.ZIGATE_DEVICE_UPDATED, weak=False)
         zigate.dispatcher.connect(_do_update, zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
         zigate.dispatcher.connect(_do_update, zigate.ZIGATE_ATTRIBUTE_UPDATED, weak=False)
-            
+        
+        self._sync_attributes()
+        
+    def _sync_attributes(self):
+        for attribute in self._device.attributes:
+            if attribute['cluster'] == 0:
+                continue
+            if 'name' in attribute:
+                _LOGGER.error(attribute)
+                key = '{}-{}-{}-{}'.format(self._device.addr,
+                                           attribute['endpoint'],
+                                           attribute['cluster'],
+                                           attribute['attribute'],
+                                           )
+                value = attribute.get('value')
+                if value is None:
+                    continue
+                if key not in self.hass.data[DATA_ZIGATE_ATTRS]:
+                    if isinstance(value, bool):
+                        platform = 'binary_sensor'
+                    else:
+                        platform = 'sensor'
+                    load_platform(self.hass, component, platform)
+        
     @property
     def should_poll(self):
         """No polling."""
@@ -120,7 +145,7 @@ class ZiGateDeviceEntity(Entity):
     def device_state_attributes(self):
         """Return the device specific state attributes."""
         attrs = {'battery': self._device.get_property_value('battery'),
-                 'battery_percent': int(self._device.battery_percent),
+                 ATTR_BATTERY_LEVEL: int(self._device.battery_percent),
                  'rssi_percent': int(self._device.rssi_percent),
                  'type': self._device.get_property_value('type'),
                  'manufacturer': self._device.get_property_value('manufacturer'),
@@ -128,5 +153,3 @@ class ZiGateDeviceEntity(Entity):
                  }
         attrs.update(self._device.info)
         return attrs
-
-
