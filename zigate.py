@@ -32,10 +32,9 @@ def setup(hass, config):
 
     port = config.get(CONF_PORT)
     z = zigate.ZiGate(port, auto_start=False)
-    z.start_mqtt_broker()
     hass.data[DOMAIN] = z
     hass.data[DATA_ZIGATE_DEVICES] = {}
-    hass.data[DATA_ZIGATE_ATTR] = {}
+    hass.data[DATA_ZIGATE_ATTRS] = {}
     
     component = EntityComponent(_LOGGER, DOMAIN, hass)
 
@@ -50,8 +49,37 @@ def setup(hass, config):
         # component.async_remove_entity
         pass
 
-    zigate.dispatcher.connect(device_added, zigate.ZIGATE_DEVICE_ADDED)
-    zigate.dispatcher.connect(device_removed, zigate.ZIGATE_DEVICE_REMOVED)
+    zigate.dispatcher.connect(device_added, zigate.ZIGATE_DEVICE_ADDED, weak=False)
+    zigate.dispatcher.connect(device_removed, zigate.ZIGATE_DEVICE_REMOVED, weak=False)
+    
+    def attribute_updated(**kwargs):
+        device = kwargs['device']
+        attribute = kwargs['attribute']
+        key = '{}-{}-{}-{}'.format(device.addr,
+                                   attribute['endpoint'],
+                                   attribute['cluster'],
+                                   attribute['attribute'],
+                                   )
+        entity = hass.data[DATA_ZIGATE_ATTRS].get(key)
+        if entity:
+            if entity.hass:
+                entity.schedule_update_ha_state()
+        entity = hass.data[DATA_ZIGATE_DEVICES].get(device.addr)
+        if entity:
+            if entity.hass:
+                entity.schedule_update_ha_state()
+    
+    zigate.dispatcher.connect(attribute_updated, zigate.ZIGATE_ATTRIBUTE_UPDATED, weak=False)
+    
+    def device_updated(**kwargs):
+        device = kwargs['device']
+        entity = hass.data[DATA_ZIGATE_DEVICES].get(device.addr)
+        if entity:
+            if entity.hass:
+                entity.schedule_update_ha_state()
+                
+        zigate.dispatcher.connect(device_updated, zigate.ZIGATE_DEVICE_UPDATED, weak=False)
+        zigate.dispatcher.connect(device_updated, zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
     
     def zigate_reset(service):
         z.reset()
@@ -65,6 +93,9 @@ def setup(hass, config):
         # firt load
         for device in z.devices:
             device_added(device=device)
+            
+        load_platform(hass, 'sensor', DOMAIN, {}, config)
+        load_platform(hass, 'binary_sensor', DOMAIN, {}, config)
 
     def stop_zigate(service_event):
         z.save_state()
@@ -88,39 +119,7 @@ class ZiGateDeviceEntity(Entity):
         """Initialize the sensor."""
         self._device = device
         self.registry_name = str(device)
-        
-        import zigate
-
-        def _do_update(**kwargs):
-            if kwargs['device'] == self._device:
-                self.hass.async_add_job(self.async_update_ha_state)
-                
-        zigate.dispatcher.connect(_do_update, zigate.ZIGATE_DEVICE_UPDATED, weak=False)
-        zigate.dispatcher.connect(_do_update, zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
-        zigate.dispatcher.connect(_do_update, zigate.ZIGATE_ATTRIBUTE_UPDATED, weak=False)
-        
-        self._sync_attributes()
-        
-    def _sync_attributes(self):
-        for attribute in self._device.attributes:
-            if attribute['cluster'] == 0:
-                continue
-            if 'name' in attribute:
-                _LOGGER.error(attribute)
-                key = '{}-{}-{}-{}'.format(self._device.addr,
-                                           attribute['endpoint'],
-                                           attribute['cluster'],
-                                           attribute['attribute'],
-                                           )
-                value = attribute.get('value')
-                if value is None:
-                    continue
-                if key not in self.hass.data[DATA_ZIGATE_ATTRS]:
-                    if isinstance(value, bool):
-                        platform = 'binary_sensor'
-                    else:
-                        platform = 'sensor'
-                    load_platform(self.hass, component, platform)
+        self._name = self._device.addr
         
     @property
     def should_poll(self):
@@ -130,7 +129,7 @@ class ZiGateDeviceEntity(Entity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._device.addr
+        return self._name
 
     @property
     def state(self):
@@ -153,3 +152,7 @@ class ZiGateDeviceEntity(Entity):
                  }
         attrs.update(self._device.info)
         return attrs
+    
+    @property
+    def icon(self):
+        return 'mdi:access-point'

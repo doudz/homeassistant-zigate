@@ -9,27 +9,64 @@ from homeassistant.const import (
     DEVICE_CLASS_TEMPERATURE)
 from homeassistant.helpers.entity import Entity
 
+DOMAIN = 'zigate'
+DATA_ZIGATE_DEVICES = 'zigate_devices'
+DATA_ZIGATE_ATTRS = 'zigate_attributes'
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the ZiGate sensors."""
-    add_devices([
-        ZiGateSensor('Outside Temperature', 15.6, DEVICE_CLASS_TEMPERATURE,
-                   TEMP_CELSIUS, 12),
-        ZiGateSensor('Outside Humidity', 54, DEVICE_CLASS_HUMIDITY, '%', None),
-    ])
+    if discovery_info is None:
+        return
+    
+    z = hass.data[DOMAIN]
+    
+    def sync_attributes(**kwargs):
+        devs = []
+        for device in z.devices:
+            for attribute in device.attributes:
+                if attribute['cluster'] == 0:
+                    continue
+                if 'name' in attribute:
+                    key = '{}-{}-{}-{}'.format(device.addr,
+                                               attribute['endpoint'],
+                                               attribute['cluster'],
+                                               attribute['attribute'],
+                                               )
+                    value = attribute.get('value')
+                    if value is None:
+                        continue
+                    if key not in hass.data[DATA_ZIGATE_ATTRS]:
+                        if not isinstance(value, bool):
+                            entity = ZiGateSensor(device, attribute)
+                            devs.append(entity)
+                            hass.data[DATA_ZIGATE_ATTRS][key] = entity
+    
+        add_devices(devs)
+        
+    sync_attributes()
+    import zigate
+    zigate.dispatcher.connect(sync_attributes, zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
 class ZiGateSensor(Entity):
     """Representation of a ZiGate sensor."""
 
-    def __init__(self, name, state, device_class,
-                 unit_of_measurement, battery):
+    def __init__(self, device, attribute):
         """Initialize the sensor."""
-        self._name = name
-        self._state = state
-        self._device_class = device_class
-        self._unit_of_measurement = unit_of_measurement
-        self._battery = battery
+        self._device = device
+        self._attribute = attribute
+        self._device_class = None
+        self._name = 'zigate_{}_{}'.format(device.addr,
+                                           attribute.get('name'))
+        self._unique_id = '{}-{}-{}-{}'.format(device.addr,
+                                               attribute['endpoint'],
+                                               attribute['cluster'],
+                                               attribute['attribute'],
+                                               )
+
+    @property
+    def unique_id(self)->str:
+        return self._unique_id
 
     @property
     def should_poll(self):
@@ -49,17 +86,23 @@ class ZiGateSensor(Entity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self._state
+        a = self._device.get_attribute(self._attribute['endpoint'],
+                                       self._attribute['cluster'],
+                                       self._attribute['attribute'])
+        return a.get('value')
 
     @property
     def unit_of_measurement(self):
         """Return the unit this state is expressed in."""
-        return self._unit_of_measurement
+        return self._attribute.get('unit')
 
     @property
     def device_state_attributes(self):
         """Return the state attributes."""
-        if self._battery:
-            return {
-                ATTR_BATTERY_LEVEL: self._battery,
-            }
+        return {
+            'addr': self._device.addr,
+            'endpoint': self._attribute['endpoint'],
+            'cluster': self._attribute['cluster'],
+            'attribute': self._attribute['attribute'],
+            
+        }
