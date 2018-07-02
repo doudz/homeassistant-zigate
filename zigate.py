@@ -20,11 +20,16 @@ REQUIREMENTS = ['zigate==0.16.4']
 DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
+ADDR = 'addr'
 
 CONFIG_SCHEMA = vol.Schema({
     vol.Optional(CONF_PORT): cv.string,
 }, extra=vol.ALLOW_EXTRA)
 
+
+REFRESH_DEVICE_SCHEMA = vol.Schema({
+    vol.Required(ADDR): cv.string,
+})
 
 def setup(hass, config):
     """Setup zigate platform."""
@@ -109,6 +114,10 @@ def setup(hass, config):
     def stop_zigate(service_event):
         z.save_state()
         z.close()
+        
+    def refresh_device(service):
+        addr = service.data.get(ADDR)
+        z.refresh_device(addr)
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
@@ -117,9 +126,11 @@ def setup(hass, config):
     hass.services.register(DOMAIN, 'permit_join', permit_join)
     hass.services.register(DOMAIN, 'start_zigate', start_zigate)
     hass.services.register(DOMAIN, 'stop_zigate', stop_zigate)
+    hass.services.register(DOMAIN, 'refresh_device',
+                           refresh_device,
+                           schema=REFRESH_DEVICE_SCHEMA)
 
     return True
-
 
 class ZiGateDeviceEntity(Entity):
     '''Representation of ZiGate device'''
@@ -127,7 +138,6 @@ class ZiGateDeviceEntity(Entity):
     def __init__(self, device):
         """Initialize the sensor."""
         self._device = device
-        self.registry_name = str(device)
         self._name = self._device.addr
         
     @property
@@ -157,7 +167,7 @@ class ZiGateDeviceEntity(Entity):
                  'rssi_percent': int(self._device.rssi_percent),
                  'type': self._device.get_property_value('type'),
                  'manufacturer': self._device.get_property_value('manufacturer'),
-                 'receiver_on_when_idle': self._device.receiver_on_when_idle()
+                 'receiver_on_when_idle': self._device.receiver_on_when_idle(),
                  }
         attrs.update(self._device.info)
         return attrs
