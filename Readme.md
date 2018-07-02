@@ -7,8 +7,10 @@ To pair a new device, go in developer/services and call the 'zigate.permit\_join
 You have 30 seconds to pair your device.
 
 
+Configuration example :
+
 ```
-# Enable ZiGate
+# Enable ZiGate (port will be auto-discovered)
 zigate:
 
 ```
@@ -21,5 +23,5 @@ zigate:
 
 ```
 
-Currently it supports sensor and binary_sensor
-Light and switch will be supported soon
+Currently it supports sensor, binary_sensor and switch
+Light will be supported soon

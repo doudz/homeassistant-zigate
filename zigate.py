@@ -64,6 +64,14 @@ def setup(hass, config):
         if entity:
             if entity.hass:
                 entity.schedule_update_ha_state()
+        key = '{}-{}-{}'.format(device.addr,
+                                   zigate.ACTIONS_ONOFF,
+                                   attribute['endpoint'],
+                                   )
+        entity = hass.data[DATA_ZIGATE_ATTRS].get(key)
+        if entity:
+            if entity.hass:
+                entity.schedule_update_ha_state()
         entity = hass.data[DATA_ZIGATE_DEVICES].get(device.addr)
         if entity:
             if entity.hass:
@@ -96,6 +104,7 @@ def setup(hass, config):
             
         load_platform(hass, 'sensor', DOMAIN, {}, config)
         load_platform(hass, 'binary_sensor', DOMAIN, {}, config)
+        load_platform(hass, 'switch', DOMAIN, {}, config)
 
     def stop_zigate(service_event):
         z.save_state()

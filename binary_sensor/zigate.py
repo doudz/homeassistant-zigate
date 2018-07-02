@@ -1,5 +1,5 @@
 """
-ZiGate platform that has two fake binary sensors.
+ZiGate platform.
 
 For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/ZiGate/
