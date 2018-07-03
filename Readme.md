@@ -24,4 +24,5 @@ zigate:
 ```
 
 Currently it supports sensor, binary_sensor and switch
+
 Light will be supported soon
