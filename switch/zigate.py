@@ -5,7 +5,6 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/ZiGate/
 """
 from homeassistant.components.switch import SwitchDevice
-from homeassistant.const import DEVICE_DEFAULT_NAME
 
 DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
@@ -16,10 +15,10 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the ZiGate sensors."""
     if discovery_info is None:
         return
-    
+
     z = hass.data[DOMAIN]
     import zigate
-    
+
     def sync_attributes():
         devs = []
         for device in z.devices:
@@ -29,17 +28,18 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             for endpoint, action_type in actions.items():
                 if zigate.ACTIONS_ONOFF in action_type:
                     key = '{}-{}-{}'.format(device.addr,
-                                               zigate.ACTIONS_ONOFF,
-                                               endpoint
-                                               )
+                                            zigate.ACTIONS_ONOFF,
+                                            endpoint
+                                            )
                     if key not in hass.data[DATA_ZIGATE_ATTRS]:
                         entity = ZiGateSwitch(device, endpoint)
                         devs.append(entity)
                         hass.data[DATA_ZIGATE_ATTRS][key] = entity
-    
+
         add_devices(devs)
     sync_attributes()
-    zigate.dispatcher.connect(sync_attributes, zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
+    zigate.dispatcher.connect(sync_attributes,
+                              zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
 class ZiGateSwitch(SwitchDevice):
@@ -72,7 +72,7 @@ class ZiGateSwitch(SwitchDevice):
 #         """Return the current power usage in W."""
 #         if self._state:
 #             return 100
-# 
+#
 #     @property
 #     def today_energy_kwh(self):
 #         """Return the today total energy usage in kWh."""
@@ -94,6 +94,7 @@ class ZiGateSwitch(SwitchDevice):
         self.hass.data[DOMAIN].action_onoff(self._device.addr,
                                             self._endpoint,
                                             0)
+
     @property
     def device_state_attributes(self):
         """Return the state attributes."""

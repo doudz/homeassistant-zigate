@@ -1,8 +1,9 @@
-'''
-Created on 3 févr. 2018
+"""
+ZiGate component.
 
-@author: doudz
-'''
+For more details about this platform, please refer to the documentation
+https://home-assistant.io/components/ZiGate/
+"""
 import logging
 import voluptuous as vol
 
@@ -10,7 +11,8 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.helpers.discovery import load_platform
 from homeassistant.const import (ATTR_BATTERY_LEVEL, CONF_PORT,
-                                 EVENT_HOMEASSISTANT_START, EVENT_HOMEASSISTANT_STOP) 
+                                 EVENT_HOMEASSISTANT_START,
+                                 EVENT_HOMEASSISTANT_STOP)
 import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
@@ -31,6 +33,7 @@ REFRESH_DEVICE_SCHEMA = vol.Schema({
     vol.Required(ADDR): cv.string,
 })
 
+
 def setup(hass, config):
     """Setup zigate platform."""
     import zigate
@@ -40,7 +43,7 @@ def setup(hass, config):
     hass.data[DOMAIN] = z
     hass.data[DATA_ZIGATE_DEVICES] = {}
     hass.data[DATA_ZIGATE_ATTRS] = {}
-    
+
     component = EntityComponent(_LOGGER, DOMAIN, hass)
 
     def device_added(**kwargs):
@@ -49,14 +52,14 @@ def setup(hass, config):
             entity = ZiGateDeviceEntity(device)
             hass.data[DATA_ZIGATE_DEVICES][device.addr] = entity
             component.add_entities([entity])
-            
+
     def device_removed(**kwargs):
         # component.async_remove_entity
         pass
 
     zigate.dispatcher.connect(device_added, zigate.ZIGATE_DEVICE_ADDED, weak=False)
     zigate.dispatcher.connect(device_removed, zigate.ZIGATE_DEVICE_REMOVED, weak=False)
-    
+
     def attribute_updated(**kwargs):
         device = kwargs['device']
         attribute = kwargs['attribute']
@@ -70,9 +73,9 @@ def setup(hass, config):
             if entity.hass:
                 entity.schedule_update_ha_state()
         key = '{}-{}-{}'.format(device.addr,
-                                   zigate.ACTIONS_ONOFF,
-                                   attribute['endpoint'],
-                                   )
+                                zigate.ACTIONS_ONOFF,
+                                attribute['endpoint'],
+                                )
         entity = hass.data[DATA_ZIGATE_ATTRS].get(key)
         if entity:
             if entity.hass:
@@ -81,19 +84,22 @@ def setup(hass, config):
         if entity:
             if entity.hass:
                 entity.schedule_update_ha_state()
-    
-    zigate.dispatcher.connect(attribute_updated, zigate.ZIGATE_ATTRIBUTE_UPDATED, weak=False)
-    
+
+    zigate.dispatcher.connect(attribute_updated,
+                              zigate.ZIGATE_ATTRIBUTE_UPDATED, weak=False)
+
     def device_updated(**kwargs):
         device = kwargs['device']
         entity = hass.data[DATA_ZIGATE_DEVICES].get(device.addr)
         if entity:
             if entity.hass:
                 entity.schedule_update_ha_state()
-                
-        zigate.dispatcher.connect(device_updated, zigate.ZIGATE_DEVICE_UPDATED, weak=False)
-        zigate.dispatcher.connect(device_updated, zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
-    
+
+        zigate.dispatcher.connect(device_updated,
+                                  zigate.ZIGATE_DEVICE_UPDATED, weak=False)
+        zigate.dispatcher.connect(device_updated,
+                                  zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
+
     def zigate_reset(service):
         z.reset()
 
@@ -106,7 +112,7 @@ def setup(hass, config):
         # firt load
         for device in z.devices:
             device_added(device=device)
-            
+
         load_platform(hass, 'sensor', DOMAIN, {}, config)
         load_platform(hass, 'binary_sensor', DOMAIN, {}, config)
         load_platform(hass, 'switch', DOMAIN, {}, config)
@@ -114,14 +120,14 @@ def setup(hass, config):
     def stop_zigate(service_event):
         z.save_state()
         z.close()
-        
+
     def refresh_device(service):
         addr = service.data.get(ADDR)
         z.refresh_device(addr)
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
-    
+
     hass.services.register(DOMAIN, 'reset', zigate_reset)
     hass.services.register(DOMAIN, 'permit_join', permit_join)
     hass.services.register(DOMAIN, 'start_zigate', start_zigate)
@@ -132,6 +138,7 @@ def setup(hass, config):
 
     return True
 
+
 class ZiGateDeviceEntity(Entity):
     '''Representation of ZiGate device'''
 
@@ -139,7 +146,7 @@ class ZiGateDeviceEntity(Entity):
         """Initialize the sensor."""
         self._device = device
         self._name = self._device.addr
-        
+
     @property
     def should_poll(self):
         """No polling."""
@@ -171,7 +178,7 @@ class ZiGateDeviceEntity(Entity):
                  }
         attrs.update(self._device.info)
         return attrs
-    
+
     @property
     def icon(self):
         return 'mdi:access-point'

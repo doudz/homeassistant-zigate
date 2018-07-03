@@ -11,13 +11,14 @@ DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
 
+
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the ZiGate sensors."""
     if discovery_info is None:
         return
-    
+
     z = hass.data[DOMAIN]
-    
+
     def sync_attributes():
         devs = []
         for device in z.devices:
@@ -34,16 +35,16 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                     if value is None:
                         continue
                     if key not in hass.data[DATA_ZIGATE_ATTRS]:
-                        actions = device.available_actions()
                         if isinstance(value, bool):
                             entity = ZiGateBinarySensor(device, attribute)
                             devs.append(entity)
                             hass.data[DATA_ZIGATE_ATTRS][key] = entity
-    
+
         add_devices(devs)
     sync_attributes()
     import zigate
-    zigate.dispatcher.connect(sync_attributes, zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
+    zigate.dispatcher.connect(sync_attributes,
+                              zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
 class ZiGateBinarySensor(BinarySensorDevice):
@@ -83,7 +84,7 @@ class ZiGateBinarySensor(BinarySensorDevice):
                                        self._attribute['cluster'],
                                        self._attribute['attribute'])
         return a.get('value')
-    
+
     @property
     def device_state_attributes(self):
         """Return the state attributes."""
@@ -92,5 +93,4 @@ class ZiGateBinarySensor(BinarySensorDevice):
             'endpoint': self._attribute['endpoint'],
             'cluster': self._attribute['cluster'],
             'attribute': self._attribute['attribute'],
-            
         }
