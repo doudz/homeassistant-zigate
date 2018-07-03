@@ -81,7 +81,9 @@ class ZiGateSwitch(SwitchDevice):
     @property
     def is_on(self):
         """Return true if switch is on."""
-        return self._device.get_property_value('onoff')
+        return self._device.get_attribute(self._endpoint,
+                                          6,
+                                          0).get('value',False)
 
     def turn_on(self, **kwargs):
         """Turn the switch on."""
