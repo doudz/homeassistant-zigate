@@ -74,18 +74,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                               zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
-def setup_platform(hass, config, add_devices_callback, discovery_info=None):
-    """Set up the ZiGate light platform."""
-    add_devices_callback([
-        ZiGateLight(1, "Bed Light", False, True, effect_list=LIGHT_EFFECT_LIST,
-                  effect=LIGHT_EFFECT_LIST[0]),
-        ZiGateLight(2, "Ceiling Lights", True, True,
-                  LIGHT_COLORS[0], LIGHT_TEMPS[1]),
-        ZiGateLight(3, "Kitchen Lights", True, True,
-                  LIGHT_COLORS[1], LIGHT_TEMPS[0])
-    ])
-
-
 class ZiGateLight(Light):
     """Representation of a ZiGate light."""
 
