@@ -133,6 +133,7 @@ def setup(hass, config):
         load_platform(hass, 'sensor', DOMAIN, {}, config)
         load_platform(hass, 'binary_sensor', DOMAIN, {}, config)
         load_platform(hass, 'switch', DOMAIN, {}, config)
+        load_platform(hass, 'light', DOMAIN, {}, config)
 
     def stop_zigate(service_event):
         z.save_state()
