@@ -17,7 +17,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.16.4']
+REQUIREMENTS = ['zigate==0.16.5']
 
 DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
@@ -48,6 +48,7 @@ def setup(hass, config):
 
     def device_added(**kwargs):
         device = kwargs['device']
+        _LOGGER.debug('Add device {}'.format(device))
         if device.addr not in hass.data[DATA_ZIGATE_DEVICES]:
             entity = ZiGateDeviceEntity(device)
             hass.data[DATA_ZIGATE_DEVICES][device.addr] = entity
@@ -57,12 +58,16 @@ def setup(hass, config):
         # component.async_remove_entity
         pass
 
-    zigate.dispatcher.connect(device_added, zigate.ZIGATE_DEVICE_ADDED, weak=False)
-    zigate.dispatcher.connect(device_removed, zigate.ZIGATE_DEVICE_REMOVED, weak=False)
+    zigate.dispatcher.connect(device_added,
+                              zigate.ZIGATE_DEVICE_ADDED, weak=False)
+    zigate.dispatcher.connect(device_removed,
+                              zigate.ZIGATE_DEVICE_REMOVED, weak=False)
 
     def attribute_updated(**kwargs):
         device = kwargs['device']
         attribute = kwargs['attribute']
+        _LOGGER.debug('Update attribute for device {} {}'.format(device,
+                                                                 attribute))
         key = '{}-{}-{}-{}'.format(device.addr,
                                    attribute['endpoint'],
                                    attribute['cluster'],
@@ -90,10 +95,14 @@ def setup(hass, config):
 
     def device_updated(**kwargs):
         device = kwargs['device']
+        _LOGGER.debug('Update device {}'.format(device))
         entity = hass.data[DATA_ZIGATE_DEVICES].get(device.addr)
         if entity:
             if entity.hass:
                 entity.schedule_update_ha_state()
+        else:
+            _LOGGER.debug('Device not found {}, adding it'.format(device))
+            device_added(device=device)
 
         zigate.dispatcher.connect(device_updated,
                                   zigate.ZIGATE_DEVICE_UPDATED, weak=False)
@@ -146,6 +155,7 @@ class ZiGateDeviceEntity(Entity):
         """Initialize the sensor."""
         self._device = device
         self._name = self._device.addr
+        self.registry_name = str(device)
 
     @property
     def should_poll(self):
@@ -169,11 +179,11 @@ class ZiGateDeviceEntity(Entity):
     @property
     def device_state_attributes(self):
         """Return the device specific state attributes."""
-        attrs = {'battery': self._device.get_property_value('battery'),
+        attrs = {'battery': self._device.get_value('battery'),
                  ATTR_BATTERY_LEVEL: int(self._device.battery_percent),
                  'rssi_percent': int(self._device.rssi_percent),
-                 'type': self._device.get_property_value('type'),
-                 'manufacturer': self._device.get_property_value('manufacturer'),
+                 'type': self._device.get_value('type'),
+                 'manufacturer': self._device.get_value('manufacturer'),
                  'receiver_on_when_idle': self._device.receiver_on_when_idle(),
                  }
         attrs.update(self._device.info)

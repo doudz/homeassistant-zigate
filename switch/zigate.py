@@ -4,11 +4,14 @@ ZiGate platform.
 For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/ZiGate/
 """
+import logging
 from homeassistant.components.switch import SwitchDevice
 
 DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -32,6 +35,10 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                                             endpoint
                                             )
                     if key not in hass.data[DATA_ZIGATE_ATTRS]:
+                        _LOGGER.debug(('Creating switch '
+                                           'for device '
+                                           '{} {}').format(device,
+                                                           endpoint))
                         entity = ZiGateSwitch(device, endpoint)
                         devs.append(entity)
                         hass.data[DATA_ZIGATE_ATTRS][key] = entity
@@ -81,9 +88,8 @@ class ZiGateSwitch(SwitchDevice):
     @property
     def is_on(self):
         """Return true if switch is on."""
-        return self._device.get_attribute(self._endpoint,
-                                          6,
-                                          0).get('value',False)
+        a = self._device.get_attribute(self._endpoint, 6, 0)
+        return a.get('value', False)
 
     def turn_on(self, **kwargs):
         """Turn the switch on."""

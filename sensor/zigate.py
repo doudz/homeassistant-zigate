@@ -4,14 +4,17 @@ ZiGate platform.
 For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/ZiGate/
 """
-from homeassistant.const import (
-    ATTR_BATTERY_LEVEL, TEMP_CELSIUS, DEVICE_CLASS_HUMIDITY,
-    DEVICE_CLASS_TEMPERATURE)
+import logging
+from homeassistant.const import (DEVICE_CLASS_HUMIDITY,
+                                 DEVICE_CLASS_TEMPERATURE,
+                                 DEVICE_CLASS_ILLUMINANCE)
 from homeassistant.helpers.entity import Entity
 
 DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -38,6 +41,10 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                         continue
                     if key not in hass.data[DATA_ZIGATE_ATTRS]:
                         if not isinstance(value, bool):
+                            _LOGGER.debug(('Creating sensor '
+                                           'for device '
+                                           '{} {}').format(device,
+                                                           attribute))
                             entity = ZiGateSensor(device, attribute)
                             devs.append(entity)
                             hass.data[DATA_ZIGATE_ATTRS][key] = entity
@@ -57,6 +64,7 @@ class ZiGateSensor(Entity):
         self._device = device
         self._attribute = attribute
         self._device_class = None
+        name = attribute.get('name')
         self._name = 'zigate_{}_{}'.format(device.addr,
                                            attribute.get('name'))
         self._unique_id = '{}-{}-{}-{}'.format(device.addr,
@@ -64,6 +72,12 @@ class ZiGateSensor(Entity):
                                                attribute['cluster'],
                                                attribute['attribute'],
                                                )
+        if 'temperature' in name:
+            self._device_class = DEVICE_CLASS_TEMPERATURE
+        elif 'humidity' in name:
+            self._device_class = DEVICE_CLASS_HUMIDITY
+        elif 'luminosity' in name:
+            self._device_class = DEVICE_CLASS_ILLUMINANCE
 
     @property
     def unique_id(self)->str:
