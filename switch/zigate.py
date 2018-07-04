@@ -29,9 +29,9 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if not actions:
                 continue
             for endpoint, action_type in actions.items():
-                if zigate.ACTIONS_ONOFF in action_type:
+                if [zigate.ACTIONS_ONOFF] == action_type:
                     key = '{}-{}-{}'.format(device.addr,
-                                            zigate.ACTIONS_ONOFF,
+                                            'switch',
                                             endpoint
                                             )
                     if key not in hass.data[DATA_ZIGATE_ATTRS]:
@@ -56,9 +56,12 @@ class ZiGateSwitch(SwitchDevice):
         """Initialize the ZiGate switch."""
         self._device = device
         self._endpoint = endpoint
-        self._name = 'zigate_{}_onoff_{}'.format(device.addr,
-                                                 endpoint)
-        self._unique_id = '{}-{}-{}'.format(device.addr, 'onoff', endpoint)
+        self._name = 'zigate_{}_{}_{}'.format(device.addr,
+                                              'switch',
+                                              endpoint)
+        self._unique_id = '{}-{}-{}'.format(device.addr,
+                                            'switch',
+                                            endpoint)
 
     @property
     def unique_id(self)->str:

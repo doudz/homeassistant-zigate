@@ -86,7 +86,7 @@ def setup(hass, config):
             if entity.hass:
                 entity.schedule_update_ha_state()
         key = '{}-{}-{}'.format(device.addr,
-                                zigate.ACTIONS_ONOFF,
+                                'switch',
                                 attribute['endpoint'],
                                 )
         entity = hass.data[DATA_ZIGATE_ATTRS].get(key)
