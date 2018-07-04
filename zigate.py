@@ -6,6 +6,7 @@ https://home-assistant.io/components/ZiGate/
 """
 import logging
 import voluptuous as vol
+import os
 
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import EntityComponent
@@ -39,7 +40,14 @@ def setup(hass, config):
     import zigate
 
     port = config.get(CONF_PORT)
-    z = zigate.ZiGate(port, auto_start=False)
+    persistent_file = os.path.join(hass.config.config_dir,
+                                   'zigate.json')
+    _LOGGER.debug('Persistent file {}'.format(persistent_file))
+
+    z = zigate.ZiGate(port,
+                      persistent_file, 
+                      auto_start=False)
+
     hass.data[DOMAIN] = z
     hass.data[DATA_ZIGATE_DEVICES] = {}
     hass.data[DATA_ZIGATE_ATTRS] = {}
