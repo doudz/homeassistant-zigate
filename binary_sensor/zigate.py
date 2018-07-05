@@ -99,7 +99,8 @@ class ZiGateBinarySensor(BinarySensorDevice):
         a = self._device.get_attribute(self._attribute['endpoint'],
                                        self._attribute['cluster'],
                                        self._attribute['attribute'])
-        return a.get('value', False)
+        if a:
+            return a.get('value', False)
 
     @property
     def device_state_attributes(self):

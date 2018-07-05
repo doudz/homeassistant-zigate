@@ -104,7 +104,8 @@ class ZiGateSensor(Entity):
         a = self._device.get_attribute(self._attribute['endpoint'],
                                        self._attribute['cluster'],
                                        self._attribute['attribute'])
-        return a.get('value')
+        if a:
+            return a.get('value')
 
     @property
     def unit_of_measurement(self):
