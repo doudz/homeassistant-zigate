@@ -149,15 +149,30 @@ class ZiGateLight(Light):
 
     def turn_on(self, **kwargs):
         """Turn the switch on."""
-        self.hass.data[DOMAIN].action_onoff(self._device.addr,
-                                            self._endpoint,
-                                            1)
+        if ATTR_BRIGHTNESS in kwargs:
+            brightness = kwargs[ATTR_BRIGHTNESS]
+            brightness = int((brightness / 255) * 100)
+            self.hass.data[DOMAIN].action_move_level_onoff(self._device.addr,
+                                                           self._endpoint,
+                                                           1,
+                                                           brightness
+                                                           )
+        else:
+            self.hass.data[DOMAIN].action_onoff(self._device.addr,
+                                                self._endpoint,
+                                                1)
 
     def turn_off(self, **kwargs):
         """Turn the device off."""
         self.hass.data[DOMAIN].action_onoff(self._device.addr,
                                             self._endpoint,
                                             0)
+
+    def toggle(self, **kwargs):
+        """Toggle the device"""
+        self.hass.data[DOMAIN].action_onoff(self._device.addr,
+                                            self._endpoint,
+                                            2)
 
     @property
     def device_state_attributes(self):

@@ -108,6 +108,12 @@ class ZiGateSwitch(SwitchDevice):
                                             self._endpoint,
                                             0)
 
+    def toggle(self, **kwargs):
+        """Toggle the device"""
+        self.hass.data[DOMAIN].action_onoff(self._device.addr,
+                                            self._endpoint,
+                                            2)
+
     @property
     def device_state_attributes(self):
         """Return the state attributes."""
