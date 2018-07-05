@@ -94,6 +94,7 @@ class ZiGateSwitch(SwitchDevice):
         a = self._device.get_attribute(self._endpoint, 6, 0)
         if a:
             return a.get('value', False)
+        return False
 
     def turn_on(self, **kwargs):
         """Turn the switch on."""
