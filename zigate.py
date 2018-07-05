@@ -32,7 +32,7 @@ CONFIG_SCHEMA = vol.Schema({
 
 
 REFRESH_DEVICE_SCHEMA = vol.Schema({
-    vol.Required(ADDR): cv.string,
+    vol.Optional(ADDR): cv.string,
 })
 
 
@@ -159,7 +159,11 @@ def setup(hass, config):
 
     def refresh_device(service):
         addr = service.data.get(ADDR)
-        z.refresh_device(addr)
+        if addr:
+            z.refresh_device(addr)
+        else:
+            for device in z.devices:
+                device.refresh_device()
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
