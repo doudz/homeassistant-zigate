@@ -115,9 +115,13 @@ class ZiGateSensor(Entity):
     @property
     def device_state_attributes(self):
         """Return the state attributes."""
-        return {
+        attrs = {
             'addr': self._device.addr,
             'endpoint': self._attribute['endpoint'],
             'cluster': self._attribute['cluster'],
             'attribute': self._attribute['attribute'],
         }
+        state = self.state
+        if isinstance(self.state, dict):
+            attrs.update(state)
+        return attrs
