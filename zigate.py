@@ -19,6 +19,7 @@ import homeassistant.helpers.config_validation as cv
 _LOGGER = logging.getLogger(__name__)
 
 REQUIREMENTS = ['zigate==0.16.5']
+DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
@@ -37,6 +38,7 @@ REFRESH_DEVICE_SCHEMA = vol.Schema({
 
 def setup(hass, config):
     """Setup zigate platform."""
+    from homeassistant.components import persistent_notification
     import zigate
 
     port = config.get(CONF_PORT)
@@ -66,10 +68,20 @@ def setup(hass, config):
         # component.async_remove_entity
         pass
 
+    def device_need_refresh(**kwargs):
+        device = kwargs['device']
+        persistent_notification.create(hass,
+                                       ('The ZiGate device {} needs some'
+                                        ' refresh (missing important'
+                                        ' information)').format(device.addr),
+                                       title='ZiGate')
+
     zigate.dispatcher.connect(device_added,
                               zigate.ZIGATE_DEVICE_ADDED, weak=False)
     zigate.dispatcher.connect(device_removed,
                               zigate.ZIGATE_DEVICE_REMOVED, weak=False)
+    zigate.dispatcher.connect(device_need_refresh,
+                              zigate.ZIGATE_DEVICE_NEED_REFRESH, weak=False)
 
     def attribute_updated(**kwargs):
         device = kwargs['device']
