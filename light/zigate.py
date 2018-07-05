@@ -87,12 +87,12 @@ class ZiGateLight(Light):
         self._unique_id = '{}-{}-{}'.format(device.addr,
                                             'light',
                                             endpoint)
-
+        import zigate
         supported_features = set()
         for action_type in device.available_actions(endpoint)[endpoint]:
-            if action_type == zigate.ACTION_LEVEL:
+            if action_type == zigate.ACTIONS_LEVEL:
                 supported_features.add(SUPPORT_BRIGHTNESS)
-            elif action_type == zigate.ACTION_COLOR:
+            elif action_type == zigate.ACTIONS_COLOR:
                 supported_features.add(SUPPORT_COLOR)
             elif action_type == zigate.ACTIONS_TEMPERATURE:
                 supported_features.add(SUPPORT_COLOR_TEMP)
@@ -119,7 +119,8 @@ class ZiGateLight(Light):
     def brightness(self) -> int:
         """Return the brightness of this light between 0..255."""
         a = self._device.get_attribute(self._endpoint, 8, 0)
-        return int(a.get('value', 0)*255/100)
+        if a:
+            return int(a.get('value', 0)*255/100)
 
 #     @property
 #     def hs_color(self) -> tuple:
@@ -150,7 +151,8 @@ class ZiGateLight(Light):
     def is_on(self) -> bool:
         """Return true if light is on."""
         a = self._device.get_attribute(self._endpoint, 6, 0)
-        return a.get('value', False)
+        if a:
+            return a.get('value', False)
 
     @property
     def supported_features(self) -> int:
