@@ -19,20 +19,6 @@ DATA_ZIGATE_ATTRS = 'zigate_attributes'
 
 _LOGGER = logging.getLogger(__name__)
 
-LIGHT_COLORS = [
-    (56, 86),
-    (345, 75),
-]
-
-LIGHT_EFFECT_LIST = ['rainbow', 'none']
-
-LIGHT_TEMPS = [240, 380]
-
-SUPPORT_FEATURE = (SUPPORT_BRIGHTNESS | SUPPORT_COLOR_TEMP | SUPPORT_EFFECT |
-                SUPPORT_COLOR | SUPPORT_WHITE_VALUE)
-
-
-
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the ZiGate sensors."""
@@ -121,6 +107,7 @@ class ZiGateLight(Light):
         a = self._device.get_attribute(self._endpoint, 8, 0)
         if a:
             return int(a.get('value', 0)*255/100)
+        return 0
 
 #     @property
 #     def hs_color(self) -> tuple:
@@ -153,6 +140,7 @@ class ZiGateLight(Light):
         a = self._device.get_attribute(self._endpoint, 6, 0)
         if a:
             return a.get('value', False)
+        return False
 
     @property
     def supported_features(self) -> int:
