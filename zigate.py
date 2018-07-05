@@ -18,7 +18,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.16.5']
+REQUIREMENTS = ['zigate==0.17.1']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
@@ -135,6 +135,12 @@ def setup(hass, config):
     def permit_join(service):
         z.permit_join()
 
+    def zigate_cleanup(service):
+        '''
+        Remove missing device
+        '''
+        z.cleanup_devices()
+
     def start_zigate(service_event):
         z.autoStart()
         z.start_auto_save()
@@ -162,6 +168,7 @@ def setup(hass, config):
     hass.services.register(DOMAIN, 'permit_join', permit_join)
     hass.services.register(DOMAIN, 'start_zigate', start_zigate)
     hass.services.register(DOMAIN, 'stop_zigate', stop_zigate)
+    hass.services.register(DOMAIN, 'cleanup_devices', zigate_cleanup)
     hass.services.register(DOMAIN, 'refresh_device',
                            refresh_device,
                            schema=REFRESH_DEVICE_SCHEMA)
@@ -206,10 +213,13 @@ class ZiGateDeviceEntity(Entity):
                  'type': self._device.get_value('type'),
                  'manufacturer': self._device.get_value('manufacturer'),
                  'receiver_on_when_idle': self._device.receiver_on_when_idle(),
+                 'missing': self._device.missing
                  }
         attrs.update(self._device.info)
         return attrs
 
     @property
     def icon(self):
+        if self._device.missing:
+            return 'mdi:emoticon-dead'
         return 'mdi:access-point'
