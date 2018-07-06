@@ -72,6 +72,11 @@ def setup(hass, config):
             entity = ZiGateDeviceEntity(device)
             hass.data[DATA_ZIGATE_DEVICES][device.addr] = entity
             component.add_entities([entity])
+            persistent_notification.create(hass,
+                                           ('A new ZiGate device "{}"'
+                                            ' has been added !'
+                                            ).format(device),
+                                           title='ZiGate')
 
     def device_removed(**kwargs):
         # component.async_remove_entity
