@@ -35,6 +35,15 @@ REFRESH_DEVICE_SCHEMA = vol.Schema({
     vol.Optional(ADDR): cv.string,
 })
 
+RAW_COMMAND_SCHEMA = vol.Schema({
+    vol.Required('cmd'): cv.positive_int,
+    vol.Optional('data'): cv.string,
+})
+
+IDENTIFY_SCHEMA = vol.Schema({
+    vol.Required(ADDR): cv.string,
+})
+
 
 def setup(hass, config):
     """Setup zigate platform."""
@@ -165,6 +174,24 @@ def setup(hass, config):
             for device in z.devices:
                 device.refresh_device()
 
+    def network_scan(service):
+        z.start_network_scan()
+
+    def raw_command(service):
+        cmd = service.data.get('cmd')
+        data = service.data.get('data', '')
+        z.send_data(cmd, data)
+
+    def identify_device(service):
+        addr = service.data.get('addr')
+        z.identify_device(addr)
+
+    def initiate_touchlink(service):
+        z.initiate_touchlink()
+
+    def touchlink_factory_reset(service):
+        z.touchlink_factory_reset()
+
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
 
@@ -176,6 +203,14 @@ def setup(hass, config):
     hass.services.register(DOMAIN, 'refresh_device',
                            refresh_device,
                            schema=REFRESH_DEVICE_SCHEMA)
+    hass.services.register(DOMAIN, 'network_scan', network_scan)
+    hass.services.register(DOMAIN, 'raw_command', raw_command,
+                           schema=RAW_COMMAND_SCHEMA)
+    hass.services.register(DOMAIN, 'identify_device', identify_device,
+                           schema=IDENTIFY_SCHEMA)
+    hass.services.register(DOMAIN, 'initiate_touchlink', initiate_touchlink)
+    hass.services.register(DOMAIN, 'touchlink_factory_reset',
+                           touchlink_factory_reset)
 
     return True
 
