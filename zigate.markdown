@@ -39,9 +39,3 @@ To pair a new device, go in developer/services and call the 'zigate.permit\_join
 You have 30 seconds to pair your device.
 Entities (sensor, switch, light, etc) will be auto-generated.
 
-{% configuration %}
-  port:
-    description: USB port
-    required: false
-    type: string
-{% endconfiguration %}
