@@ -161,8 +161,8 @@ class ZiGateLight(Light):
             h, s = kwargs[ATTR_HS_COLOR]
             self.hass.data[DOMAIN].actions_move_hue_saturation(self._device.addr,
                                                                self._endpoint,
-                                                               h,
-                                                               s)
+                                                               int(h),
+                                                               int(s))
 
     def turn_off(self, **kwargs):
         """Turn the device off."""
