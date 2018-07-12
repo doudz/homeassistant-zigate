@@ -7,6 +7,7 @@ https://home-assistant.io/components/ZiGate/
 import logging
 import voluptuous as vol
 import os
+import datetime
 
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import EntityComponent
@@ -275,4 +276,8 @@ class ZiGateDeviceEntity(Entity):
     def icon(self):
         if self._device.missing:
             return 'mdi:emoticon-dead'
+        last_24h = datetime.datetime.now()-datetime.timedelta(hours=24)
+        last_24h = last_24h.strftime('%Y-%m-%d %H:%M:%S')
+        if self.state < last_24h:
+            return 'mdi:help'
         return 'mdi:access-point'
