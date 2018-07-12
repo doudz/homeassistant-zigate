@@ -68,11 +68,6 @@ class ZiGateSensor(Entity):
         name = attribute.get('name')
         self._name = 'zigate_{}_{}'.format(device.addr,
                                            attribute.get('name'))
-        self._unique_id = '{}-{}-{}-{}'.format(device.addr,
-                                               attribute['endpoint'],
-                                               attribute['cluster'],
-                                               attribute['attribute'],
-                                               )
         self.registry_name = '{} {}'.format(name, device)
         if 'temperature' in name:
             self._device_class = DEVICE_CLASS_TEMPERATURE
@@ -83,7 +78,12 @@ class ZiGateSensor(Entity):
 
     @property
     def unique_id(self)->str:
-        return self._unique_id
+        if self._device.ieee:
+            return '{}-{}-{}-{}'.format(self._device.ieee,
+                                        self._attribute['endpoint'],
+                                        self._attribute['cluster'],
+                                        self._attribute['attribute'],
+                                        )
 
     @property
     def should_poll(self):

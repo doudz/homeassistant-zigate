@@ -59,14 +59,14 @@ class ZiGateSwitch(SwitchDevice):
         self._name = 'zigate_{}_{}_{}'.format(device.addr,
                                               'switch',
                                               endpoint)
-        self._unique_id = '{}-{}-{}'.format(device.addr,
-                                            'switch',
-                                            endpoint)
         self.registry_name = '{} {}'.format(device, endpoint)
 
     @property
     def unique_id(self)->str:
-        return self._unique_id
+        if self._device.ieee:
+            return '{}-{}-{}'.format(self._device.ieee,
+                                     'switch',
+                                     self._endpoint)
 
     @property
     def should_poll(self):

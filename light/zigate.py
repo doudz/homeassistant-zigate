@@ -70,9 +70,6 @@ class ZiGateLight(Light):
         self._name = 'zigate_{}_{}_{}'.format(device.addr,
                                               'light',
                                               endpoint)
-        self._unique_id = '{}-{}-{}'.format(device.addr,
-                                            'light',
-                                            endpoint)
         self.registry_name = '{} {}'.format(device, endpoint)
         import zigate
         supported_features = set()
@@ -100,7 +97,10 @@ class ZiGateLight(Light):
     @property
     def unique_id(self):
         """Return unique ID for light."""
-        return self._unique_id
+        if self._device.ieee:
+            return '{}-{}-{}'.format(self._device.ieee,
+                                     'light',
+                                     self._endpoint)
 
     @property
     def brightness(self) -> int:

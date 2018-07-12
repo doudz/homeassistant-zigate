@@ -64,11 +64,6 @@ class ZiGateBinarySensor(BinarySensorDevice):
         name = attribute.get('name')
         self._name = 'zigate_{}_{}'.format(device.addr,
                                            name)
-        self._unique_id = '{}-{}-{}-{}'.format(device.addr,
-                                               attribute['endpoint'],
-                                               attribute['cluster'],
-                                               attribute['attribute'],
-                                               )
         self.registry_name = '{} {}'.format(name, device)
 
         if name == 'presence':
@@ -82,7 +77,12 @@ class ZiGateBinarySensor(BinarySensorDevice):
 
     @property
     def unique_id(self)->str:
-        return self._unique_id
+        if self._device.ieee:
+            return '{}-{}-{}-{}'.format(self._device.ieee,
+                                        self._attribute['endpoint'],
+                                        self._attribute['cluster'],
+                                        self._attribute['attribute'],
+                                        )
 
     @property
     def should_poll(self):
