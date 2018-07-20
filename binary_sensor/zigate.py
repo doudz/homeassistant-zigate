@@ -25,7 +25,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         devs = []
         for device in z.devices:
             actions = device.available_actions()
-            if actions:
+            if any(actions.values()):
                 continue
             for attribute in device.attributes:
                 if attribute['cluster'] == 0:

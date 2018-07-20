@@ -37,7 +37,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         devs = []
         for device in z.devices:
             actions = device.available_actions()
-            if not actions:
+            if not any(actions.values()):
                 continue
             for endpoint, action_type in actions.items():
                 if any(i in action_type for i in LIGHT_ACTIONS):
