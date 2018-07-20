@@ -27,6 +27,9 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     def sync_attributes(**kwargs):
         devs = []
         for device in z.devices:
+            actions = device.available_actions()
+            if actions:
+                continue
             for attribute in device.attributes:
                 if attribute['cluster'] == 0:
                     continue
@@ -40,7 +43,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                     if value is None:
                         continue
                     if key not in hass.data[DATA_ZIGATE_ATTRS]:
-                        if not isinstance(value, bool):
+                        if type(value) not in (bool, dict):
                             _LOGGER.debug(('Creating sensor '
                                            'for device '
                                            '{} {}').format(device,
@@ -122,6 +125,8 @@ class ZiGateSensor(Entity):
             'endpoint': self._attribute['endpoint'],
             'cluster': self._attribute['cluster'],
             'attribute': self._attribute['attribute'],
+            'battery_voltage': self._device.get_value('battery'),
+            'battery_level': int(self._device.battery_percent),
         }
         state = self.state
         if isinstance(self.state, dict):

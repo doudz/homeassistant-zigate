@@ -24,6 +24,9 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     def sync_attributes():
         devs = []
         for device in z.devices:
+            actions = device.available_actions()
+            if actions:
+                continue
             for attribute in device.attributes:
                 if attribute['cluster'] == 0:
                     continue
@@ -37,7 +40,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                     if value is None:
                         continue
                     if key not in hass.data[DATA_ZIGATE_ATTRS]:
-                        if isinstance(value, bool):
+                        if type(value) in (bool, dict):
                             _LOGGER.debug(('Creating binary sensor '
                                            'for device '
                                            '{} {}').format(device,
@@ -101,15 +104,23 @@ class ZiGateBinarySensor(BinarySensorDevice):
                                        self._attribute['cluster'],
                                        self._attribute['attribute'])
         if a:
-            return a.get('value', False)
+            value = a.get('value', False)
+            if isinstance(value, dict):
+                return value.get('alarm1')
         return False
 
     @property
     def device_state_attributes(self):
         """Return the state attributes."""
-        return {
+        attrs = {
             'addr': self._device.addr,
             'endpoint': self._attribute['endpoint'],
             'cluster': self._attribute['cluster'],
             'attribute': self._attribute['attribute'],
+            'battery_voltage': self._device.get_value('battery'),
+            'battery_level': int(self._device.battery_percent),
         }
+        state = self.state
+        if isinstance(self.state, dict):
+            attrs.update(state)
+        return attrs

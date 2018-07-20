@@ -12,7 +12,8 @@ import datetime
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.helpers.discovery import load_platform
-from homeassistant.const import (ATTR_BATTERY_LEVEL, CONF_PORT, 
+from homeassistant.helpers.event import track_time_change
+from homeassistant.const import (ATTR_BATTERY_LEVEL, CONF_PORT,
                                  CONF_HOST,
                                  EVENT_HOMEASSISTANT_START,
                                  EVENT_HOMEASSISTANT_STOP)
@@ -20,7 +21,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.18.0']
+REQUIREMENTS = ['zigate==0.18.1']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
@@ -192,6 +193,9 @@ def setup(hass, config):
         z.save_state()
         z.close()
 
+    def refresh_devices_list(service):
+        z.get_devices_list()
+
     def refresh_device(service):
         addr = service.data.get(ADDR)
         if addr:
@@ -204,7 +208,7 @@ def setup(hass, config):
         z.start_network_scan()
 
     def raw_command(service):
-        cmd = service.data.get('cmd')
+        cmd = int(service.data.get('cmd'))
         data = service.data.get('data', '')
         z.send_data(cmd, data)
 
@@ -221,6 +225,7 @@ def setup(hass, config):
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
 
+    hass.services.register(DOMAIN, 'refresh_devices_list', refresh_devices_list)
     hass.services.register(DOMAIN, 'reset', zigate_reset)
     hass.services.register(DOMAIN, 'permit_join', permit_join)
     hass.services.register(DOMAIN, 'start_zigate', start_zigate)
@@ -237,6 +242,9 @@ def setup(hass, config):
     hass.services.register(DOMAIN, 'initiate_touchlink', initiate_touchlink)
     hass.services.register(DOMAIN, 'touchlink_factory_reset',
                            touchlink_factory_reset)
+
+    track_time_change(hass, refresh_devices_list,
+                      hour=0, minute=0, second=0)
 
     return True
 
@@ -272,7 +280,7 @@ class ZiGateDeviceEntity(Entity):
     @property
     def device_state_attributes(self):
         """Return the device specific state attributes."""
-        attrs = {'battery': self._device.get_value('battery'),
+        attrs = {'battery_voltage': self._device.get_value('battery'),
                  ATTR_BATTERY_LEVEL: int(self._device.battery_percent),
                  'rssi_percent': int(self._device.rssi_percent),
                  'type': self._device.get_value('type'),

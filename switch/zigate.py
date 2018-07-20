@@ -121,4 +121,6 @@ class ZiGateSwitch(SwitchDevice):
         return {
             'addr': self._device.addr,
             'endpoint': self._endpoint,
+            'battery_voltage': self._device.get_value('battery'),
+            'battery_level': int(self._device.battery_percent),
         }
