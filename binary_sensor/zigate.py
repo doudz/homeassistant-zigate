@@ -69,10 +69,15 @@ class ZiGateBinarySensor(BinarySensorDevice):
                                            name)
         self.registry_name = '{} {}'.format(name, device)
 
+        typ = self._device.get_value('type', '').lower()
         if name == 'presence':
             self._device_class = 'motion'
-        elif 'magnet' in self._device.get_value('type', ''):
+        elif 'magnet' in typ:
             self._device_class = 'door'
+        elif 'smok' in typ:
+            self._device_class = 'smoke'
+        elif 'leak' in typ:
+            self._device_class = 'safety'
 
     @property
     def device_class(self):
