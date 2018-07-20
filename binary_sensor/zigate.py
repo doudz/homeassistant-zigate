@@ -6,6 +6,7 @@ https://home-assistant.io/components/ZiGate/
 """
 import logging
 from homeassistant.components.binary_sensor import BinarySensorDevice
+from homeassistant.const import STATE_UNAVAILABLE, STATE_ON, STATE_OFF
 
 DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
@@ -109,10 +110,16 @@ class ZiGateBinarySensor(BinarySensorDevice):
                                        self._attribute['cluster'],
                                        self._attribute['attribute'])
         if a:
-            value = a.get('value', False)
+            value = a.get('value')
             if isinstance(value, dict):
                 return value.get('alarm1')
-        return False
+            return value
+
+    @property
+    def state(self):
+        if self.is_on is None:
+            return STATE_UNAVAILABLE
+        return STATE_ON if self.is_on else STATE_OFF
 
     @property
     def device_state_attributes(self):

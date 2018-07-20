@@ -7,7 +7,8 @@ https://home-assistant.io/components/ZiGate/
 import logging
 from homeassistant.const import (DEVICE_CLASS_HUMIDITY,
                                  DEVICE_CLASS_TEMPERATURE,
-                                 DEVICE_CLASS_ILLUMINANCE)
+                                 DEVICE_CLASS_ILLUMINANCE,
+                                 STATE_UNAVAILABLE)
 from homeassistant.helpers.entity import Entity
 
 DOMAIN = 'zigate'
@@ -110,7 +111,8 @@ class ZiGateSensor(Entity):
                                        self._attribute['cluster'],
                                        self._attribute['attribute'])
         if a:
-            return a.get('value')
+            return a.get('value', STATE_UNAVAILABLE)
+        return STATE_UNAVAILABLE
 
     @property
     def unit_of_measurement(self):
