@@ -23,4 +23,16 @@ zigate:
 
 ```
 
-Currently it supports sensor, binary_sensor and switch and light (only brightness currently)
+or
+if you want to use Wifi ZiGate (or usb zigate forwarded with ser2net for example)
+Port is optionnal, default is 9999 
+
+```
+# Enable ZiGate Wifi
+zigate:
+  host: 192.168.0.10
+  port: 9999
+
+```
+
+Currently it supports sensor, binary_sensor and switch and light (brightness and color)

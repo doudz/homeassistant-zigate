@@ -12,7 +12,8 @@ import datetime
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.helpers.discovery import load_platform
-from homeassistant.const import (ATTR_BATTERY_LEVEL, CONF_PORT,
+from homeassistant.const import (ATTR_BATTERY_LEVEL, CONF_PORT, 
+                                 CONF_HOST,
                                  EVENT_HOMEASSISTANT_START,
                                  EVENT_HOMEASSISTANT_STOP)
 import homeassistant.helpers.config_validation as cv
@@ -29,6 +30,7 @@ ADDR = 'addr'
 
 CONFIG_SCHEMA = vol.Schema({
     vol.Optional(CONF_PORT): cv.string,
+    vol.Optional(CONF_HOST): cv.string,
 }, extra=vol.ALLOW_EXTRA)
 
 
@@ -37,7 +39,7 @@ REFRESH_DEVICE_SCHEMA = vol.Schema({
 })
 
 RAW_COMMAND_SCHEMA = vol.Schema({
-    vol.Required('cmd'): cv.positive_int,
+    vol.Required('cmd'): cv.string,
     vol.Optional('data'): cv.string,
 })
 
@@ -52,13 +54,22 @@ def setup(hass, config):
     import zigate
 
     port = config.get(CONF_PORT)
+    host = config.get(CONF_HOST)
     persistent_file = os.path.join(hass.config.config_dir,
                                    'zigate.json')
     _LOGGER.debug('Persistent file {}'.format(persistent_file))
 
-    z = zigate.ZiGate(port,
-                      persistent_file,
-                      auto_start=False)
+    if host:
+        if not port:
+            port = 9999
+        z = zigate.ZiGateWiFi(host,
+                              port,
+                              path=persistent_file,
+                              auto_start=False)
+    else:
+        z = zigate.ZiGate(port,
+                          path=persistent_file,
+                          auto_start=False)
 
     hass.data[DOMAIN] = z
     hass.data[DATA_ZIGATE_DEVICES] = {}
