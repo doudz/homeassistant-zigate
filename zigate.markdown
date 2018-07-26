@@ -35,6 +35,17 @@ To integrate the ZiGate component in Home Assistant, add the following section t
   port: /dev/ttyS0
 ```
 
+or
+if you want to use Wifi ZiGate (or usb zigate forwarded with ser2net for example)
+Port is optionnal, default is 9999 
+
+```yaml
+# Enable ZiGate Wifi
+zigate:
+  host: 192.168.0.10:9999
+
+```
+
 To pair a new device, go in developer/services and call the 'zigate.permit\_join' service.
 You have 30 seconds to pair your device.
 Entities (sensor, switch, light, etc) will be auto-generated.

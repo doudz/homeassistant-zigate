@@ -30,8 +30,7 @@ Port is optionnal, default is 9999
 ```
 # Enable ZiGate Wifi
 zigate:
-  host: 192.168.0.10
-  port: 9999
+  host: 192.168.0.10:9999
 
 ```
 

@@ -21,7 +21,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.18.1']
+REQUIREMENTS = ['zigate==0.18.2']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
@@ -63,10 +63,12 @@ def setup(hass, config):
                                    'zigate.json')
 
     if host:
-        if not port:
-            port = 9999
-        myzigate = zigate.ZiGateWiFi(host,
-                                     int(port),
+        host = host.split(':',1)
+        port = None
+        if len(host) == 2:
+            port = int(host[1])
+        myzigate = zigate.ZiGateWiFi(host[0],
+                                     port,
                                      path=persistent_file,
                                      auto_start=False)
     else:
