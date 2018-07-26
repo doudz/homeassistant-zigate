@@ -5,6 +5,7 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/sensor.zigate/
 """
 import logging
+from homeassistant.components.sensor import ENTITY_ID_FORMAT
 from homeassistant.const import (DEVICE_CLASS_HUMIDITY,
                                  DEVICE_CLASS_TEMPERATURE,
                                  DEVICE_CLASS_ILLUMINANCE,
@@ -74,9 +75,11 @@ class ZiGateSensor(Entity):
         self._attribute = attribute
         self._device_class = None
         name = attribute.get('name')
-        self._name = 'zigate_{}_{}'.format(device.addr,
-                                           attribute.get('name'))
-        self.registry_name = '{} {}'.format(name, device)
+        entity_id = 'zigate_{}_{}'.format(device.addr,
+                                          name)
+        self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
+        self._name = '{} {}'.format(name, device)
+
         if 'temperature' in name:
             self._device_class = DEVICE_CLASS_TEMPERATURE
         elif 'humidity' in name:

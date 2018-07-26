@@ -266,8 +266,8 @@ class ZiGateDeviceEntity(Entity):
     def __init__(self, device):
         """Initialize the sensor."""
         self._device = device
-        self._name = self._device.addr
-        self.registry_name = str(device)
+        self.entity_id = '{}.{}'.format(DOMAIN, self._device.addr)
+        self._name = str(device)
 
     @property
     def should_poll(self):

@@ -5,7 +5,8 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/binary_sensor.zigate/
 """
 import logging
-from homeassistant.components.binary_sensor import BinarySensorDevice
+from homeassistant.components.binary_sensor import (BinarySensorDevice,
+                                                    ENTITY_ID_FORMAT)
 from homeassistant.const import STATE_UNAVAILABLE, STATE_ON, STATE_OFF
 try:
     from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
@@ -70,9 +71,10 @@ class ZiGateBinarySensor(BinarySensorDevice):
         self._attribute = attribute
         self._device_class = None
         name = attribute.get('name')
-        self._name = 'zigate_{}_{}'.format(device.addr,
-                                           name)
-        self.registry_name = '{} {}'.format(name, device)
+        entity_id = 'zigate_{}_{}'.format(device.addr,
+                                          name)
+        self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
+        self._name = '{} {}'.format(name, device)
 
         typ = self._device.get_value('type', '').lower()
         if name == 'presence':

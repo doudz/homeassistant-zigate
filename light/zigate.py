@@ -11,7 +11,7 @@ from operator import ior
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS, ATTR_HS_COLOR,
     SUPPORT_BRIGHTNESS, SUPPORT_COLOR_TEMP,
-    SUPPORT_COLOR, Light)
+    SUPPORT_COLOR, Light, ENTITY_ID_FORMAT)
 try:
     from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
 except:  # temporary until official support
@@ -71,10 +71,11 @@ class ZiGateLight(Light):
         """Initialize the light."""
         self._device = device
         self._endpoint = endpoint
-        self._name = 'zigate_{}_{}_{}'.format(device.addr,
-                                              'light',
-                                              endpoint)
-        self.registry_name = '{} {}'.format(device, endpoint)
+        entity_id = 'zigate_{}_{}'.format(device.addr,
+                                          endpoint)
+        self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
+        self._name = '{} {}'.format(device, endpoint)
+
         import zigate
         supported_features = set()
         for action_type in device.available_actions(endpoint)[endpoint]:

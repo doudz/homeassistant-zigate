@@ -5,7 +5,7 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/switch.zigate/
 """
 import logging
-from homeassistant.components.switch import SwitchDevice
+from homeassistant.components.switch import SwitchDevice, ENTITY_ID_FORMAT
 try:
     from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
 except:  # temporary until official support
@@ -60,10 +60,10 @@ class ZiGateSwitch(SwitchDevice):
         """Initialize the ZiGate switch."""
         self._device = device
         self._endpoint = endpoint
-        self._name = 'zigate_{}_{}_{}'.format(device.addr,
-                                              'switch',
-                                              endpoint)
-        self.registry_name = '{} {}'.format(device, endpoint)
+        entity_id = 'zigate_{}_{}'.format(device.addr,
+                                          endpoint)
+        self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
+        self._name = '{} {}'.format(device, endpoint)
 
     @property
     def unique_id(self)->str:
