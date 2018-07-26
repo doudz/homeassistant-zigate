@@ -1,0 +1,2 @@
+permit_join:
+  description: Allow pairing new device.
