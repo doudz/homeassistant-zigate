@@ -83,7 +83,7 @@ class ZiGateBinarySensor(BinarySensorDevice):
             self._device_class = 'door'
         elif 'smok' in typ:
             self._device_class = 'smoke'
-        elif 'leak' in typ:
+        elif 'zone_status' in name:
             self._device_class = 'safety'
 
     @property
