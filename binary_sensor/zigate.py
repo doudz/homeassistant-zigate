@@ -117,7 +117,7 @@ class ZiGateBinarySensor(BinarySensorDevice):
                                        self._attribute['attribute'])
         if a:
             value = a.get('value')
-            if isinstance(value, dict):
+            if self._is_zone_status():
                 return value.get('alarm1')
             return value
 
@@ -138,7 +138,10 @@ class ZiGateBinarySensor(BinarySensorDevice):
             'battery_voltage': self._device.get_value('battery'),
             'battery_level': int(self._device.battery_percent),
         }
-        state = self.state
-        if isinstance(self.state, dict):
-            attrs.update(state)
+        if self._is_zone_status():
+            attrs.update(self._attribute.get('value'))
         return attrs
+
+    def _is_zone_status(self):
+        '''return True if attribute is a zone status'''
+        return 'zone_status' in self._attribute.get('name')
