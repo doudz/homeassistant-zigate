@@ -9,7 +9,7 @@ from functools import reduce
 from operator import ior
 
 from homeassistant.components.light import (
-    ATTR_BRIGHTNESS, ATTR_HS_COLOR,
+    ATTR_BRIGHTNESS, ATTR_TRANSITION, ATTR_HS_COLOR,
     SUPPORT_BRIGHTNESS, SUPPORT_COLOR_TEMP,
     SUPPORT_COLOR, Light, ENTITY_ID_FORMAT)
 try:
@@ -150,36 +150,51 @@ class ZiGateLight(Light):
 
     def turn_on(self, **kwargs):
         """Turn the switch on."""
+        transition = 0
+        if ATTR_TRANSITION in kwargs:
+            transition = kwargs[ATTR_TRANSITION]
         if ATTR_BRIGHTNESS in kwargs:
             brightness = kwargs[ATTR_BRIGHTNESS]
             brightness = int((brightness / 255) * 100)
             self.hass.data[ZIGATE_DOMAIN].action_move_level_onoff(self._device.addr,
                                                            self._endpoint,
                                                            1,
-                                                           brightness
+                                                           brightness,
+                                                           transition
                                                            )
         else:
             self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
                                                 self._endpoint,
-                                                1)
+                                                1,
+                                                transition)
         if ATTR_HS_COLOR in kwargs:
             h, s = kwargs[ATTR_HS_COLOR]
             self.hass.data[ZIGATE_DOMAIN].actions_move_hue_saturation(self._device.addr,
                                                                self._endpoint,
                                                                int(h),
-                                                               int(s))
+                                                               int(s),
+                                                               transition)
 
     def turn_off(self, **kwargs):
         """Turn the device off."""
+        transition = 0
+        if ATTR_TRANSITION in kwargs:
+            transition = kwargs[ATTR_TRANSITION]
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
                                             self._endpoint,
-                                            0)
+                                            0,
+                                            off_time=transition)
 
     def toggle(self, **kwargs):
         """Toggle the device"""
+        transition = 0
+        if ATTR_TRANSITION in kwargs:
+            transition = kwargs[ATTR_TRANSITION]
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
                                             self._endpoint,
-                                            2)
+                                            2,
+                                            transition,
+                                            transition)
 
     @property
     def device_state_attributes(self):
