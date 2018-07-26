@@ -154,7 +154,7 @@ class ZiGateLight(Light):
         """Turn the switch on."""
         transition = 0
         if ATTR_TRANSITION in kwargs:
-            transition = kwargs[ATTR_TRANSITION]
+            transition = int(kwargs[ATTR_TRANSITION])
         if ATTR_BRIGHTNESS in kwargs:
             brightness = kwargs[ATTR_BRIGHTNESS]
             brightness = int((brightness / 255) * 100)
@@ -181,7 +181,7 @@ class ZiGateLight(Light):
         """Turn the device off."""
         transition = 0
         if ATTR_TRANSITION in kwargs:
-            transition = kwargs[ATTR_TRANSITION]
+            transition = int(kwargs[ATTR_TRANSITION])
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
                                             self._endpoint,
                                             0,
@@ -191,7 +191,7 @@ class ZiGateLight(Light):
         """Toggle the device"""
         transition = 0
         if ATTR_TRANSITION in kwargs:
-            transition = kwargs[ATTR_TRANSITION]
+            transition = int(kwargs[ATTR_TRANSITION])
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
                                             self._endpoint,
                                             2,
