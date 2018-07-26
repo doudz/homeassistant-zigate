@@ -92,11 +92,11 @@ def setup(hass, config):
             hass.data[DATA_ZIGATE_DEVICES][device.addr] = entity
             component.add_entities([entity])
             if 'signal' in kwargs:
-                hass.components.persistent_notification.create(hass,
-                                                               ('A new ZiGate device "{}"'
-                                                                ' has been added !'
-                                                                ).format(device),
-                                                               title='ZiGate')
+                hass.components.persistent_notification.create(
+                    ('A new ZiGate device "{}"'
+                     ' has been added !'
+                     ).format(device),
+                    title='ZiGate')
 
     def device_removed(**kwargs):
         # component.async_remove_entity
@@ -104,11 +104,11 @@ def setup(hass, config):
 
     def device_need_refresh(**kwargs):
         device = kwargs['device']
-        hass.components.persistent_notification.create(hass,
-                                       ('The ZiGate device {} needs some'
-                                        ' refresh (missing important'
-                                        ' information)').format(device.addr),
-                                       title='ZiGate')
+        hass.components.persistent_notification.create(
+            ('The ZiGate device {} needs some'
+             ' refresh (missing important'
+             ' information)').format(device.addr),
+            title='ZiGate')
 
     zigate.dispatcher.connect(device_added,
                               zigate.ZIGATE_DEVICE_ADDED, weak=False)
@@ -188,11 +188,10 @@ def setup(hass, config):
         myzigate.start_auto_save()
         version = myzigate.get_version_text()
         if version < '3.0d':
-            hass.components.persistent_notification.create(hass,
-                                                           ('Your zigate firmware is outdated, '
-                                                            'Please upgrade to 3.0d or later !'
-                                                            ),
-                                                           title='ZiGate')
+            hass.components.persistent_notification.create(
+                ('Your zigate firmware is outdated, '
+                 'Please upgrade to 3.0d or later !'),
+                title='ZiGate')
         # first load
         for device in myzigate.devices:
             device_added(device=device)
