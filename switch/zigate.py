@@ -2,12 +2,12 @@
 ZiGate platform.
 
 For more details about this platform, please refer to the documentation
-https://home-assistant.io/components/ZiGate/
+https://home-assistant.io/components/switch.zigate/
 """
 import logging
 from homeassistant.components.switch import SwitchDevice
+from homeassistant.components.zigate import DOMAIN
 
-DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
 
@@ -19,12 +19,12 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
-    z = hass.data[DOMAIN]
+    myzigate = hass.data[DOMAIN]
     import zigate
 
     def sync_attributes():
         devs = []
-        for device in z.devices:
+        for device in myzigate.devices:
             actions = device.available_actions()
             if not any(actions.values()):
                 continue
@@ -34,14 +34,15 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                                             'switch',
                                             endpoint
                                             )
-                    if key not in hass.data[DATA_ZIGATE_ATTRS]:
-                        _LOGGER.debug(('Creating switch '
-                                       'for device '
-                                       '{} {}').format(device,
-                                                       endpoint))
-                        entity = ZiGateSwitch(device, endpoint)
-                        devs.append(entity)
-                        hass.data[DATA_ZIGATE_ATTRS][key] = entity
+                    if key in hass.data[DATA_ZIGATE_ATTRS]:
+                        continue
+                    _LOGGER.debug(('Creating switch '
+                                   'for device '
+                                   '{} {}').format(device,
+                                                   endpoint))
+                    entity = ZiGateSwitch(device, endpoint)
+                    devs.append(entity)
+                    hass.data[DATA_ZIGATE_ATTRS][key] = entity
 
         add_devices(devs)
     sync_attributes()
@@ -77,17 +78,6 @@ class ZiGateSwitch(SwitchDevice):
     def name(self):
         """Return the name of the device if any."""
         return self._name
-
-#     @property
-#     def current_power_w(self):
-#         """Return the current power usage in W."""
-#         if self._state:
-#             return 100
-#
-#     @property
-#     def today_energy_kwh(self):
-#         """Return the today total energy usage in kWh."""
-#         return 15
 
     @property
     def is_on(self):

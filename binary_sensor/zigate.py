@@ -2,13 +2,13 @@
 ZiGate platform.
 
 For more details about this platform, please refer to the documentation
-https://home-assistant.io/components/ZiGate/
+https://home-assistant.io/components/binary_sensor.zigate/
 """
 import logging
 from homeassistant.components.binary_sensor import BinarySensorDevice
 from homeassistant.const import STATE_UNAVAILABLE, STATE_ON, STATE_OFF
+from homeassistant.components.zigate import DOMAIN
 
-DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
 
@@ -20,11 +20,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
-    z = hass.data[DOMAIN]
+    myzigate = hass.data[DOMAIN]
 
     def sync_attributes():
         devs = []
-        for device in z.devices:
+        for device in myzigate.devices:
             actions = device.available_actions()
             if any(actions.values()):
                 continue
@@ -40,15 +40,16 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                     value = attribute.get('value')
                     if value is None:
                         continue
-                    if key not in hass.data[DATA_ZIGATE_ATTRS]:
-                        if type(value) in (bool, dict):
-                            _LOGGER.debug(('Creating binary sensor '
-                                           'for device '
-                                           '{} {}').format(device,
-                                                           attribute))
-                            entity = ZiGateBinarySensor(device, attribute)
-                            devs.append(entity)
-                            hass.data[DATA_ZIGATE_ATTRS][key] = entity
+                    if key in hass.data[DATA_ZIGATE_ATTRS]:
+                        continue
+                    if type(value) in (bool, dict):
+                        _LOGGER.debug(('Creating binary sensor '
+                                       'for device '
+                                       '{} {}').format(device,
+                                                       attribute))
+                        entity = ZiGateBinarySensor(device, attribute)
+                        devs.append(entity)
+                        hass.data[DATA_ZIGATE_ATTRS][key] = entity
 
         add_devices(devs)
     sync_attributes()

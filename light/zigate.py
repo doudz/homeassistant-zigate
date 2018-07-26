@@ -2,7 +2,7 @@
 ZiGate light platform that implements lights.
 
 For more details about this platform, please refer to the documentation
-https://home-assistant.io/components/ZiGate/
+https://home-assistant.io/components/light.zigate/
 """
 import logging
 from functools import reduce
@@ -12,8 +12,8 @@ from homeassistant.components.light import (
     ATTR_BRIGHTNESS, ATTR_HS_COLOR,
     SUPPORT_BRIGHTNESS, SUPPORT_COLOR_TEMP,
     SUPPORT_COLOR, Light)
+from homeassistant.components.zigate import DOMAIN
 
-DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
 
@@ -25,7 +25,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
-    z = hass.data[DOMAIN]
+    myzigate = hass.data[DOMAIN]
     import zigate
     LIGHT_ACTIONS = [zigate.ACTIONS_LEVEL,
                      zigate.ACTIONS_COLOR,
@@ -35,7 +35,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     def sync_attributes():
         devs = []
-        for device in z.devices:
+        for device in myzigate.devices:
             actions = device.available_actions()
             if not any(actions.values()):
                 continue
@@ -45,14 +45,15 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                                             'light',
                                             endpoint
                                             )
-                    if key not in hass.data[DATA_ZIGATE_ATTRS]:
-                        _LOGGER.debug(('Creating light '
-                                       'for device '
-                                       '{} {}').format(device,
-                                                       endpoint))
-                        entity = ZiGateLight(device, endpoint)
-                        devs.append(entity)
-                        hass.data[DATA_ZIGATE_ATTRS][key] = entity
+                    if key in hass.data[DATA_ZIGATE_ATTRS]:
+                        continue
+                    _LOGGER.debug(('Creating light '
+                                   'for device '
+                                   '{} {}').format(device,
+                                                   endpoint))
+                    entity = ZiGateLight(device, endpoint)
+                    devs.append(entity)
+                    hass.data[DATA_ZIGATE_ATTRS][key] = entity
 
         add_devices(devs)
     sync_attributes()

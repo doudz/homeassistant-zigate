@@ -2,7 +2,7 @@
 ZiGate platform.
 
 For more details about this platform, please refer to the documentation
-https://home-assistant.io/components/ZiGate/
+https://home-assistant.io/components/sensor.zigate/
 """
 import logging
 from homeassistant.const import (DEVICE_CLASS_HUMIDITY,
@@ -10,8 +10,8 @@ from homeassistant.const import (DEVICE_CLASS_HUMIDITY,
                                  DEVICE_CLASS_ILLUMINANCE,
                                  STATE_UNAVAILABLE)
 from homeassistant.helpers.entity import Entity
+from homeassistant.components.zigate import DOMAIN
 
-DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
 
@@ -23,11 +23,11 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
-    z = hass.data[DOMAIN]
+    myzigate = hass.data[DOMAIN]
 
     def sync_attributes(**kwargs):
         devs = []
-        for device in z.devices:
+        for device in myzigate.devices:
             actions = device.available_actions()
             if any(actions.values()):
                 continue
@@ -43,15 +43,16 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                     value = attribute.get('value')
                     if value is None:
                         continue
-                    if key not in hass.data[DATA_ZIGATE_ATTRS]:
-                        if type(value) not in (bool, dict):
-                            _LOGGER.debug(('Creating sensor '
-                                           'for device '
-                                           '{} {}').format(device,
-                                                           attribute))
-                            entity = ZiGateSensor(device, attribute)
-                            devs.append(entity)
-                            hass.data[DATA_ZIGATE_ATTRS][key] = entity
+                    if key in hass.data[DATA_ZIGATE_ATTRS]:
+                        continue
+                    if type(value) not in (bool, dict):
+                        _LOGGER.debug(('Creating sensor '
+                                       'for device '
+                                       '{} {}').format(device,
+                                                       attribute))
+                        entity = ZiGateSensor(device, attribute)
+                        devs.append(entity)
+                        hass.data[DATA_ZIGATE_ATTRS][key] = entity
 
         add_devices(devs)
 

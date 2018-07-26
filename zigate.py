@@ -2,7 +2,7 @@
 ZiGate component.
 
 For more details about this platform, please refer to the documentation
-https://home-assistant.io/components/ZiGate/
+https://home-assistant.io/components/zigate/
 """
 import logging
 import voluptuous as vol
@@ -28,6 +28,10 @@ DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
 ADDR = 'addr'
+SUPPORTED_PLATFORMS = ('sensor',
+                       'binary_sensor',
+                       'switch',
+                       'light')
 
 CONFIG_SCHEMA = vol.Schema({
     vol.Optional(CONF_PORT): cv.string,
@@ -51,28 +55,26 @@ IDENTIFY_SCHEMA = vol.Schema({
 
 def setup(hass, config):
     """Setup zigate platform."""
-    from homeassistant.components import persistent_notification
     import zigate
 
     port = config.get(CONF_PORT)
     host = config.get(CONF_HOST)
     persistent_file = os.path.join(hass.config.config_dir,
                                    'zigate.json')
-    _LOGGER.debug('Persistent file {}'.format(persistent_file))
 
     if host:
         if not port:
             port = 9999
-        z = zigate.ZiGateWiFi(host,
-                              port,
-                              path=persistent_file,
-                              auto_start=False)
+        myzigate = zigate.ZiGateWiFi(host,
+                                     int(port),
+                                     path=persistent_file,
+                                     auto_start=False)
     else:
-        z = zigate.ZiGate(port,
-                          path=persistent_file,
-                          auto_start=False)
+        myzigate = zigate.ZiGate(port,
+                                 path=persistent_file,
+                                 auto_start=False)
 
-    hass.data[DOMAIN] = z
+    hass.data[DOMAIN] = myzigate
     hass.data[DATA_ZIGATE_DEVICES] = {}
     hass.data[DATA_ZIGATE_ATTRS] = {}
 
@@ -86,11 +88,11 @@ def setup(hass, config):
             hass.data[DATA_ZIGATE_DEVICES][device.addr] = entity
             component.add_entities([entity])
             if 'signal' in kwargs:
-                persistent_notification.create(hass,
-                                               ('A new ZiGate device "{}"'
-                                                ' has been added !'
-                                                ).format(device),
-                                               title='ZiGate')
+                hass.components.persistent_notification.create(hass,
+                                                               ('A new ZiGate device "{}"'
+                                                                ' has been added !'
+                                                                ).format(device),
+                                                               title='ZiGate')
 
     def device_removed(**kwargs):
         # component.async_remove_entity
@@ -98,7 +100,7 @@ def setup(hass, config):
 
     def device_need_refresh(**kwargs):
         device = kwargs['device']
-        persistent_notification.create(hass,
+        hass.components.persistent_notification.create(hass,
                                        ('The ZiGate device {} needs some'
                                         ' refresh (missing important'
                                         ' information)').format(device.addr),
@@ -166,61 +168,66 @@ def setup(hass, config):
                                   zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
     def zigate_reset(service):
-        z.reset()
+        myzigate.reset()
 
     def permit_join(service):
-        z.permit_join()
+        myzigate.permit_join()
 
     def zigate_cleanup(service):
         '''
         Remove missing device
         '''
-        z.cleanup_devices()
+        myzigate.cleanup_devices()
 
     def start_zigate(service_event):
-        z.autoStart()
-        z.start_auto_save()
-        # firt load
-        for device in z.devices:
+        myzigate.autoStart()
+        myzigate.start_auto_save()
+        version = myzigate.get_version_text()
+        if version < '3.0d':
+            hass.components.persistent_notification.create(hass,
+                                                           ('Your zigate firmware is outdated, '
+                                                            'Please upgrade to 3.0d or later !'
+                                                            ),
+                                                           title='ZiGate')
+        # first load
+        for device in myzigate.devices:
             device_added(device=device)
 
-        load_platform(hass, 'sensor', DOMAIN, {}, config)
-        load_platform(hass, 'binary_sensor', DOMAIN, {}, config)
-        load_platform(hass, 'switch', DOMAIN, {}, config)
-        load_platform(hass, 'light', DOMAIN, {}, config)
+        for platform in SUPPORTED_PLATFORMS:
+            load_platform(hass, platform, DOMAIN, {}, config)
 
     def stop_zigate(service_event):
-        z.save_state()
-        z.close()
+        myzigate.save_state()
+        myzigate.close()
 
     def refresh_devices_list(service):
-        z.get_devices_list()
+        myzigate.get_devices_list()
 
     def refresh_device(service):
         addr = service.data.get(ADDR)
         if addr:
-            z.refresh_device(addr)
+            myzigate.refresh_device(addr)
         else:
-            for device in z.devices:
+            for device in myzigate.devices:
                 device.refresh_device()
 
     def network_scan(service):
-        z.start_network_scan()
+        myzigate.start_network_scan()
 
     def raw_command(service):
         cmd = int(service.data.get('cmd'))
         data = service.data.get('data', '')
-        z.send_data(cmd, data)
+        myzigate.send_data(cmd, data)
 
     def identify_device(service):
         addr = service.data.get('addr')
-        z.identify_device(addr)
+        myzigate.identify_device(addr)
 
     def initiate_touchlink(service):
-        z.initiate_touchlink()
+        myzigate.initiate_touchlink()
 
     def touchlink_factory_reset(service):
-        z.touchlink_factory_reset()
+        myzigate.touchlink_factory_reset()
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
