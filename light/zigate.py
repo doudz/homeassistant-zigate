@@ -11,6 +11,7 @@ from operator import ior
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS, ATTR_TRANSITION, ATTR_HS_COLOR,
     SUPPORT_BRIGHTNESS, SUPPORT_COLOR_TEMP,
+    SUPPORT_TRANSITION,
     SUPPORT_COLOR, Light, ENTITY_ID_FORMAT)
 try:
     from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
