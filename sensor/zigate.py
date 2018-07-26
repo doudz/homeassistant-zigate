@@ -10,7 +10,10 @@ from homeassistant.const import (DEVICE_CLASS_HUMIDITY,
                                  DEVICE_CLASS_ILLUMINANCE,
                                  STATE_UNAVAILABLE)
 from homeassistant.helpers.entity import Entity
-from homeassistant.components.zigate import DOMAIN
+try:
+    from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
+except:  # temporary until official support
+    from custom_components.zigate import DOMAIN as ZIGATE_DOMAIN
 
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
@@ -23,7 +26,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
-    myzigate = hass.data[DOMAIN]
+    myzigate = hass.data[ZIGATE_DOMAIN]
 
     def sync_attributes(**kwargs):
         devs = []

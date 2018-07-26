@@ -34,8 +34,10 @@ SUPPORTED_PLATFORMS = ('sensor',
                        'light')
 
 CONFIG_SCHEMA = vol.Schema({
-    vol.Optional(CONF_PORT): cv.string,
-    vol.Optional(CONF_HOST): cv.string,
+    DOMAIN: vol.Schema({
+        vol.Optional(CONF_PORT): cv.string,
+        vol.Optional(CONF_HOST): cv.string
+    })
 }, extra=vol.ALLOW_EXTRA)
 
 
@@ -57,13 +59,13 @@ def setup(hass, config):
     """Setup zigate platform."""
     import zigate
 
-    port = config.get(CONF_PORT)
-    host = config.get(CONF_HOST)
+    port = config[DOMAIN].get(CONF_PORT)
+    host = config[DOMAIN].get(CONF_HOST)
     persistent_file = os.path.join(hass.config.config_dir,
-                                   'zigate.json')
+                                   '.zigate.json')
 
     if host:
-        host = host.split(':',1)
+        host = host.split(':', 1)
         port = None
         if len(host) == 2:
             port = int(host[1])

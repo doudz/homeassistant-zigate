@@ -12,7 +12,10 @@ from homeassistant.components.light import (
     ATTR_BRIGHTNESS, ATTR_HS_COLOR,
     SUPPORT_BRIGHTNESS, SUPPORT_COLOR_TEMP,
     SUPPORT_COLOR, Light)
-from homeassistant.components.zigate import DOMAIN
+try:
+    from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
+except:  # temporary until official support
+    from custom_components.zigate import DOMAIN as ZIGATE_DOMAIN
 
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
@@ -25,7 +28,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
-    myzigate = hass.data[DOMAIN]
+    myzigate = hass.data[ZIGATE_DOMAIN]
     import zigate
     LIGHT_ACTIONS = [zigate.ACTIONS_LEVEL,
                      zigate.ACTIONS_COLOR,
@@ -149,31 +152,31 @@ class ZiGateLight(Light):
         if ATTR_BRIGHTNESS in kwargs:
             brightness = kwargs[ATTR_BRIGHTNESS]
             brightness = int((brightness / 255) * 100)
-            self.hass.data[DOMAIN].action_move_level_onoff(self._device.addr,
+            self.hass.data[ZIGATE_DOMAIN].action_move_level_onoff(self._device.addr,
                                                            self._endpoint,
                                                            1,
                                                            brightness
                                                            )
         else:
-            self.hass.data[DOMAIN].action_onoff(self._device.addr,
+            self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
                                                 self._endpoint,
                                                 1)
         if ATTR_HS_COLOR in kwargs:
             h, s = kwargs[ATTR_HS_COLOR]
-            self.hass.data[DOMAIN].actions_move_hue_saturation(self._device.addr,
+            self.hass.data[ZIGATE_DOMAIN].actions_move_hue_saturation(self._device.addr,
                                                                self._endpoint,
                                                                int(h),
                                                                int(s))
 
     def turn_off(self, **kwargs):
         """Turn the device off."""
-        self.hass.data[DOMAIN].action_onoff(self._device.addr,
+        self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
                                             self._endpoint,
                                             0)
 
     def toggle(self, **kwargs):
         """Toggle the device"""
-        self.hass.data[DOMAIN].action_onoff(self._device.addr,
+        self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
                                             self._endpoint,
                                             2)
 

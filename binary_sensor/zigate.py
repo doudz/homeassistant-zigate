@@ -7,7 +7,10 @@ https://home-assistant.io/components/binary_sensor.zigate/
 import logging
 from homeassistant.components.binary_sensor import BinarySensorDevice
 from homeassistant.const import STATE_UNAVAILABLE, STATE_ON, STATE_OFF
-from homeassistant.components.zigate import DOMAIN
+try:
+    from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
+except:  # temporary until official support
+    from custom_components.zigate import DOMAIN as ZIGATE_DOMAIN
 
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
@@ -20,7 +23,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
-    myzigate = hass.data[DOMAIN]
+    myzigate = hass.data[ZIGATE_DOMAIN]
 
     def sync_attributes():
         devs = []
