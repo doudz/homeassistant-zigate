@@ -78,6 +78,7 @@ class ZiGateLight(Light):
 
         import zigate
         supported_features = set()
+        supported_features.add(SUPPORT_TRANSITION)
         for action_type in device.available_actions(endpoint)[endpoint]:
             if action_type == zigate.ACTIONS_LEVEL:
                 supported_features.add(SUPPORT_BRIGHTNESS)
