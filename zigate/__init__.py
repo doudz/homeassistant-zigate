@@ -21,7 +21,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.18.2']
+REQUIREMENTS = ['zigate==0.18.3']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
@@ -186,12 +186,12 @@ def setup(hass, config):
     def start_zigate(service_event=None):
         myzigate.autoStart()
         myzigate.start_auto_save()
-#         version = myzigate.get_version_text()
-#         if version < '3.0d':
-#             hass.components.persistent_notification.create(
-#                 ('Your zigate firmware is outdated, '
-#                  'Please upgrade to 3.0d or later !'),
-#                 title='ZiGate')
+        version = myzigate.get_version_text()
+        if version < '3.0d':
+            hass.components.persistent_notification.create(
+                ('Your zigate firmware is outdated, '
+                 'Please upgrade to 3.0d or later !'),
+                title='ZiGate')
         # first load
         for device in myzigate.devices:
             device_added(device=device)
