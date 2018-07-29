@@ -266,7 +266,6 @@ class ZiGateDeviceEntity(Entity):
         """Initialize the sensor."""
         self._device = device
         self.entity_id = '{}.{}'.format(DOMAIN, self._device.addr)
-        self._name = str(device)
 
     @property
     def should_poll(self):
@@ -276,7 +275,7 @@ class ZiGateDeviceEntity(Entity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name
+        return str(self._device)
 
     @property
     def state(self):

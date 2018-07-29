@@ -75,7 +75,6 @@ class ZiGateLight(Light):
         entity_id = 'zigate_{}_{}'.format(device.addr,
                                           endpoint)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
-        self._name = '{} {}'.format(device, endpoint)
 
         import zigate
         supported_features = set()
@@ -99,7 +98,8 @@ class ZiGateLight(Light):
     @property
     def name(self) -> str:
         """Return the name of the light if any."""
-        return self._name
+        return '{} {}'.format(self._device,
+                              self._endpoint)
 
     @property
     def unique_id(self):

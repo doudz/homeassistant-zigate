@@ -74,7 +74,6 @@ class ZiGateBinarySensor(BinarySensorDevice):
         entity_id = 'zigate_{}_{}'.format(device.addr,
                                           name)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
-        self._name = '{} {}'.format(name, device)
 
         typ = self._device.get_value('type', '').lower()
         if name == 'presence':
@@ -107,7 +106,8 @@ class ZiGateBinarySensor(BinarySensorDevice):
     @property
     def name(self):
         """Return the name of the binary sensor."""
-        return self._name
+        return '{} {}'.format(self._attribute.get('name'),
+                              self._device)
 
     @property
     def is_on(self):

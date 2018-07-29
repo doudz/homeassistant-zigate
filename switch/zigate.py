@@ -63,7 +63,6 @@ class ZiGateSwitch(SwitchDevice):
         entity_id = 'zigate_{}_{}'.format(device.addr,
                                           endpoint)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
-        self._name = '{} {}'.format(device, endpoint)
 
     @property
     def unique_id(self)->str:
@@ -80,7 +79,8 @@ class ZiGateSwitch(SwitchDevice):
     @property
     def name(self):
         """Return the name of the device if any."""
-        return self._name
+        return '{} {}'.format(self._device,
+                              self._endpoint)
 
     @property
     def is_on(self):

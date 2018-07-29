@@ -78,7 +78,6 @@ class ZiGateSensor(Entity):
         entity_id = 'zigate_{}_{}'.format(device.addr,
                                           name)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
-        self._name = '{} {}'.format(name, device)
 
         if 'temperature' in name:
             self._device_class = DEVICE_CLASS_TEMPERATURE
@@ -109,7 +108,8 @@ class ZiGateSensor(Entity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return self._name
+        return '{} {}'.format(self._attribute.get('name'),
+                              self._device)
 
     @property
     def state(self):
