@@ -3,25 +3,25 @@ permit_join:
 
 refresh_device:
   description: >
-    Refresh a device by sending man requests to it.
-    Be aware that battery devices need to be wake up to answer,
+    Refresh a device by sending many requests to it.
+    Be aware that devices running on battery need to be woken up to answer,
     typically by pushing the pairing button.
     You should provide the entity_id OR the addr.
   fields:
     entity_id:
       description: The device entity_id to refresh
-      example: binary_sensor.zigate_af7d_onoff
+      example: 'zigate.af7d'
     addr:
       description: ZiGate address of the device.
-      example: af7d
+      example: 'af7d'
 
 raw_command:
   description: Send a raw command to zigate.
   fields:
     cmd:
       description: Command code
-      example: 0x0092
+      example: '0x0092'
     addr:
       description: Payload in hex format.
-      example: 02af7d010101
+      example: '02af7d010101'
       
