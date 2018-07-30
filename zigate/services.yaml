@@ -21,7 +21,7 @@ raw_command:
     cmd:
       description: Command code
       example: '0x0092'
-    addr:
+    data:
       description: Payload in hex format.
       example: '02af7d010101'
       
