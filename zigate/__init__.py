@@ -15,6 +15,7 @@ from homeassistant.helpers.discovery import load_platform
 from homeassistant.helpers.event import track_time_change
 from homeassistant.const import (ATTR_BATTERY_LEVEL, CONF_PORT,
                                  CONF_HOST,
+                                 ATTR_ENTITY_ID,
                                  EVENT_HOMEASSISTANT_START,
                                  EVENT_HOMEASSISTANT_STOP)
 import homeassistant.helpers.config_validation as cv
@@ -43,6 +44,7 @@ CONFIG_SCHEMA = vol.Schema({
 
 REFRESH_DEVICE_SCHEMA = vol.Schema({
     vol.Optional(ADDR): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
 })
 
 RAW_COMMAND_SCHEMA = vol.Schema({
@@ -208,6 +210,11 @@ def setup(hass, config):
 
     def refresh_device(service):
         addr = service.data.get(ADDR)
+        entity_id = service.data.get(ATTR_ENTITY_ID)
+        if entity_id:
+            entity = component.get_entity(entity_id)
+            if entity:
+                addr = entity._device.addr
         if addr:
             myzigate.refresh_device(addr)
         else:
@@ -218,7 +225,7 @@ def setup(hass, config):
         myzigate.start_network_scan()
 
     def raw_command(service):
-        cmd = int(service.data.get('cmd'))
+        cmd = int(service.data.get('cmd'), 16)
         data = service.data.get('data', '')
         myzigate.send_data(cmd, data)
 
