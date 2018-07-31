@@ -6,7 +6,7 @@ refresh_device:
     Refresh a device by sending many requests to it.
     Be aware that devices running on battery need to be woken up to answer,
     typically by pushing the pairing button.
-    You should provide the entity_id OR the addr.\n
+    You should provide the entity_id OR the addr.
     If no parameter is provided, every devices will be refreshed.
   fields:
     entity_id:

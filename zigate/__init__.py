@@ -22,7 +22,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.18.5']
+REQUIREMENTS = ['zigate==0.19.0']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
@@ -66,19 +66,23 @@ def setup(hass, config):
     persistent_file = os.path.join(hass.config.config_dir,
                                    '.zigate.json')
 
-    if host:
-        host = host.split(':', 1)
-        port = None
-        if len(host) == 2:
-            port = int(host[1])
-        myzigate = zigate.ZiGateWiFi(host[0],
-                                     port,
-                                     path=persistent_file,
-                                     auto_start=False)
-    else:
-        myzigate = zigate.ZiGate(port,
-                                 path=persistent_file,
-                                 auto_start=False)
+    myzigate = zigate.connect(port=port, host=host,
+                              path=persistent_file,
+                              auto_start=False
+                              )
+#     if host:
+#         host = host.split(':', 1)
+#         port = None
+#         if len(host) == 2:
+#             port = int(host[1])
+#         myzigate = zigate.ZiGateWiFi(host[0],
+#                                      port,
+#                                      path=persistent_file,
+#                                      auto_start=False)
+#     else:
+#         myzigate = zigate.ZiGate(port,
+#                                  path=persistent_file,
+#                                  auto_start=False)
 
     hass.data[DOMAIN] = myzigate
     hass.data[DATA_ZIGATE_DEVICES] = {}
