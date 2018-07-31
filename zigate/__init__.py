@@ -106,7 +106,10 @@ def setup(hass, config):
 
     def device_removed(**kwargs):
         # component.async_remove_entity
-        pass
+        addr = kwargs['addr']
+        hass.components.persistent_notification.create(
+            'The ZiGate device {} has leaved.'.format(addr),
+            title='ZiGate')
 
     def device_need_refresh(**kwargs):
         device = kwargs['device']
