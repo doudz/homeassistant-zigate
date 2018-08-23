@@ -15,11 +15,14 @@ from homeassistant.components.light import (
     SUPPORT_COLOR, Light, ENTITY_ID_FORMAT)
 try:
     from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
+    from homeassistant.components.zigate import DATA_ZIGATE_DEVICES
+    from homeassistant.components.zigate import DATA_ZIGATE_ATTRS
 except:  # temporary until official support
     from custom_components.zigate import DOMAIN as ZIGATE_DOMAIN
+    from custom_components.zigate import DATA_ZIGATE_DEVICES
+    from custom_components.zigate import DATA_ZIGATE_ATTRS
 
-DATA_ZIGATE_DEVICES = 'zigate_devices'
-DATA_ZIGATE_ATTRS = 'zigate_attributes'
+DEPENDENCIES = ['zigate']
 
 _LOGGER = logging.getLogger(__name__)
 
