@@ -1,6 +1,20 @@
 permit_join:
   description: Allow pairing new device.
 
+identify_device:
+  description: >
+    Automatically identify a device's destination endpoint.
+    Be aware that devices running on battery need to be woken up to answer,
+    typically by pushing the pairing button.
+    You should provide the entity_id OR the addr.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    addr:
+      description: ZiGate address of the device.
+      example: '0123'
+
 refresh_device:
   description: >
     Refresh a device by sending many requests to it.
@@ -11,10 +25,10 @@ refresh_device:
   fields:
     entity_id:
       description: The device entity_id to refresh
-      example: 'zigate.af7d'
+      example: 'zigate.0123456789abcdef'
     addr:
       description: ZiGate address of the device.
-      example: 'af7d'
+      example: '0123'
 
 raw_command:
   description: Send a raw command to zigate.
@@ -24,5 +38,4 @@ raw_command:
       example: '0x0092'
     data:
       description: Payload in hex format.
-      example: '02af7d010101'
-      
+      example: '020123010101'

@@ -49,13 +49,14 @@ REFRESH_DEVICE_SCHEMA = vol.Schema({
     vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
 })
 
+IDENTIFY_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+})
+
 RAW_COMMAND_SCHEMA = vol.Schema({
     vol.Required('cmd'): cv.string,
     vol.Optional('data'): cv.string,
-})
-
-IDENTIFY_SCHEMA = vol.Schema({
-    vol.Required(ADDR): cv.string,
 })
 
 
@@ -218,13 +219,20 @@ def setup(hass, config):
     def refresh_devices_list(service):
         myzigate.get_devices_list()
 
-    def refresh_device(service):
-        addr = service.data.get(ADDR)
+    def _get_addr_from_service_request(service):
         entity_id = service.data.get(ATTR_ENTITY_ID)
         if entity_id:
             entity = component.get_entity(entity_id)
             if entity:
-                addr = entity._device.addr
+                return entity._device.addr
+        return service.data.get(ADDR)
+
+    def identify_device(service):
+        addr = _get_addr_from_service_request(service)
+        myzigate.identify_device(addr)
+
+    def refresh_device(service):
+        addr = _get_addr_from_service_request(service)
         if addr:
             myzigate.refresh_device(addr)
         else:
@@ -238,10 +246,6 @@ def setup(hass, config):
         cmd = int(service.data.get('cmd'), 16)
         data = service.data.get('data', '')
         myzigate.send_data(cmd, data)
-
-    def identify_device(service):
-        addr = service.data.get('addr')
-        myzigate.identify_device(addr)
 
     def initiate_touchlink(service):
         myzigate.initiate_touchlink()
@@ -258,14 +262,14 @@ def setup(hass, config):
     hass.services.register(DOMAIN, 'start_zigate', start_zigate)
     hass.services.register(DOMAIN, 'stop_zigate', stop_zigate)
     hass.services.register(DOMAIN, 'cleanup_devices', zigate_cleanup)
+    hass.services.register(DOMAIN, 'identify_device', identify_device,
+                           schema=IDENTIFY_SCHEMA)
     hass.services.register(DOMAIN, 'refresh_device',
                            refresh_device,
                            schema=REFRESH_DEVICE_SCHEMA)
     hass.services.register(DOMAIN, 'network_scan', network_scan)
     hass.services.register(DOMAIN, 'raw_command', raw_command,
                            schema=RAW_COMMAND_SCHEMA)
-    hass.services.register(DOMAIN, 'identify_device', identify_device,
-                           schema=IDENTIFY_SCHEMA)
     hass.services.register(DOMAIN, 'initiate_touchlink', initiate_touchlink)
     hass.services.register(DOMAIN, 'touchlink_factory_reset',
                            touchlink_factory_reset)
