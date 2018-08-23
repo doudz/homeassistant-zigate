@@ -29,6 +29,8 @@ DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
 ADDR = 'addr'
+IEEE = 'ieee'
+
 SUPPORTED_PLATFORMS = ('sensor',
                        'binary_sensor',
                        'switch',
@@ -93,30 +95,32 @@ def setup(hass, config):
     def device_added(**kwargs):
         device = kwargs['device']
         _LOGGER.debug('Add device {}'.format(device))
-        if device.addr not in hass.data[DATA_ZIGATE_DEVICES]:
+        if device.ieee not in hass.data[DATA_ZIGATE_DEVICES]:
             entity = ZiGateDeviceEntity(device)
-            hass.data[DATA_ZIGATE_DEVICES][device.addr] = entity
+            hass.data[DATA_ZIGATE_DEVICES][device.ieee] = entity
             component.add_entities([entity])
             if 'signal' in kwargs:
                 hass.components.persistent_notification.create(
-                    ('A new ZiGate device "{}"'
+                    ('A new ZiGate device "{} ({})"'
                      ' has been added !'
-                     ).format(device),
+                     ).format(device.ieee, device.addr),
                     title='ZiGate')
 
     def device_removed(**kwargs):
         # component.async_remove_entity
-        addr = kwargs['addr']
+        addr = kwargs[ADDR]
+        ieee = kwargs[IEEE]
         hass.components.persistent_notification.create(
-            'The ZiGate device {} has leaved.'.format(addr),
+            'The ZiGate device {} ({}) has leaved.'.format(ieee, addr),
             title='ZiGate')
+        del hass.data[DATA_ZIGATE_DEVICES][ieee]
 
     def device_need_refresh(**kwargs):
         device = kwargs['device']
         hass.components.persistent_notification.create(
-            ('The ZiGate device {} needs some'
+            ('The ZiGate device {} ({}) needs some'
              ' refresh (missing important'
-             ' information)').format(device.addr),
+             ' information)').format(device.ieee, device.addr),
             title='ZiGate')
 
     zigate.dispatcher.connect(device_added,
@@ -129,9 +133,8 @@ def setup(hass, config):
     def attribute_updated(**kwargs):
         device = kwargs['device']
         attribute = kwargs['attribute']
-        _LOGGER.debug('Update attribute for device {} {}'.format(device,
-                                                                 attribute))
-        key = '{}-{}-{}-{}'.format(device.addr,
+        _LOGGER.debug('Update attribute {} for device {}'.format(attribute, device))
+        key = '{}-{}-{}-{}'.format(device.ieee,
                                    attribute['endpoint'],
                                    attribute['cluster'],
                                    attribute['attribute'],
@@ -140,7 +143,7 @@ def setup(hass, config):
         if entity:
             if entity.hass:
                 entity.schedule_update_ha_state()
-        key = '{}-{}-{}'.format(device.addr,
+        key = '{}-{}-{}'.format(device.ieee,
                                 'switch',
                                 attribute['endpoint'],
                                 )
@@ -148,7 +151,7 @@ def setup(hass, config):
         if entity:
             if entity.hass:
                 entity.schedule_update_ha_state()
-        key = '{}-{}-{}'.format(device.addr,
+        key = '{}-{}-{}'.format(device.ieee,
                                 'light',
                                 attribute['endpoint'],
                                 )
@@ -156,7 +159,7 @@ def setup(hass, config):
         if entity:
             if entity.hass:
                 entity.schedule_update_ha_state()
-        entity = hass.data[DATA_ZIGATE_DEVICES].get(device.addr)
+        entity = hass.data[DATA_ZIGATE_DEVICES].get(device.ieee)
         if entity:
             if entity.hass:
                 entity.schedule_update_ha_state()
@@ -167,7 +170,7 @@ def setup(hass, config):
     def device_updated(**kwargs):
         device = kwargs['device']
         _LOGGER.debug('Update device {}'.format(device))
-        entity = hass.data[DATA_ZIGATE_DEVICES].get(device.addr)
+        entity = hass.data[DATA_ZIGATE_DEVICES].get(device.ieee)
         if entity:
             if entity.hass:
                 entity.schedule_update_ha_state()
@@ -279,7 +282,7 @@ class ZiGateDeviceEntity(Entity):
     def __init__(self, device):
         """Initialize the sensor."""
         self._device = device
-        self.entity_id = '{}.{}'.format(DOMAIN, self._device.addr)
+        self.entity_id = '{}.{}'.format(DOMAIN, self._device.ieee)
 
     @property
     def should_poll(self):

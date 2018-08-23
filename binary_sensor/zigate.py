@@ -39,7 +39,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                 if attribute['cluster'] == 0:
                     continue
                 if 'name' in attribute:
-                    key = '{}-{}-{}-{}'.format(device.addr,
+                    key = '{}-{}-{}-{}'.format(device.ieee,
                                                attribute['endpoint'],
                                                attribute['cluster'],
                                                attribute['attribute'],
@@ -74,7 +74,7 @@ class ZiGateBinarySensor(BinarySensorDevice):
         self._attribute = attribute
         self._device_class = None
         name = attribute.get('name')
-        entity_id = 'zigate_{}_{}'.format(device.addr,
+        entity_id = 'zigate_{}_{}'.format(device.ieee,
                                           name)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
 
