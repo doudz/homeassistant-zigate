@@ -8,11 +8,14 @@ import logging
 from homeassistant.components.switch import SwitchDevice, ENTITY_ID_FORMAT
 try:
     from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
+    from homeassistant.components.zigate import DATA_ZIGATE_DEVICES
+    from homeassistant.components.zigate import DATA_ZIGATE_ATTRS
 except:  # temporary until official support
     from custom_components.zigate import DOMAIN as ZIGATE_DOMAIN
+    from custom_components.zigate import DATA_ZIGATE_DEVICES
+    from custom_components.zigate import DATA_ZIGATE_ATTRS
 
-DATA_ZIGATE_DEVICES = 'zigate_devices'
-DATA_ZIGATE_ATTRS = 'zigate_attributes'
+DEPENDENCIES = ['zigate']
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,7 +36,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                 continue
             for endpoint, action_type in actions.items():
                 if [zigate.ACTIONS_ONOFF] == action_type:
-                    key = '{}-{}-{}'.format(device.addr,
+                    key = '{}-{}-{}'.format(device.ieee,
                                             'switch',
                                             endpoint
                                             )
@@ -60,7 +63,7 @@ class ZiGateSwitch(SwitchDevice):
         """Initialize the ZiGate switch."""
         self._device = device
         self._endpoint = endpoint
-        entity_id = 'zigate_{}_{}'.format(device.addr,
+        entity_id = 'zigate_{}_{}'.format(device.ieee,
                                           endpoint)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
 
