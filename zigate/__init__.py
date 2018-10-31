@@ -22,7 +22,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.19.0']
+REQUIREMENTS = ['zigate==0.20.2']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
@@ -59,6 +59,10 @@ RAW_COMMAND_SCHEMA = vol.Schema({
     vol.Optional('data'): cv.string,
 })
 
+REMOVE_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+})
 
 def setup(hass, config):
     """Setup zigate platform."""
@@ -73,20 +77,7 @@ def setup(hass, config):
                               path=persistent_file,
                               auto_start=False
                               )
-#     if host:
-#         host = host.split(':', 1)
-#         port = None
-#         if len(host) == 2:
-#             port = int(host[1])
-#         myzigate = zigate.ZiGateWiFi(host[0],
-#                                      port,
-#                                      path=persistent_file,
-#                                      auto_start=False)
-#     else:
-#         myzigate = zigate.ZiGate(port,
-#                                  path=persistent_file,
-#                                  auto_start=False)
-
+    
     hass.data[DOMAIN] = myzigate
     hass.data[DATA_ZIGATE_DEVICES] = {}
     hass.data[DATA_ZIGATE_ATTRS] = {}
@@ -253,6 +244,10 @@ def setup(hass, config):
     def touchlink_factory_reset(service):
         myzigate.touchlink_factory_reset()
 
+    def remove_device(service):
+        addr = _get_addr_from_service_request(service)
+        myzigate.remove_device(addr)
+
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
 
@@ -273,6 +268,8 @@ def setup(hass, config):
     hass.services.register(DOMAIN, 'initiate_touchlink', initiate_touchlink)
     hass.services.register(DOMAIN, 'touchlink_factory_reset',
                            touchlink_factory_reset)
+    hass.services.register(DOMAIN, 'remove_device',
+                           remove_device, schema=REMOVE_SCHEMA)
 
     track_time_change(hass, refresh_devices_list,
                       hour=0, minute=0, second=0)
@@ -296,7 +293,7 @@ class ZiGateDeviceEntity(Entity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return str(self._device)
+        return 'Device {} ({})'.format(self._device.ieee, self._device.addr)
 
     @property
     def state(self):

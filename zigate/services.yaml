@@ -30,6 +30,17 @@ refresh_device:
       description: ZiGate address of the device.
       example: '0123'
 
+remove_device:
+  description: >
+    Remove device
+  fields:
+    entity_id:
+      description: The device entity_id to refresh
+      example: 'zigate.0123456789abcdef'
+    addr:
+      description: ZiGate address of the device.
+      example: '0123'
+
 raw_command:
   description: Send a raw command to zigate.
   fields:
