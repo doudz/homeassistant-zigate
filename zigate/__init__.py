@@ -101,9 +101,8 @@ def setup(hass, config):
     def device_removed(**kwargs):
         # component.async_remove_entity
         addr = kwargs[ADDR]
-        ieee = kwargs[IEEE]
         hass.components.persistent_notification.create(
-            'The ZiGate device {} ({}) has leaved.'.format(ieee, addr),
+            'The ZiGate device with address {} has leaved.'.format(addr),
             title='ZiGate')
         del hass.data[DATA_ZIGATE_DEVICES][ieee]
 
