@@ -101,10 +101,11 @@ def setup(hass, config):
     def device_removed(**kwargs):
         # component.async_remove_entity
         addr = kwargs[ADDR]
+        device = myzigate.get_device_from_addr(addr)
         hass.components.persistent_notification.create(
             'The ZiGate device with address {} has leaved.'.format(addr),
             title='ZiGate')
-        del hass.data[DATA_ZIGATE_DEVICES][ieee]
+        del hass.data[DATA_ZIGATE_DEVICES][device.ieee]
 
     def device_need_refresh(**kwargs):
         device = kwargs['device']
@@ -154,6 +155,12 @@ def setup(hass, config):
         if entity:
             if entity.hass:
                 entity.schedule_update_ha_state()
+
+        event_data = attribute.copy()
+        event_data['ieee'] = device.ieee
+        event_data['device_type'] = device.get_property_value('type')
+        event_data['entity_id'] = entity.entity_id
+        hass.bus.fire('zigate.update_attribute', event_data)
 
     zigate.dispatcher.connect(attribute_updated,
                               zigate.ZIGATE_ATTRIBUTE_UPDATED, weak=False)
