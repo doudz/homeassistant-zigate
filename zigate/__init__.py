@@ -84,7 +84,7 @@ def setup(hass, config):
 
     component = EntityComponent(_LOGGER, DOMAIN, hass)
 
-    def get_entity_from_addr(self, addr):
+    def get_entity_from_addr(addr):
         if addr:
             for d in hass.data[DATA_ZIGATE_DEVICES].values():
                 if d.addr == addr:
