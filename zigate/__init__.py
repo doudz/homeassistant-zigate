@@ -111,7 +111,7 @@ def setup(hass, config):
         hass.components.persistent_notification.create(
             'The ZiGate device with address {} has leaved.'.format(addr),
             title='ZiGate')
-        del hass.data[DATA_ZIGATE_DEVICES][entity.ieee]
+        del hass.data[DATA_ZIGATE_DEVICES][entity.unique_id]
 
     def device_need_refresh(**kwargs):
         device = kwargs['device']
