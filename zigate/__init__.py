@@ -84,6 +84,12 @@ def setup(hass, config):
 
     component = EntityComponent(_LOGGER, DOMAIN, hass)
 
+    def get_entity_from_addr(self, addr):
+        if addr:
+            for d in hass.data[DATA_ZIGATE_DEVICES].values():
+                if d.addr == addr:
+                    return d
+
     def device_added(**kwargs):
         device = kwargs['device']
         _LOGGER.debug('Add device {}'.format(device))
@@ -101,11 +107,11 @@ def setup(hass, config):
     def device_removed(**kwargs):
         # component.async_remove_entity
         addr = kwargs[ADDR]
-        mydevice = myzigate.get_device_from_addr(addr)
+        entity = get_entity_from_addr(addr)
         hass.components.persistent_notification.create(
             'The ZiGate device with address {} has leaved.'.format(addr),
             title='ZiGate')
-        del hass.data[DATA_ZIGATE_DEVICES][mydevice.ieee()]
+        del hass.data[DATA_ZIGATE_DEVICES][entity.ieee]
 
     def device_need_refresh(**kwargs):
         device = kwargs['device']
@@ -309,6 +315,10 @@ class ZiGateDeviceEntity(Entity):
     @property
     def unique_id(self)->str:
         return self._device.ieee
+
+    @property
+    def addr(self):
+        return self._device.addr
 
     @property
     def device_state_attributes(self):
