@@ -101,11 +101,11 @@ def setup(hass, config):
     def device_removed(**kwargs):
         # component.async_remove_entity
         addr = kwargs[ADDR]
-        device = myzigate.get_device_from_addr(addr)
+        mydevice = myzigate.get_device_from_addr(addr)
         hass.components.persistent_notification.create(
             'The ZiGate device with address {} has leaved.'.format(addr),
             title='ZiGate')
-        del hass.data[DATA_ZIGATE_DEVICES][device.ieee]
+        del hass.data[DATA_ZIGATE_DEVICES][mydevice.ieee()]
 
     def device_need_refresh(**kwargs):
         device = kwargs['device']
