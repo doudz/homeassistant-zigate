@@ -93,20 +93,20 @@ class ZiGateSwitch(SwitchDevice):
     def turn_on(self, **kwargs):
         """Turn the switch on."""
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
-                                            self._endpoint,
-                                            1)
+                                                   self._endpoint,
+                                                   1)
 
     def turn_off(self, **kwargs):
         """Turn the device off."""
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
-                                            self._endpoint,
-                                            0)
+                                                   self._endpoint,
+                                                   0)
 
     def toggle(self, **kwargs):
         """Toggle the device"""
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
-                                            self._endpoint,
-                                            2)
+                                                   self._endpoint,
+                                                   2)
 
     @property
     def device_state_attributes(self):

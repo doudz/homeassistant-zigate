@@ -159,23 +159,23 @@ class ZiGateLight(Light):
             brightness = kwargs[ATTR_BRIGHTNESS]
             brightness = int((brightness / 255) * 100)
             self.hass.data[ZIGATE_DOMAIN].action_move_level_onoff(self._device.addr,
-                                                           self._endpoint,
-                                                           1,
-                                                           brightness,
-                                                           transition
-                                                           )
+                                                                  self._endpoint,
+                                                                  1,
+                                                                  brightness,
+                                                                  transition
+                                                                  )
         else:
             self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
-                                                self._endpoint,
-                                                1,
-                                                transition)
+                                                       self._endpoint,
+                                                       1,
+                                                       transition)
         if ATTR_HS_COLOR in kwargs:
             h, s = kwargs[ATTR_HS_COLOR]
             self.hass.data[ZIGATE_DOMAIN].actions_move_hue_saturation(self._device.addr,
-                                                               self._endpoint,
-                                                               int(h),
-                                                               int(s),
-                                                               transition)
+                                                                      self._endpoint,
+                                                                      int(h),
+                                                                      int(s),
+                                                                      transition)
 
     def turn_off(self, **kwargs):
         """Turn the device off."""
@@ -183,9 +183,9 @@ class ZiGateLight(Light):
         if ATTR_TRANSITION in kwargs:
             transition = int(kwargs[ATTR_TRANSITION])
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
-                                            self._endpoint,
-                                            0,
-                                            off_time=transition)
+                                                   self._endpoint,
+                                                   0,
+                                                   off_time=transition)
 
     def toggle(self, **kwargs):
         """Toggle the device"""
@@ -193,10 +193,10 @@ class ZiGateLight(Light):
         if ATTR_TRANSITION in kwargs:
             transition = int(kwargs[ATTR_TRANSITION])
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
-                                            self._endpoint,
-                                            2,
-                                            transition,
-                                            transition)
+                                                   self._endpoint,
+                                                   2,
+                                                   transition,
+                                                   transition)
 
     @property
     def device_state_attributes(self):

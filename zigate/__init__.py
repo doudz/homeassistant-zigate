@@ -249,7 +249,8 @@ def setup(hass, config):
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
 
-    hass.services.register(DOMAIN, 'refresh_devices_list', refresh_devices_list)
+    hass.services.register(DOMAIN, 'refresh_devices_list',
+                           refresh_devices_list)
     hass.services.register(DOMAIN, 'reset', zigate_reset)
     hass.services.register(DOMAIN, 'permit_join', permit_join)
     hass.services.register(DOMAIN, 'start_zigate', start_zigate)
