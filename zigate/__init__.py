@@ -29,6 +29,8 @@ DOMAIN = 'zigate'
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
 ADDR = 'addr'
+IEEE = 'ieee'
+
 SUPPORTED_PLATFORMS = ('sensor',
                        'binary_sensor',
                        'switch',
@@ -108,7 +110,7 @@ def setup(hass, config):
         # component.async_remove_entity
         addr = kwargs['addr']
         hass.components.persistent_notification.create(
-            'The ZiGate device {} has leaved.'.format(addr),
+            'The ZiGate device {} is gone.'.format(addr),
             title='ZiGate')
 
     def device_need_refresh(**kwargs):
