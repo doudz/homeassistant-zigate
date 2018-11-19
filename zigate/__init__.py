@@ -56,7 +56,15 @@ RAW_COMMAND_SCHEMA = vol.Schema({
 })
 
 IDENTIFY_SCHEMA = vol.Schema({
-    vol.Required(ADDR): cv.string,
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+})
+
+REMOVE_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
 })
 
 
@@ -73,19 +81,6 @@ def setup(hass, config):
                               path=persistent_file,
                               auto_start=False
                               )
-#     if host:
-#         host = host.split(':', 1)
-#         port = None
-#         if len(host) == 2:
-#             port = int(host[1])
-#         myzigate = zigate.ZiGateWiFi(host[0],
-#                                      port,
-#                                      path=persistent_file,
-#                                      auto_start=False)
-#     else:
-#         myzigate = zigate.ZiGate(port,
-#                                  path=persistent_file,
-#                                  auto_start=False)
 
     hass.data[DOMAIN] = myzigate
     hass.data[DATA_ZIGATE_DEVICES] = {}
@@ -109,17 +104,19 @@ def setup(hass, config):
 
     def device_removed(**kwargs):
         # component.async_remove_entity
-        addr = kwargs['addr']
+        device = kwargs['device']
         hass.components.persistent_notification.create(
-            'The ZiGate device {} is gone.'.format(addr),
+            'The ZiGate device {}({}) is gone.'.format(device.ieee,
+                                                       device.addr),
             title='ZiGate')
+        del hass.data[DATA_ZIGATE_DEVICES][device.ieee]
 
     def device_need_refresh(**kwargs):
         device = kwargs['device']
         hass.components.persistent_notification.create(
-            ('The ZiGate device {}-{} needs some'
+            ('The ZiGate device {}({}) needs some'
              ' refresh (missing important'
-             ' information)').format(device.addr, device.ieee),
+             ' information)').format(device.ieee, device.addr),
             title='ZiGate')
 
     zigate.dispatcher.connect(device_added,
@@ -218,18 +215,22 @@ def setup(hass, config):
     def refresh_devices_list(service):
         myzigate.get_devices_list()
 
-    def refresh_device(service):
+    def _get_addr_from_service_request(service):
+        entity_id = service.data.get(ATTR_ENTITY_ID)
         ieee = service.data.get(IEEE)
         addr = service.data.get(ADDR)
-        entity_id = service.data.get(ATTR_ENTITY_ID)
         if entity_id:
             entity = component.get_entity(entity_id)
             if entity:
                 addr = entity._device.addr
-        if ieee:
+        elif ieee:
             device = myzigate.get_device_from_ieee(ieee)
             if device:
-                addr = device.addr 
+                addr = device.addr
+        return addr
+
+    def refresh_device(service):
+        addr = _get_addr_from_service_request(service)
         if addr:
             myzigate.refresh_device(addr)
         else:
@@ -245,8 +246,12 @@ def setup(hass, config):
         myzigate.send_data(cmd, data)
 
     def identify_device(service):
-        addr = service.data.get(ADDR)
+        addr = _get_addr_from_service_request(service)
         myzigate.identify_device(addr)
+
+    def remove_device(service):
+        addr = _get_addr_from_service_request(service)
+        myzigate.remove_device(addr)
 
     def initiate_touchlink(service):
         myzigate.initiate_touchlink()
@@ -272,6 +277,8 @@ def setup(hass, config):
                            schema=RAW_COMMAND_SCHEMA)
     hass.services.register(DOMAIN, 'identify_device', identify_device,
                            schema=IDENTIFY_SCHEMA)
+    hass.services.register(DOMAIN, 'remove_device', remove_device,
+                           schema=REMOVE_SCHEMA)
     hass.services.register(DOMAIN, 'initiate_touchlink', initiate_touchlink)
     hass.services.register(DOMAIN, 'touchlink_factory_reset',
                            touchlink_factory_reset)
