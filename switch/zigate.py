@@ -33,7 +33,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                 continue
             for endpoint, action_type in actions.items():
                 if [zigate.ACTIONS_ONOFF] == action_type:
-                    key = '{}-{}-{}'.format(device.addr,
+                    key = '{}-{}-{}'.format(device.ieee,
                                             'switch',
                                             endpoint
                                             )
@@ -60,7 +60,7 @@ class ZiGateSwitch(SwitchDevice):
         """Initialize the ZiGate switch."""
         self._device = device
         self._endpoint = endpoint
-        entity_id = 'zigate_{}_{}'.format(device.addr,
+        entity_id = 'zigate_{}_{}'.format(device.ieee,
                                           endpoint)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
 
@@ -113,6 +113,7 @@ class ZiGateSwitch(SwitchDevice):
         """Return the state attributes."""
         return {
             'addr': self._device.addr,
+            'ieee': self._device.ieee,
             'endpoint': self._endpoint,
             'battery_voltage': self._device.get_value('battery'),
             'battery_level': int(self._device.battery_percent),

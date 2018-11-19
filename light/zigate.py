@@ -45,7 +45,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                 continue
             for endpoint, action_type in actions.items():
                 if any(i in action_type for i in LIGHT_ACTIONS):
-                    key = '{}-{}-{}'.format(device.addr,
+                    key = '{}-{}-{}'.format(device.ieee,
                                             'light',
                                             endpoint
                                             )
@@ -72,7 +72,7 @@ class ZiGateLight(Light):
         """Initialize the light."""
         self._device = device
         self._endpoint = endpoint
-        entity_id = 'zigate_{}_{}'.format(device.addr,
+        entity_id = 'zigate_{}_{}'.format(device.ieee,
                                           endpoint)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
 
@@ -203,5 +203,6 @@ class ZiGateLight(Light):
         """Return the state attributes."""
         return {
             'addr': self._device.addr,
+            'ieee': self._device.ieee,
             'endpoint': self._endpoint,
         }

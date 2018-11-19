@@ -15,6 +15,9 @@ refresh_device:
     addr:
       description: ZiGate address of the device.
       example: 'af7d'
+    ieee:
+      description: IEEE address of the device.
+      example: '0015231321463248'
 
 raw_command:
   description: Send a raw command to zigate.
