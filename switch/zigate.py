@@ -64,7 +64,8 @@ class ZiGateSwitch(SwitchDevice):
         """Initialize the ZiGate switch."""
         self._device = device
         self._endpoint = endpoint
-        entity_id = 'zigate_{}_{}'.format(device.ieee,
+        ieee = device.ieee or device.addr  # compatibility
+        entity_id = 'zigate_{}_{}'.format(ieee,
                                           endpoint)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
 

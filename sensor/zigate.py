@@ -79,7 +79,8 @@ class ZiGateSensor(Entity):
         self._attribute = attribute
         self._device_class = None
         name = attribute.get('name')
-        entity_id = 'zigate_{}_{}'.format(device.ieee,
+        ieee = device.ieee or device.addr  # compatibility
+        entity_id = 'zigate_{}_{}'.format(ieee,
                                           name)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
 
