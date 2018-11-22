@@ -43,12 +43,13 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     def sync_attributes():
         devs = []
         for device in myzigate.devices:
+            ieee = device.ieee or device.addr  # compatibility
             actions = device.available_actions()
             if not any(actions.values()):
                 continue
             for endpoint, action_type in actions.items():
                 if any(i in action_type for i in LIGHT_ACTIONS):
-                    key = '{}-{}-{}'.format(device.ieee,
+                    key = '{}-{}-{}'.format(ieee,
                                             'light',
                                             endpoint
                                             )
