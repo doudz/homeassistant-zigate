@@ -22,7 +22,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.21.2']
+REQUIREMENTS = ['zigate==0.22.0']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
