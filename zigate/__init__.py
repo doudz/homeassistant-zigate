@@ -75,7 +75,7 @@ def setup(hass, config):
     port = config[DOMAIN].get(CONF_PORT)
     host = config[DOMAIN].get(CONF_HOST)
     persistent_file = os.path.join(hass.config.config_dir,
-                                   '.zigate.json')
+                                   'zigate.json')
 
     myzigate = zigate.connect(port=port, host=host,
                               path=persistent_file,
