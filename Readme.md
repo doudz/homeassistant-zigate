@@ -25,7 +25,7 @@ custom_components/
 To pair a new device, go in developer/services and call the 'zigate.permit\_join' service.
 You have 30 seconds to pair your device.
 
-WARNING : Since commit https://github.com/doudz/homeassistant-zigate/commit/ddf141ebb103eaa4f6d585b645262446fd77d202, you have to rename the file .zigate.json to zigate.json to avoid loosing you configuration !
+# WARNING : Since commit [ddf141e](https://github.com/doudz/homeassistant-zigate/commit/ddf141ebb103eaa4f6d585b645262446fd77d202), you have to rename the file .zigate.json to zigate.json to avoid loosing you configuration !
 
 
 Configuration example :
