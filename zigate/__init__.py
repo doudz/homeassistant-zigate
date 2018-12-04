@@ -218,9 +218,14 @@ def setup(hass, config):
         for platform in SUPPORTED_PLATFORMS:
             load_platform(hass, platform, DOMAIN, {}, config)
 
+        hass.bus.fire('zigate.started')
+
+
     def stop_zigate(service_event):
         myzigate.save_state()
         myzigate.close()
+
+        hass.bus.fire('zigate.stopped')
 
     def refresh_devices_list(service):
         myzigate.get_devices_list()
