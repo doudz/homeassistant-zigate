@@ -32,6 +32,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     def sync_attributes():
         devs = []
         for device in myzigate.devices:
+            ieee = device.ieee or device.addr  # compatibility
             actions = device.available_actions()
             if any(actions.values()):
                 continue
@@ -39,7 +40,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                 if attribute['cluster'] == 0:
                     continue
                 if 'name' in attribute:
-                    key = '{}-{}-{}-{}'.format(device.ieee,
+                    key = '{}-{}-{}-{}'.format(ieee,
                                                attribute['endpoint'],
                                                attribute['cluster'],
                                                attribute['attribute'],
@@ -74,7 +75,8 @@ class ZiGateBinarySensor(BinarySensorDevice):
         self._attribute = attribute
         self._device_class = None
         name = attribute.get('name')
-        entity_id = 'zigate_{}_{}'.format(device.ieee,
+        ieee = device.ieee or device.addr  # compatibility
+        entity_id = 'zigate_{}_{}'.format(ieee,
                                           name)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
 

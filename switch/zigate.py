@@ -31,12 +31,13 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     def sync_attributes():
         devs = []
         for device in myzigate.devices:
+            ieee = device.ieee or device.addr  # compatibility
             actions = device.available_actions()
             if not any(actions.values()):
                 continue
             for endpoint, action_type in actions.items():
                 if [zigate.ACTIONS_ONOFF] == action_type:
-                    key = '{}-{}-{}'.format(device.ieee,
+                    key = '{}-{}-{}'.format(ieee,
                                             'switch',
                                             endpoint
                                             )
@@ -63,7 +64,8 @@ class ZiGateSwitch(SwitchDevice):
         """Initialize the ZiGate switch."""
         self._device = device
         self._endpoint = endpoint
-        entity_id = 'zigate_{}_{}'.format(device.ieee,
+        ieee = device.ieee or device.addr  # compatibility
+        entity_id = 'zigate_{}_{}'.format(ieee,
                                           endpoint)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
 

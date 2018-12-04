@@ -1,10 +1,31 @@
 # ZiGate component for Home Assistant
 A new component to use the ZiGate (http://zigate.fr)
 
-To install, copy all the files in your hass folder, under 'custom\_components' and adapt your configuration.yaml
+To install:
+- if not exists, create folder 'custom\_components' under your home assitant directory (beside configuration.yaml)
+- copy all the files in your hass folder, under 'custom\_components' like that :
+
+```
+custom_components/
+├── binary_sensor
+│   └── zigate.py
+├── light
+│   └── zigate.py
+├── sensor
+│   └── zigate.py
+├── switch
+│   └── zigate.py
+└── zigate
+    ├── __init__.py
+    └── services.yaml
+```
+    
+- adapt your configuration.yaml
 
 To pair a new device, go in developer/services and call the 'zigate.permit\_join' service.
 You have 30 seconds to pair your device.
+
+# WARNING : Since commit [ddf141e](https://github.com/doudz/homeassistant-zigate/commit/ddf141ebb103eaa4f6d585b645262446fd77d202), you have to rename the file .zigate.json to zigate.json to avoid loosing your configuration !
 
 
 Configuration example :
