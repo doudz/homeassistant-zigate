@@ -164,6 +164,12 @@ def setup(hass, config):
             if entity.hass:
                 entity.schedule_update_ha_state()
 
+        event_data = attribute.copy()
+        event_data['ieee'] = device.ieee
+        event_data['device_type'] = device.get_property_value('type')
+        event_data['entity_id'] = entity.entity_id
+        hass.bus.fire('zigate.update_attribute', event_data)
+
     zigate.dispatcher.connect(attribute_updated,
                               zigate.ZIGATE_ATTRIBUTE_UPDATED, weak=False)
 
