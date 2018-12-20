@@ -50,6 +50,7 @@ identify_device:
     ieee:
       description: IEEE address of the device.
       example: '0123456789abcdef'
+
 raw_command:
   description: Send a raw command to zigate.
   fields:
@@ -59,4 +60,64 @@ raw_command:
     data:
       description: Payload in hex format.
       example: '02af7d010101'
+     
+read_attribute:
+  description: >
+    Read attribute from device
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    addr:
+      description: ZiGate address of the device.
+      example: 'af7d'
+    ieee:
+      description: IEEE address of the device.
+      example: '0123456789abcdef'
+    endpoint:
+      description: Device endpoint.
+      example: '1'
+    cluster:
+      description: Device endpoint cluster.
+      example: '0'
+    attribute_id:
+      description: Attribute ID to read.
+      example: '0xFF0D'
+    manufacturer_code:
+      description: Optionnal Manufacturer Code.
+      example: '0x115F'
+      
+write_attribute:
+  description: >
+    Read attribute from device
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    addr:
+      description: ZiGate address of the device.
+      example: 'af7d'
+    ieee:
+      description: IEEE address of the device.
+      example: '0123456789abcdef'
+    endpoint:
+      description: Device endpoint.
+      example: '1'
+    cluster:
+      description: Device endpoint cluster.
+      example: '0'
+    attribute_id:
+      description: Attribute ID to write.
+      example: '0xFF0D'
+    value:
+       description: Value to write
+       example: '0x01'
+    attribute_type:
+      description: Attribute type to write.
+      example: '0x20'
+    manufacturer_code:
+      description: Optionnal Manufacturer Code.
+      example: '0x115F'
       

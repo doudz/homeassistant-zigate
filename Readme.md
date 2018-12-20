@@ -1,6 +1,8 @@
 # ZiGate component for Home Assistant
 A new component to use the ZiGate (http://zigate.fr)
 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sebramage)
+
 To install:
 - if not exists, create folder 'custom\_components' under your home assitant directory (beside configuration.yaml)
 - copy all the files in your hass folder, under 'custom\_components' like that :

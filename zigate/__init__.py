@@ -22,7 +22,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.23.1']
+REQUIREMENTS = ['zigate==0.24.1']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
@@ -65,6 +65,28 @@ REMOVE_SCHEMA = vol.Schema({
     vol.Optional(ADDR): cv.string,
     vol.Optional(IEEE): cv.string,
     vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+})
+
+READ_ATTRIBUTE_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Required('endpoint'): cv.string,
+    vol.Required('cluster'): cv.string,
+    vol.Required('attribute_id'): cv.string,
+    vol.Optional('manufacturer_code'): cv.string,
+})
+
+WRITE_ATTRIBUTE_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Required('endpoint'): cv.string,
+    vol.Required('cluster'): cv.string,
+    vol.Required('attribute_id'): cv.string,
+    vol.Required('attribute_type'): cv.string,
+    vol.Required('value'): cv.string,
+    vol.Optional('manufacturer_code'): cv.string,
 })
 
 
@@ -273,6 +295,27 @@ def setup(hass, config):
 
     def touchlink_factory_reset(service):
         myzigate.touchlink_factory_reset()
+        
+    def read_attribute(service):
+        addr = _get_addr_from_service_request(service)
+        endpoint = int(service.data.get('endpoint'))
+        cluster = int(service.data.get('cluster'))
+        attribute_id = service.data.get('attribute_id')
+        manufacturer_code = service.data.get('manufacturer_code')
+        myzigate.read_attribute_request(addr, endpoint, cluster, attribute_id,
+                                        manufacturer_code=manufacturer_code)
+    
+    def write_attribute(service):
+        addr = _get_addr_from_service_request(service)
+        endpoint = int(service.data.get('endpoint'))
+        cluster = int(service.data.get('cluster'))
+        attribute_id = int(service.data.get('attribute_id'), 16)
+        attribute_type = int(service.data.get('attribute_type'), 16)
+        value = int(service.data.get('value'), 16)
+        attributes = [(attribute_id, attribute_type, value)]
+        manufacturer_code = int(service.data.get('manufacturer_code'), 16)
+        myzigate.write_attribute_request(addr, endpoint, cluster, attributes,
+                                         manufacturer_code=manufacturer_code)
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
@@ -297,6 +340,10 @@ def setup(hass, config):
     hass.services.register(DOMAIN, 'initiate_touchlink', initiate_touchlink)
     hass.services.register(DOMAIN, 'touchlink_factory_reset',
                            touchlink_factory_reset)
+    hass.services.register(DOMAIN, 'read_attribute', read_attribute,
+                           schema=READ_ATTRIBUTE_SCHEMA)
+    hass.services.register(DOMAIN, 'write_attribute', write_attribute,
+                           schema=WRITE_ATTRIBUTE_SCHEMA)
 
     track_time_change(hass, refresh_devices_list,
                       hour=0, minute=0, second=0)
