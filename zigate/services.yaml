@@ -81,7 +81,6 @@ read_attribute:
     manufacturer_code:
       description: Optionnal Manufacturer Code.
       example: '0x115F'
-      default: '0'
       
 write_attribute:
   description: >
