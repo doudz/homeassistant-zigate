@@ -75,6 +75,12 @@ read_attribute:
     ieee:
       description: IEEE address of the device.
       example: '0123456789abcdef'
+    endpoint:
+      description: Device endpoint.
+      example: '1'
+    cluster:
+      description: Device endpoint cluster.
+      example: '0'
     attribute_id:
       description: Attribute ID to read.
       example: '0xFF0D'
@@ -96,6 +102,12 @@ write_attribute:
     ieee:
       description: IEEE address of the device.
       example: '0123456789abcdef'
+    endpoint:
+      description: Device endpoint.
+      example: '1'
+    cluster:
+      description: Device endpoint cluster.
+      example: '0'
     attribute_id:
       description: Attribute ID to write.
       example: '0xFF0D'
