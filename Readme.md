@@ -43,6 +43,7 @@ or
 # Enable ZiGate
 zigate:
   port: /dev/ttyS0
+  channel: 24
 
 ```
 
