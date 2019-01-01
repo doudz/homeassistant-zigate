@@ -300,7 +300,7 @@ def setup(hass, config):
         endpoint = _to_int(service.data.get('endpoint'))
         cluster = _to_int(service.data.get('cluster'))
         attribute_id = _to_int(service.data.get('attribute_id'))
-        manufacturer_code = _to_int(service.data.get('manufacturer_code', 0))
+        manufacturer_code = _to_int(service.data.get('manufacturer_code', '0'))
         myzigate.read_attribute_request(addr, endpoint, cluster, attribute_id,
                                         manufacturer_code=manufacturer_code)
 
@@ -312,7 +312,7 @@ def setup(hass, config):
         attribute_type = _to_int(service.data.get('attribute_type'))
         value = _to_int(service.data.get('value'))
         attributes = [(attribute_id, attribute_type, value)]
-        manufacturer_code = _to_int(service.data.get('manufacturer_code', 0))
+        manufacturer_code = _to_int(service.data.get('manufacturer_code', '0'))
         myzigate.write_attribute_request(addr, endpoint, cluster, attributes,
                                          manufacturer_code=manufacturer_code)
 
