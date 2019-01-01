@@ -257,6 +257,14 @@ def setup(hass, config):
                 addr = device.addr
         return addr
 
+    def _to_int(value):
+        '''
+        convert str to int
+        '''
+        if 'x' in value:
+            return int(value, 16)
+        return int(value)
+
     def refresh_device(service):
         addr = _get_addr_from_service_request(service)
         if addr:
@@ -286,25 +294,25 @@ def setup(hass, config):
 
     def touchlink_factory_reset(service):
         myzigate.touchlink_factory_reset()
-        
+
     def read_attribute(service):
         addr = _get_addr_from_service_request(service)
-        endpoint = int(service.data.get('endpoint'))
-        cluster = int(service.data.get('cluster'))
-        attribute_id = service.data.get('attribute_id')
-        manufacturer_code = service.data.get('manufacturer_code')
+        endpoint = _to_int(service.data.get('endpoint'))
+        cluster = _to_int(service.data.get('cluster'))
+        attribute_id = _to_int(service.data.get('attribute_id'))
+        manufacturer_code = _to_int(service.data.get('manufacturer_code', 0))
         myzigate.read_attribute_request(addr, endpoint, cluster, attribute_id,
                                         manufacturer_code=manufacturer_code)
-    
+
     def write_attribute(service):
         addr = _get_addr_from_service_request(service)
-        endpoint = int(service.data.get('endpoint'))
-        cluster = int(service.data.get('cluster'))
-        attribute_id = int(service.data.get('attribute_id'), 16)
-        attribute_type = int(service.data.get('attribute_type'), 16)
-        value = int(service.data.get('value'), 16)
+        endpoint = _to_int(service.data.get('endpoint'))
+        cluster = _to_int(service.data.get('cluster'))
+        attribute_id = _to_int(service.data.get('attribute_id'))
+        attribute_type = _to_int(service.data.get('attribute_type'))
+        value = _to_int(service.data.get('value'))
         attributes = [(attribute_id, attribute_type, value)]
-        manufacturer_code = int(service.data.get('manufacturer_code'), 16)
+        manufacturer_code = _to_int(service.data.get('manufacturer_code', 0))
         myzigate.write_attribute_request(addr, endpoint, cluster, attributes,
                                          manufacturer_code=manufacturer_code)
 
