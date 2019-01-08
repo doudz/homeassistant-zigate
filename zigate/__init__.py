@@ -196,8 +196,10 @@ def setup(hass, config):
 
         event_data = attribute.copy()
         event_data['ieee'] = device.ieee
+        event_data['addr'] = device.addr
         event_data['device_type'] = device.get_property_value('type')
-        event_data['entity_id'] = entity.entity_id
+        if entity:
+            event_data['entity_id'] = entity.entity_id
         hass.bus.fire('zigate.attribute_updated', event_data)
 
     zigate.dispatcher.connect(attribute_updated,
