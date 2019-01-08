@@ -67,6 +67,7 @@ Currently it supports sensor, binary_sensor and switch and light
 logger:
   default: error
   logs:
+    zigate: debug
     custom_components.zigate: debug
 
 ```
