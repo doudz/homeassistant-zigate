@@ -18,6 +18,24 @@ refresh_device:
     ieee:
       description: IEEE address of the device.
       example: '0123456789abcdef'
+
+discover_device:
+  description: >
+    Discover a device by sending many requests to it.
+    Be aware that devices running on battery need to be woken up to answer,
+    typically by pushing the pairing button.
+    You should provide the entity_id OR the addr OR the ieee.
+    If no parameter is provided, every devices will be discovered.
+  fields:
+    entity_id:
+      description: The device entity_id to refresh
+      example: 'zigate.0123456789abcdef'
+    addr:
+      description: ZiGate address of the device.
+      example: 'af7d'
+    ieee:
+      description: IEEE address of the device.
+      example: '0123456789abcdef'
       
 remove_device:
   description: >

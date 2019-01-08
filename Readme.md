@@ -58,4 +58,4 @@ zigate:
 
 ```
 
-Currently it supports sensor, binary_sensor and switch and light (brightness and color)
+Currently it supports sensor, binary_sensor and switch and light
