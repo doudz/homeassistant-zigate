@@ -185,7 +185,6 @@ class ZiGateLight(Light):
                                                                    self._endpoint,
                                                                    int(temp),
                                                                    transition)
-        _LOGGER.error(kwargs)
 
     def turn_off(self, **kwargs):
         """Turn the device off."""
