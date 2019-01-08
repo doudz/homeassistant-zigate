@@ -60,3 +60,15 @@ zigate:
 ```
 
 Currently it supports sensor, binary_sensor and switch and light
+
+## How enable debug log
+
+```yaml
+logger:
+  default: error
+  logs:
+    custom_components.zigate: debug
+
+```
+Alternatively you could call the service `logger.set_level` with data `custom_components.zigate: debug`
+
