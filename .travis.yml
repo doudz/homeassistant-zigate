@@ -27,8 +27,3 @@ matrix:
         - pip install -e ".[dev]"
       script:
         - tox
-    - language: markdown
-      script:
-        - gem install mdl
-        - cd ${TRAVIS_BUILD_DIR}
-        - mdl -s markdownlint.rb *.md
