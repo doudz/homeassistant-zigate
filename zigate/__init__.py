@@ -194,6 +194,12 @@ def setup(hass, config):
             if entity.hass:
                 entity.schedule_update_ha_state()
 
+        event_data = attribute.copy()
+        event_data['ieee'] = device.ieee
+        event_data['device_type'] = device.get_property_value('type')
+        event_data['entity_id'] = entity.entity_id
+        hass.bus.fire('zigate.update_attribute', event_data)
+
     zigate.dispatcher.connect(attribute_updated,
                               zigate.ZIGATE_ATTRIBUTE_UPDATED, weak=False)
 
@@ -242,9 +248,14 @@ def setup(hass, config):
         for platform in SUPPORTED_PLATFORMS:
             load_platform(hass, platform, DOMAIN, {}, config)
 
+        hass.bus.fire('zigate.started')
+
+
     def stop_zigate(service_event):
         myzigate.save_state()
         myzigate.close()
+
+        hass.bus.fire('zigate.stopped')
 
     def refresh_devices_list(service):
         myzigate.get_devices_list()
