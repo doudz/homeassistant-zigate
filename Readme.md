@@ -71,5 +71,5 @@ logger:
     custom_components.zigate: debug
 
 ```
-Alternatively you could call the service `logger.set_level` with data `custom_components.zigate: debug`
+Alternatively you could call the service `logger.set_level` with data `{"custom_components.zigate": "debug", "zigate": "debug"}`
 
