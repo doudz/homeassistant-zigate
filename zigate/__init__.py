@@ -196,7 +196,7 @@ def setup(hass, config):
 
         event_data = attribute.copy()
         if type(event_data['type'] == type):
-            event_data['type'] = type(event_data['type'])
+            event_data['type'] = event_data['type'].__name__
         event_data['ieee'] = device.ieee
         event_data['addr'] = device.addr
         event_data['device_type'] = device.get_property_value('type')
