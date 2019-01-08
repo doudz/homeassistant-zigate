@@ -1,6 +1,7 @@
 # ZiGate component for Home Assistant
 A new component to use the ZiGate (http://zigate.fr)
 
+[![Build Status](https://travis-ci.org/doudz/homeassistant-zigate.svg?branch=master)](https://travis-ci.org/doudz/homeassistant-zigate)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sebramage)
 
 To install:
