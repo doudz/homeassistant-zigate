@@ -195,7 +195,7 @@ def setup(hass, config):
                 entity.schedule_update_ha_state()
 
         event_data = attribute.copy()
-        if type(event_data.get('type') == type):
+        if type(event_data.get('type')) == type:
             event_data['type'] = event_data['type'].__name__
         event_data['ieee'] = device.ieee
         event_data['addr'] = device.addr
