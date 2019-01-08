@@ -254,7 +254,6 @@ def setup(hass, config):
 
         hass.bus.fire('zigate.started')
 
-
     def stop_zigate(service_event):
         myzigate.save_state()
         myzigate.close()
@@ -280,7 +279,7 @@ def setup(hass, config):
             if device:
                 addr = device.addr
         return addr
-        
+
     def _to_int(value):
         '''
         convert str to int
@@ -323,7 +322,7 @@ def setup(hass, config):
 
     def touchlink_factory_reset(service):
         myzigate.touchlink_factory_reset()
-        
+
     def read_attribute(service):
         addr = _get_addr_from_service_request(service)
         endpoint = _to_int(service.data.get('endpoint'))

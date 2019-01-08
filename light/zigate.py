@@ -15,12 +15,10 @@ from homeassistant.components.light import (
     SUPPORT_COLOR, Light, ENTITY_ID_FORMAT)
 try:
     from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
-    from homeassistant.components.zigate import (DATA_ZIGATE_DEVICES,
-                                                 DATA_ZIGATE_ATTRS)
-except:  # temporary until official support
+    from homeassistant.components.zigate import DATA_ZIGATE_ATTRS
+except ImportError:  # temporary until official support
     from custom_components.zigate import DOMAIN as ZIGATE_DOMAIN
-    from custom_components.zigate import (DATA_ZIGATE_DEVICES,
-                                          DATA_ZIGATE_ATTRS)
+    from custom_components.zigate import DATA_ZIGATE_ATTRS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -119,7 +117,7 @@ class ZiGateLight(Light):
         """Return the brightness of this light between 0..255."""
         a = self._device.get_attribute(self._endpoint, 8, 0)
         if a:
-            return int(a.get('value', 0)*255/100)
+            return int(a.get('value', 0) * 255 / 100)
         return 0
 
     @property
