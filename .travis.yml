@@ -5,25 +5,25 @@ matrix:
     - python: 3.4
       env: TOXENV=py34
       install:
-        - pip install -e "zigate[dev]"
+        - pip install zigate[dev]
       script:
         - tox
     - python: 3.5
       env: TOXENV=py35
       install:
-        - pip install -e "zigate[dev]"
+        - pip install zigate[dev]
       script:
         - tox
     - python: 3.6
       env: TOXENV=py36
       install:
-        - pip install -e "zigate[dev]"
+        - pip install zigate[dev]
       script:
         - tox
     - python: 3.7
       dist: xenial
       env: TOXENV=py37
       install:
-        - pip install -e "zigate[dev]"
+        - pip install zigate[dev]
       script:
         - tox
