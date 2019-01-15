@@ -215,3 +215,7 @@ class ZiGateLight(Light):
             'ieee': self._device.ieee,
             'endpoint': self._endpoint,
         }
+
+    @property
+    def assumed_state(self)->bool:
+        return self._device.assumed_state()

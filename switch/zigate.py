@@ -121,3 +121,7 @@ class ZiGateSwitch(SwitchDevice):
             'battery_voltage': self._device.get_value('battery'),
             'battery_level': int(self._device.battery_percent),
         }
+
+    @property
+    def assumed_state(self)->bool:
+        return self._device.assumed_state()
