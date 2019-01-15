@@ -124,4 +124,4 @@ class ZiGateSwitch(SwitchDevice):
 
     @property
     def assumed_state(self)->bool:
-        return self._device.assumed_state()
+        return self._device.assumed_state
