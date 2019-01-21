@@ -95,8 +95,10 @@ class ZiGateLight(Light):
 
     @property
     def should_poll(self) -> bool:
-        """No polling needed for a ZiGate light."""
-        return False
+        return self._device.assumed_state
+
+    def update(self):
+        self._device.refresh_device()
 
     @property
     def name(self) -> str:
@@ -216,6 +218,6 @@ class ZiGateLight(Light):
             'endpoint': self._endpoint,
         }
 
-    @property
-    def assumed_state(self)->bool:
-        return self._device.assumed_state
+#     @property
+#     def assumed_state(self)->bool:
+#         return self._device.assumed_state

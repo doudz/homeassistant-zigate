@@ -77,7 +77,10 @@ class ZiGateSwitch(SwitchDevice):
     @property
     def should_poll(self):
         """No polling needed for a ZiGate switch."""
-        return False
+        return self._device.assumed_state
+
+    def update(self):
+        self._device.refresh_device()
 
     @property
     def name(self):
@@ -122,6 +125,6 @@ class ZiGateSwitch(SwitchDevice):
             'battery_level': int(self._device.battery_percent),
         }
 
-    @property
-    def assumed_state(self)->bool:
-        return self._device.assumed_state
+#     @property
+#     def assumed_state(self)->bool:
+#         return self._device.assumed_state
