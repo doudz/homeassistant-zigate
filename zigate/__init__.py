@@ -219,10 +219,12 @@ def setup(hass, config):
             _LOGGER.debug('Device not found {}, adding it'.format(device))
             device_added(device=device)
 
-        zigate.dispatcher.connect(device_updated,
-                                  zigate.ZIGATE_DEVICE_UPDATED, weak=False)
-        zigate.dispatcher.connect(device_updated,
-                                  zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
+    zigate.dispatcher.connect(device_updated,
+                              zigate.ZIGATE_DEVICE_UPDATED, weak=False)
+    zigate.dispatcher.connect(device_updated,
+                              zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
+    zigate.dispatcher.connect(device_updated,
+                              zigate.ZIGATE_DEVICE_ADDRESS_CHANGED, weak=False)
 
     def zigate_reset(service):
         myzigate.reset()
