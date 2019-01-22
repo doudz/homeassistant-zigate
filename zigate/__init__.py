@@ -141,6 +141,8 @@ def setup(hass, config):
             'The ZiGate device {}({}) is gone.'.format(device.ieee,
                                                        device.addr),
             title='ZiGate')
+        entity = hass.data[DATA_ZIGATE_DEVICES][ieee]
+        component.async_remove_entity(entity.entity_id)
         del hass.data[DATA_ZIGATE_DEVICES][ieee]
 
     def device_need_discovery(**kwargs):
