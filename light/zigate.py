@@ -176,17 +176,17 @@ class ZiGateLight(Light):
                                                        transition)
         if ATTR_HS_COLOR in kwargs:
             h, s = kwargs[ATTR_HS_COLOR]
-            self.hass.data[ZIGATE_DOMAIN].actions_move_hue_saturation(self._device.addr,
-                                                                      self._endpoint,
-                                                                      int(h),
-                                                                      int(s),
-                                                                      transition)
+            self.hass.data[ZIGATE_DOMAIN].action_move_hue_saturation(self._device.addr,
+                                                                     self._endpoint,
+                                                                     int(h),
+                                                                     int(s),
+                                                                     transition)
         elif ATTR_COLOR_TEMP in kwargs:
             temp = kwargs[ATTR_COLOR_TEMP]
-            self.hass.data[ZIGATE_DOMAIN].actions_move_temperature(self._device.addr,
-                                                                   self._endpoint,
-                                                                   int(temp),
-                                                                   transition)
+            self.hass.data[ZIGATE_DOMAIN].action_move_temperature(self._device.addr,
+                                                                  self._endpoint,
+                                                                  int(temp),
+                                                                  transition)
 
     def turn_off(self, **kwargs):
         """Turn the device off."""
