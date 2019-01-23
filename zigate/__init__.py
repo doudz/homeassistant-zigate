@@ -119,6 +119,7 @@ GET_GROUP_MEMBERSHIP_SCHEMA = vol.Schema({
     vol.Required('endpoint'): cv.string,
 })
 
+
 def setup(hass, config):
     """Setup zigate platform."""
     import zigate
@@ -384,7 +385,7 @@ def setup(hass, config):
 
     def get_group_membership(service):
         addr = _get_addr_from_service_request(service)
-        endpoint = _to_int(service.data.get('endpoint'))       
+        endpoint = _to_int(service.data.get('endpoint'))
         myzigate.get_group_membership(addr, endpoint)
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
@@ -422,9 +423,9 @@ def setup(hass, config):
     hass.services.register(DOMAIN, 'add_group', add_group,
                            schema=ADD_GROUP_SCHEMA)
     hass.services.register(DOMAIN, 'get_group_membership', get_group_membership,
-                           schema=GET_GROUP_MEMBERSHIP_SCHEMA)    
+                           schema=GET_GROUP_MEMBERSHIP_SCHEMA)
     hass.services.register(DOMAIN, 'remove_group', remove_group,
-                           schema=REMOVE_GROUP_SCHEMA)    
+                           schema=REMOVE_GROUP_SCHEMA)
     track_time_change(hass, refresh_devices_list,
                       hour=0, minute=0, second=0)
 
