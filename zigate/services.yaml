@@ -138,4 +138,64 @@ write_attribute:
     manufacturer_code:
       description: Optionnal Manufacturer Code.
       example: '0x115F'
-      
+
+add_group:
+  description: >
+    Add group to device
+   
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    addr:
+      description: ZiGate address of the device.
+      example: 'af7d'
+    ieee:
+      description: IEEE address of the device.
+      example: '0123456789abcdef'
+    endpoint:
+      description: Device endpoint.
+      example: '1'
+    groupaddr:
+      description: Group addr.
+      example: '0ab9'    
+
+remove_group:
+  description: >
+    Remove group from device
+    You should provide the entity_id OR the addr OR the ieee.
+    if group_addr not specified, remove all groups
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    addr:
+      description: ZiGate address of the device.
+      example: 'af7d'
+    ieee:
+      description: IEEE address of the device.
+      example: '0123456789abcdef'
+    endpoint:
+      description: Device endpoint.
+      example: '1'
+    groupaddr:
+      description: Group addr.
+      example: '0ab9'  
+
+get_group_membership:
+  description: >
+    Get device groups
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    addr:
+      description: ZiGate address of the device.
+      example: 'af7d'
+    ieee:
+      description: IEEE address of the device.
+      example: '0123456789abcdef'
+    endpoint:
+      description: Device endpoint.
+      example: '1'    
