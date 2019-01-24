@@ -472,6 +472,7 @@ class ZiGateDeviceEntity(Entity):
                  'missing': self._device.missing,
                  'generic_type': self._device.genericType,
                  'discovery': self._device.discovery,
+                 'groups': self._device.groups
                  }
         attrs.update(self._device.info)
         return attrs
