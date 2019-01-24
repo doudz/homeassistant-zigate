@@ -96,6 +96,29 @@ WRITE_ATTRIBUTE_SCHEMA = vol.Schema({
     vol.Optional('manufacturer_code'): cv.string,
 })
 
+ADD_GROUP_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Required('endpoint'): cv.string,
+    vol.Optional('group_addr'): cv.string,
+})
+
+REMOVE_GROUP_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Required('endpoint'): cv.string,
+    vol.Optional('group_addr'): cv.string,
+})
+
+GET_GROUP_MEMBERSHIP_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Required('endpoint'): cv.string,
+})
+
 
 def setup(hass, config):
     """Setup zigate platform."""
@@ -348,6 +371,23 @@ def setup(hass, config):
         myzigate.write_attribute_request(addr, endpoint, cluster, attributes,
                                          manufacturer_code=manufacturer_code)
 
+    def add_group(service):
+        addr = _get_addr_from_service_request(service)
+        endpoint = _to_int(service.data.get('endpoint'))
+        groupaddr = service.data.get('group_addr')
+        myzigate.add_group(addr, endpoint, groupaddr)
+
+    def remove_group(service):
+        addr = _get_addr_from_service_request(service)
+        endpoint = _to_int(service.data.get('endpoint'))
+        groupaddr = service.data.get('group_addr')
+        myzigate.remove_group(addr, endpoint, groupaddr)
+
+    def get_group_membership(service):
+        addr = _get_addr_from_service_request(service)
+        endpoint = _to_int(service.data.get('endpoint'))
+        myzigate.get_group_membership(addr, endpoint)
+
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
 
@@ -380,7 +420,12 @@ def setup(hass, config):
                            schema=READ_ATTRIBUTE_SCHEMA)
     hass.services.register(DOMAIN, 'write_attribute', write_attribute,
                            schema=WRITE_ATTRIBUTE_SCHEMA)
-
+    hass.services.register(DOMAIN, 'add_group', add_group,
+                           schema=ADD_GROUP_SCHEMA)
+    hass.services.register(DOMAIN, 'get_group_membership', get_group_membership,
+                           schema=GET_GROUP_MEMBERSHIP_SCHEMA)
+    hass.services.register(DOMAIN, 'remove_group', remove_group,
+                           schema=REMOVE_GROUP_SCHEMA)
     track_time_change(hass, refresh_devices_list,
                       hour=0, minute=0, second=0)
 
