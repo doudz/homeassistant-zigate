@@ -156,8 +156,8 @@ add_group:
     endpoint:
       description: Device endpoint.
       example: '1'
-    groupaddr:
-      description: Group addr.
+    group_addr:
+      description: Optionnal Group addr, if not specified, generate a random addr.
       example: '0ab9'    
 
 remove_group:
@@ -178,8 +178,8 @@ remove_group:
     endpoint:
       description: Device endpoint.
       example: '1'
-    groupaddr:
-      description: Group addr.
+    group_addr:
+      description: Optionnal Group addr, if not specified remove all groups.
       example: '0ab9'  
 
 get_group_membership:
@@ -198,4 +198,4 @@ get_group_membership:
       example: '0123456789abcdef'
     endpoint:
       description: Device endpoint.
-      example: '1'    
+      example: '1'
