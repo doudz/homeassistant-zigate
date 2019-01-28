@@ -199,3 +199,37 @@ get_group_membership:
     endpoint:
       description: Device endpoint.
       example: '1'
+
+action_onoff:
+  description: >
+    Execute action ON/OFF
+    Note that timed onoff and effect are mutually exclusive
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    addr:
+      description: ZiGate address of the device or the group
+      example: 'af7d'
+    ieee:
+      description: IEEE address of the device.
+      example: '0123456789abcdef'    
+    onoff:
+      description: 0=Off 1=On 2=Toggle
+      example: '1'
+    endpoint:
+      description: Device endpoint (Optionnal for group addr).
+      example: '1'
+    on_time:
+      description: timed on in sec
+      example: '0'
+    off_time:
+      description: timed off in sec
+      example: '0'
+    effect:
+      description: effect id
+      example: '0'
+    gradient:
+      description: effect gradient
+      example: '0'

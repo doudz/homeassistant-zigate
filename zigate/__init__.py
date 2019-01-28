@@ -119,6 +119,18 @@ GET_GROUP_MEMBERSHIP_SCHEMA = vol.Schema({
     vol.Required('endpoint'): cv.string,
 })
 
+ACTION_ONOFF_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,    
+    vol.Required('onoff'): cv.string,
+    vol.Optional('endpoint'): cv.string,
+    vol.Optional('on_time'): cv.string,
+    vol.Optional('off_time'): cv.string,
+    vol.Optional('effect'): cv.string,
+    vol.Optional('gradient'): cv.string,
+})
+
 
 def setup(hass, config):
     """Setup zigate platform."""
@@ -387,6 +399,16 @@ def setup(hass, config):
         addr = _get_addr_from_service_request(service)
         endpoint = _to_int(service.data.get('endpoint'))
         myzigate.get_group_membership(addr, endpoint)
+    
+    def action_onoff(service):
+        addr = _get_addr_from_service_request(service)
+        onoff = _to_int(service.data.get('onoff'))
+        endpoint = _to_int(service.data.get('endpoint', '0'))        
+        ontime = _to_int(service.data.get('on_time', '0'))
+        offtime = _to_int(service.data.get('off_time', '0'))
+        effect = _to_int(service.data.get('effect', '0'))
+        gradient = _to_int(service.data.get('gradient', '0'))
+        myzigate.action_onoff(addr, endpoint, onoff, ontime, offtime, effect, gradient)
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
@@ -426,6 +448,8 @@ def setup(hass, config):
                            schema=GET_GROUP_MEMBERSHIP_SCHEMA)
     hass.services.register(DOMAIN, 'remove_group', remove_group,
                            schema=REMOVE_GROUP_SCHEMA)
+    hass.services.register(DOMAIN, 'action_onoff', action_onoff,
+                           schema=ACTION_ONOFF_SCHEMA)
     track_time_change(hass, refresh_devices_list,
                       hour=0, minute=0, second=0)
 
