@@ -122,7 +122,7 @@ GET_GROUP_MEMBERSHIP_SCHEMA = vol.Schema({
 ACTION_ONOFF_SCHEMA = vol.Schema({
     vol.Optional(ADDR): cv.string,
     vol.Optional(IEEE): cv.string,
-    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,    
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
     vol.Required('onoff'): cv.string,
     vol.Optional('endpoint'): cv.string,
     vol.Optional('on_time'): cv.string,
@@ -399,11 +399,11 @@ def setup(hass, config):
         addr = _get_addr_from_service_request(service)
         endpoint = _to_int(service.data.get('endpoint'))
         myzigate.get_group_membership(addr, endpoint)
-    
+
     def action_onoff(service):
         addr = _get_addr_from_service_request(service)
         onoff = _to_int(service.data.get('onoff'))
-        endpoint = _to_int(service.data.get('endpoint', '0'))        
+        endpoint = _to_int(service.data.get('endpoint', '0'))
         ontime = _to_int(service.data.get('on_time', '0'))
         offtime = _to_int(service.data.get('off_time', '0'))
         effect = _to_int(service.data.get('effect', '0'))
