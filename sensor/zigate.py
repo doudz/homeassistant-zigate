@@ -90,7 +90,7 @@ class ZiGateSensor(Entity):
             self._device_class = DEVICE_CLASS_ILLUMINANCE
 
     @property
-    def unique_id(self)->str:
+    def unique_id(self) -> str:
         if self._device.ieee:
             return '{}-{}-{}-{}'.format(self._device.ieee,
                                         self._attribute['endpoint'],

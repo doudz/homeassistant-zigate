@@ -68,7 +68,7 @@ class ZiGateSwitch(SwitchDevice):
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
 
     @property
-    def unique_id(self)->str:
+    def unique_id(self) -> str:
         if self._device.ieee:
             return '{}-{}-{}'.format(self._device.ieee,
                                      'switch',

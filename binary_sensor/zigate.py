@@ -93,7 +93,7 @@ class ZiGateBinarySensor(BinarySensorDevice):
         return self._device_class
 
     @property
-    def unique_id(self)->str:
+    def unique_id(self) -> str:
         if self._device.ieee:
             return '{}-{}-{}-{}'.format(self._device.ieee,
                                         self._attribute['endpoint'],

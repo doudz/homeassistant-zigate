@@ -481,7 +481,7 @@ class ZiGateDeviceEntity(Entity):
         return self._device.info.get('last_seen')
 
     @property
-    def unique_id(self)->str:
+    def unique_id(self) -> str:
         return self._device.ieee
 
     @property
