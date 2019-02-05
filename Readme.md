@@ -73,3 +73,9 @@ logger:
 ```
 Alternatively you could call the service `logger.set_level` with data `{"custom_components.zigate": "debug", "zigate": "debug"}`
 
+## How to adjust device parameter
+
+Some devices have the ability to change some parameters, for example on the Xiaomi vibration sensor you can adujst the sensibility. You'll be able to do that using the service `write_attribute` with parameters :
+`{ "addr": "8c37", "endpoint":"1", "cluster":"0", "attribute_id":"0xFF0D", "manufacturer_code":"0x115F", "attribute_type":"0x20", "value":"0x01" }`
+
+In this example, the value is the sensiblity, it could be 0x01 for "high sens", 0x0B for "medium" and 0x15 for "low"
