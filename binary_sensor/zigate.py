@@ -35,7 +35,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             if any(actions.values()):
                 continue
             for attribute in device.attributes:
-                if attribute['cluster'] == 0:
+                if attribute['cluster'] < 5:
                     continue
                 if 'name' in attribute:
                     key = '{}-{}-{}-{}'.format(ieee,
