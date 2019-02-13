@@ -410,6 +410,10 @@ def setup(hass, config):
         gradient = _to_int(service.data.get('gradient', '0'))
         myzigate.action_onoff(addr, endpoint, onoff, ontime, offtime, effect, gradient)
 
+    def build_network_map(service):
+        filename = os.path.join(hass.config.config_dir, 'zigate_network.png')
+        myzigate.build_network_map(filename)
+
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
 
@@ -450,6 +454,8 @@ def setup(hass, config):
                            schema=REMOVE_GROUP_SCHEMA)
     hass.services.register(DOMAIN, 'action_onoff', action_onoff,
                            schema=ACTION_ONOFF_SCHEMA)
+    hass.services.register(DOMAIN, 'build_network_map', build_network_map)
+
     track_time_change(hass, refresh_devices_list,
                       hour=0, minute=0, second=0)
 
