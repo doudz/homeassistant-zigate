@@ -411,8 +411,7 @@ def setup(hass, config):
         myzigate.action_onoff(addr, endpoint, onoff, ontime, offtime, effect, gradient)
 
     def build_network_map(service):
-        filename = os.path.join(hass.config.config_dir, 'zigate_network.png')
-        myzigate.build_network_map(filename)
+        myzigate.build_network_map(hass.config.config_dir)
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
