@@ -139,7 +139,7 @@ class ZiGateBinarySensor(BinarySensorDevice):
             'endpoint': self._attribute['endpoint'],
             'cluster': self._attribute['cluster'],
             'attribute': self._attribute['attribute'],
-            'battery_voltage': self._device.get_value('battery'),
+            'battery_voltage': self._device.get_value('battery_voltage'),
             'battery_level': int(self._device.battery_percent),
         }
         if self._is_zone_status():
