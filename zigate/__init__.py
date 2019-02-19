@@ -22,7 +22,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.27.9']
+REQUIREMENTS = ['zigate==0.28.0']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
@@ -494,7 +494,7 @@ class ZiGateDeviceEntity(Entity):
         """Return the device specific state attributes."""
         attrs = {'battery_voltage': self._device.get_value('battery_voltage'),
                  ATTR_BATTERY_LEVEL: int(self._device.battery_percent),
-                 'rssi_percent': int(self._device.rssi_percent),
+                 'lqi_percent': int(self._device.lqi_percent),
                  'type': self._device.get_value('type'),
                  'manufacturer': self._device.get_value('manufacturer'),
                  'receiver_on_when_idle': self._device.receiver_on_when_idle(),
