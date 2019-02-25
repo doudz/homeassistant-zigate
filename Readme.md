@@ -10,17 +10,13 @@ To install:
 
 ```
 custom_components/
-├── binary_sensor
-│   └── zigate.py
-├── light
-│   └── zigate.py
-├── sensor
-│   └── zigate.py
-├── switch
-│   └── zigate.py
 └── zigate
     ├── __init__.py
-    └── services.yaml
+    ├── services.yaml
+    ├── switch.py
+    ├── sensor.py
+    ├── light.py
+    └── binary_sensor.py
 ```
     
 - adapt your configuration.yaml
@@ -79,3 +75,22 @@ Some devices have the ability to change some parameters, for example on the Xiao
 `{ "addr": "8c37", "endpoint":"1", "cluster":"0", "attribute_id":"0xFF0D", "manufacturer_code":"0x115F", "attribute_type":"0x20", "value":"0x01" }`
 
 In this example, the value is the sensiblity, it could be 0x01 for "high sens", 0x0B for "medium" and 0x15 for "low"
+
+## custom panel
+
+You can add a custom panel to display the network map.
+To do so, copy the panels folder in your hass config folder like this :
+
+```
+panels/
+└── zigate.html
+```
+
+and the following in your configuration.yaml
+
+```yaml
+panel_custom:
+  - name: zigate
+    sidebar_title: ZiGate
+    sidebar_icon: mdi:zigbee
+```

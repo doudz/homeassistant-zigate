@@ -1,0 +1,74 @@
+<dom-module id='ha-panel-zigate'>
+  <template>
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed>
+        <app-toolbar>
+          <ha-menu-button narrow='[[narrow]]' show-menu='[[showMenu]]'></ha-menu-button>
+          <div main-title>ZiGate Graph</div>
+        </app-toolbar>
+      </app-header>
+
+      <div class="content" style="height:calc(100% - 64px)">
+        <svg id="svg" style="width:100%; height:100%"></svg>
+      </div>
+    </app-header-layout>
+
+  </template>
+
+</dom-module>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vivagraphjs/0.10.1/vivagraph.min.js"></script>
+<script>
+class HaPanelZiGate extends Polymer.Element {
+  static get is() { return 'ha-panel-zigate'; }
+
+  static get properties() {
+    return {
+      // Home Assistant object
+      hass: Object,
+      // If should render in narrow mode
+      narrow: {
+        type: Boolean,
+        value: false,
+      },
+      // If sidebar is currently shown
+      showMenu: {
+        type: Boolean,
+        value: false,
+      },
+      // Home Assistant panel info99
+      // panel.config contains config passed to register_panel serverside
+      panel: Object,
+    };
+  }
+
+
+  ready() {
+    super.ready();
+    var graph = Viva.Graph.graph();
+
+    let states=new Array();
+    for (let state in this.hass.states)
+    {
+      states.push(this.hass.states[state]);
+    }
+    let zigates = states.filter((s) => {return s.entity_id.indexOf("zigate.") ==0});
+    zigates.forEach(function(entity){
+        graph.addNode(entity.attributes.addr, entity.entity_id);
+    });
+    
+    var myzigate = this.hass.states['zigate.zigate'];
+    myzigate.attributes.network_table.forEach(function(link){
+        graph.addLink(link[0], link[1]);
+    });
+    
+
+    var renderer = Viva.Graph.View.renderer(graph, {
+      container: this.$.svg
+    });
+    renderer.run();
+
+  }
+
+}
+customElements.define(HaPanelZiGate.is, HaPanelZiGate);
+</script>
