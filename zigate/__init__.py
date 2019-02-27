@@ -478,7 +478,7 @@ class ZiGateComponentEntity(Entity):
         """Initialize the sensor."""
         self._device = myzigate
         self.entity_id = '{}.{}'.format(DOMAIN, 'zigate')
-        self._network_table = []
+        self.network_table = []
 
     @property
     def should_poll(self):
@@ -508,7 +508,7 @@ class ZiGateComponentEntity(Entity):
         attrs = {'addr': self._device.addr,
                  'ieee': self._device.ieee,
                  'groups': self._device.groups,
-                 'network_table': self._network_table
+                 'network_table': self.network_table
                  }
         return attrs
 
