@@ -49,9 +49,13 @@ class HaPanelZiGate extends Polymer.Element {
     var graphics = Viva.Graph.View.svgGraphics();
     graphics.node(function(node) {
               // This time it's a group of elements: http://www.w3.org/TR/SVG/struct.html#Groups
+              var text = node.data.entity_id;
+              if ('friendly_name' in node.data.attributes){
+                var text = node.data.attributes.friendly_name;
+              }
               var ui = Viva.Graph.svg('g'),
                   // Create SVG text element with user id as content
-                  svgText = Viva.Graph.svg('text').attr('y', '-4px').text(node.data),
+                  svgText = Viva.Graph.svg('text').attr('y', '-4px').text(text),
                   rect =  Viva.Graph.svg('rect')
                       .attr('stroke-width', 2)
                       .attr('stroke', 'blue')
@@ -77,7 +81,7 @@ class HaPanelZiGate extends Polymer.Element {
     }
     let zigates = states.filter((s) => {return s.entity_id.indexOf("zigate.") ==0});
     zigates.forEach(function(entity){
-        graph.addNode(entity.attributes.addr, entity.entity_id);
+        graph.addNode(entity.attributes.addr, entity);
     });
     
     var myzigate = this.hass.states['zigate.zigate'];
