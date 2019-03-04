@@ -113,4 +113,3 @@ class ZiGateCover(CoverDevice):
         self.hass.data[ZIGATE_DOMAIN].action_cover(self._device.addr,
                                                    self._endpoint,
                                                    0x02)
-
