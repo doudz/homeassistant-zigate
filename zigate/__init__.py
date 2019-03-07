@@ -22,7 +22,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.28.4']
+REQUIREMENTS = ['zigate==0.29.0']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
@@ -40,7 +40,8 @@ CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
         vol.Optional(CONF_PORT): cv.string,
         vol.Optional(CONF_HOST): cv.string,
-        vol.Optional('channel'): cv.positive_int
+        vol.Optional('channel'): cv.positive_int,
+        vol.Optional('gpio'): cv.boolean
     })
 }, extra=vol.ALLOW_EXTRA)
 
@@ -138,13 +139,15 @@ def setup(hass, config):
 
     port = config[DOMAIN].get(CONF_PORT)
     host = config[DOMAIN].get(CONF_HOST)
+    gpio = config[DOMAIN].get('gpio', False)
     channel = config[DOMAIN].get('channel')
     persistent_file = os.path.join(hass.config.config_dir,
                                    'zigate.json')
 
     myzigate = zigate.connect(port=port, host=host,
                               path=persistent_file,
-                              auto_start=False
+                              auto_start=False,
+                              gpio=gpio
                               )
 
     hass.data[DOMAIN] = myzigate
