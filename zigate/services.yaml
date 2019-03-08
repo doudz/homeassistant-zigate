@@ -236,7 +236,6 @@ action_onoff:
 ota_load_image:
   description: >
     Load ota image file
-    You should provide the entity_id OR the addr OR the ieee.
   fields:
     imagepath:
       description: Path to ota update file.
@@ -245,6 +244,7 @@ ota_load_image:
 ota_image_notify:
   description: >
     Notify OTA Update
+    You should provide the entity_id OR the addr OR the ieee.
   fields:
     entity_id:
       description: The device entity_id to identify
