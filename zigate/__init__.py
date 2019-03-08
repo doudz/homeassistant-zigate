@@ -136,7 +136,7 @@ OTA_LOAD_IMAGE_SCHEMA = vol.Schema({
     vol.Required('imagepath'): cv.string,
 })
 
-OTA_IMAGE_NOTIFY_SCHEMA =  vol.Schema({
+OTA_IMAGE_NOTIFY_SCHEMA = vol.Schema({
     vol.Optional(ADDR): cv.string,
     vol.Optional(IEEE): cv.string,
     vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
@@ -443,13 +443,13 @@ def setup(hass, config):
         myzigate.ota_load_image(ota_image_path)
 
     def ota_image_notify(service):
-       addr = _get_addr_from_service_request(service)
-       destination_endpoint = _to_int(service.data.get('destination_endpoint', '1'))
-       payload_type =  _to_int(service.data.get('payload_type', '0'))
-       myzigate.ota_image_notify(addr, destination_endpoint, payload_type)
+        addr = _get_addr_from_service_request(service)
+        destination_endpoint = _to_int(service.data.get('destination_endpoint', '1'))
+        payload_type = _to_int(service.data.get('payload_type', '0'))
+        myzigate.ota_image_notify(addr, destination_endpoint, payload_type)
 
     def get_ota_status(service):
-       myzigate.get_ota_status()
+        myzigate.get_ota_status()
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
