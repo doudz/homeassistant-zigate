@@ -142,7 +142,6 @@ write_attribute:
 add_group:
   description: >
     Add group to device
-   
   fields:
     entity_id:
       description: The device entity_id to identify
@@ -180,7 +179,7 @@ remove_group:
       example: '1'
     group_addr:
       description: Optionnal Group addr, if not specified remove all groups.
-      example: '0ab9'  
+      example: '0ab9'
 
 get_group_membership:
   description: >
@@ -214,7 +213,7 @@ action_onoff:
       example: 'af7d'
     ieee:
       description: IEEE address of the device.
-      example: '0123456789abcdef'    
+      example: '0123456789abcdef'
     onoff:
       description: 0=Off 1=On 2=Toggle
       example: '1'
@@ -232,4 +231,33 @@ action_onoff:
       example: '0'
     gradient:
       description: effect gradient
+      example: '0'
+
+ota_load_image:
+  description: >
+    Load ota image file
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    imagepath:
+      description: Path to ota update file.
+      example: '/config/ota/10005777-3.1-TRADFRI-control-outlet-2.0.019.ota.ota.signed'
+
+ota_image_notify:
+  description: >
+    Notify OTA Update
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    addr:
+      description: ZiGate address of the device.
+      example: 'af7d'
+    ieee:
+      description: IEEE address of the device.
+      example: '0123456789abcdef'
+    destination_enpoint:
+      description: Optionnal destination enpoint
+      example: '1'
+    payload_type:
+      description: Optionnal payload type
       example: '0'
