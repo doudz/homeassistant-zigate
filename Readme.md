@@ -41,6 +41,7 @@ or
 zigate:
   port: /dev/ttyS0
   channel: 24
+  enable_led : false
 
 ```
 

@@ -18,9 +18,10 @@ The `zigate` component allows you to use the ZiGate module (http://www.zigate.fr
 Available ZiGate platforms:
 
 - [Binary sensor](/components/binary_sensor/) (`binary_sensor`)
-- [Light](/components/light/) (`light`) (not yet)
+- [Light](/components/light/) (`light`)
 - [Sensor](/components/sensor/) (`sensor`)
 - [Switch](/components/switch/) (`switch`)
+- [Cover](/components/cover/) (`cover`)
 
 To integrate the ZiGate component in Home Assistant, add the following section to your `configuration.yaml` file:
 
@@ -32,7 +33,9 @@ To integrate the ZiGate component in Home Assistant, add the following section t
 
 # Example configuration.yaml entry setting the USB port
 [zigate]:
-  port: /dev/ttyS0
+  port: /dev/ttyUSB0
+  channel: 15
+  enable_led: false
 ```
 
 or

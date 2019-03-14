@@ -23,6 +23,7 @@ import homeassistant.helpers.config_validation as cv
 _LOGGER = logging.getLogger(__name__)
 
 REQUIREMENTS = ['zigate==0.29.1']
+# REQUIREMENTS = ['https://github.com/doudz/zigate/archive/dev.zip#1.0.0']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
@@ -41,7 +42,8 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional(CONF_PORT): cv.string,
         vol.Optional(CONF_HOST): cv.string,
         vol.Optional('channel'): cv.positive_int,
-        vol.Optional('gpio'): cv.boolean
+        vol.Optional('gpio'): cv.boolean,
+        vol.Optional('enable_led'): cv.boolean
     })
 }, extra=vol.ALLOW_EXTRA)
 
@@ -140,6 +142,7 @@ def setup(hass, config):
     port = config[DOMAIN].get(CONF_PORT)
     host = config[DOMAIN].get(CONF_HOST)
     gpio = config[DOMAIN].get('gpio', False)
+    enable_led = config[DOMAIN].get('enable_led', True)
     channel = config[DOMAIN].get('channel')
     persistent_file = os.path.join(hass.config.config_dir,
                                    'zigate.json')
@@ -164,7 +167,7 @@ def setup(hass, config):
         _LOGGER.debug('Add device {}'.format(device))
         ieee = device.ieee or device.addr  # compatibility
         if ieee not in hass.data[DATA_ZIGATE_DEVICES]:
-            entity = ZiGateDeviceEntity(device)
+            entity = ZiGateDeviceEntity(hass, device)
             hass.data[DATA_ZIGATE_DEVICES][ieee] = entity
             component.add_entities([entity])
             if 'signal' in kwargs:
@@ -208,10 +211,6 @@ def setup(hass, config):
         _LOGGER.debug('Update attribute for device {} {}'.format(device,
                                                                  attribute))
         entity = hass.data[DATA_ZIGATE_DEVICES].get(ieee)
-        if entity:
-            if entity.hass:
-                entity.schedule_update_ha_state()
-
         event_data = attribute.copy()
         if type(event_data.get('type')) == type:
             event_data['type'] = event_data['type'].__name__
@@ -230,12 +229,16 @@ def setup(hass, config):
         _LOGGER.debug('Update device {}'.format(device))
         ieee = device.ieee or device.addr  # compatibility
         entity = hass.data[DATA_ZIGATE_DEVICES].get(ieee)
-        if entity:
-            if entity.hass:
-                entity.schedule_update_ha_state()
-        else:
+        if not entity:
             _LOGGER.debug('Device not found {}, adding it'.format(device))
             device_added(device=device)
+        event_data = {}
+        event_data['ieee'] = device.ieee
+        event_data['addr'] = device.addr
+        event_data['device_type'] = device.get_property_value('type')
+        if entity:
+            event_data['entity_id'] = entity.entity_id
+        hass.bus.fire('zigate.device_updated', event_data)
 
     zigate.dispatcher.connect(device_updated,
                               zigate.ZIGATE_DEVICE_UPDATED, weak=False)
@@ -259,11 +262,12 @@ def setup(hass, config):
     def start_zigate(service_event=None):
         myzigate.autoStart(channel)
         myzigate.start_auto_save()
+        myzigate.set_led(enable_led)
         version = myzigate.get_version_text()
-        if version < '3.0d':
+        if version < '3.0f':
             hass.components.persistent_notification.create(
                 ('Your zigate firmware is outdated, '
-                 'Please upgrade to 3.0d or later !'),
+                 'Please upgrade to 3.0f or later !'),
                 title='ZiGate')
         # first load
         for device in myzigate.devices:
@@ -498,11 +502,17 @@ class ZiGateComponentEntity(Entity):
 class ZiGateDeviceEntity(Entity):
     '''Representation of ZiGate device'''
 
-    def __init__(self, device):
+    def __init__(self, hass, device):
         """Initialize the sensor."""
         self._device = device
         ieee = device.ieee or device.addr
         self.entity_id = '{}.{}'.format(DOMAIN, ieee)
+        hass.bus.listen('zigate.attribute_updated', self._handle_event)
+        hass.bus.listen('zigate.device_updated', self._handle_event)
+
+    def _handle_event(self, call):
+        if self._device.ieee == call.data['ieee']:
+            self.schedule_update_ha_state()
 
     @property
     def should_poll(self):
