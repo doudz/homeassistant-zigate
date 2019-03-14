@@ -94,10 +94,10 @@ class ZiGateBinarySensor(BinarySensorDevice):
 
     def _handle_event(self, call):
         if (
-            self._device.ieee == call.data['ieee'] and
-            self._attribute['endpoint'] == call.data['endpoint'] and
-            self._attribute['cluster'] == call.data['cluster'] and
-            self._attribute['attribute'] == call.data['attribute']
+            self._device.ieee == call.data['ieee']
+            and self._attribute['endpoint'] == call.data['endpoint']
+            and self._attribute['cluster'] == call.data['cluster']
+            and self._attribute['attribute'] == call.data['attribute']
         ):
             _LOGGER.debug("Event received: %s", call.data)
             if self._is_zone_status():
