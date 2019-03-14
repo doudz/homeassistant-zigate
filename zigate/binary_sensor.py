@@ -7,7 +7,6 @@ https://home-assistant.io/components/binary_sensor.zigate/
 import logging
 from homeassistant.components.binary_sensor import (BinarySensorDevice,
                                                     ENTITY_ID_FORMAT)
-from homeassistant.const import STATE_UNAVAILABLE, STATE_ON, STATE_OFF
 try:
     from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
     from homeassistant.components.zigate import DATA_ZIGATE_ATTRS
@@ -95,10 +94,10 @@ class ZiGateBinarySensor(BinarySensorDevice):
 
     def _handle_event(self, call):
         if (
-            self._device.ieee == call.data['ieee']
-            and self._attribute['endpoint'] == call.data['endpoint']
-            and self._attribute['cluster'] == call.data['cluster']
-            and self._attribute['attribute'] == call.data['attribute']
+            self._device.ieee == call.data['ieee'] and
+            self._attribute['endpoint'] == call.data['endpoint'] and
+            self._attribute['cluster'] == call.data['cluster'] and
+            self._attribute['attribute'] == call.data['attribute']
         ):
             _LOGGER.debug("Event received: %s", call.data)
             if self._is_zone_status():

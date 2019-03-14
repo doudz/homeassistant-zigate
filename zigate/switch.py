@@ -74,8 +74,8 @@ class ZiGateSwitch(SwitchDevice):
 
     def _handle_event(self, call):
         if (
-            self._device.ieee == call.data['ieee']
-            and self._endpoint == call.data['endpoint']
+            self._device.ieee == call.data['ieee'] and
+            self._endpoint == call.data['endpoint']
         ):
             _LOGGER.debug("Event received: %s", call.data)
             if call.data['cluster'] == 6 and call.data['attribute'] == 0:
