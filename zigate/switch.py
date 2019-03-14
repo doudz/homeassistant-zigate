@@ -75,12 +75,11 @@ class ZiGateSwitch(SwitchDevice):
     def _handle_event(self, call):
         if (
             self._device.ieee == call.data['ieee']
-            and self._attribute['endpoint'] == call.data['endpoint']
-            and self._attribute['cluster'] == 6
-            and self._attribute['attribute'] == 0
+            and self._endpoint == call.data['endpoint']
         ):
             _LOGGER.debug("Event received: %s", call.data)
-            self._is_on = call.data['value']
+            if call.data['cluster'] == 6 and call.data['attribute'] == 0:
+                self._is_on = call.data['value']
             self.schedule_update_ha_state()
 
     @property
