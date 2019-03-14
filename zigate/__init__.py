@@ -22,7 +22,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.29.0']
+REQUIREMENTS = ['zigate==0.29.1']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
@@ -207,23 +207,6 @@ def setup(hass, config):
         attribute = kwargs['attribute']
         _LOGGER.debug('Update attribute for device {} {}'.format(device,
                                                                  attribute))
-        key = '{}-{}-{}-{}'.format(ieee,
-                                   attribute['endpoint'],
-                                   attribute['cluster'],
-                                   attribute['attribute'],
-                                   )
-        entity = hass.data[DATA_ZIGATE_ATTRS].get(key)
-        if entity:
-            if entity.hass:
-                entity.schedule_update_ha_state()
-        key = '{}-{}-{}'.format(ieee,
-                                'switch',
-                                attribute['endpoint'],
-                                )
-        entity = hass.data[DATA_ZIGATE_ATTRS].get(key)
-        if entity:
-            if entity.hass:
-                entity.schedule_update_ha_state()
         key = '{}-{}-{}'.format(ieee,
                                 'light',
                                 attribute['endpoint'],

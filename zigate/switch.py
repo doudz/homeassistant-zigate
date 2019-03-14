@@ -45,7 +45,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                                    'for device '
                                    '{} {}').format(device,
                                                    endpoint))
-                    entity = ZiGateSwitch(device, endpoint)
+                    entity = ZiGateSwitch(hass, device, endpoint)
                     devs.append(entity)
                     hass.data[DATA_ZIGATE_ATTRS][key] = entity
 
@@ -58,14 +58,30 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class ZiGateSwitch(SwitchDevice):
     """Representation of a ZiGate switch."""
 
-    def __init__(self, device, endpoint):
+    def __init__(self, hass, device, endpoint):
         """Initialize the ZiGate switch."""
         self._device = device
         self._endpoint = endpoint
+        self._is_on = False
+        a = self._device.get_attribute(endpoint, 6, 0)
+        if a:
+            self._is_on = a.get('value', False)
         ieee = device.ieee or device.addr  # compatibility
         entity_id = 'zigate_{}_{}'.format(ieee,
                                           endpoint)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
+        hass.bus.listen('zigate.attribute_updated', self._handle_event)
+
+    def _handle_event(self, call):
+        if (
+            self._device.ieee == call.data['ieee']
+            and self._attribute['endpoint'] == call.data['endpoint']
+            and self._attribute['cluster'] == 6
+            and self._attribute['attribute'] == 0
+        ):
+            _LOGGER.debug("Event received: %s", call.data)
+            self._is_on = call.data['value']
+            self.schedule_update_ha_state()
 
     @property
     def unique_id(self) -> str:
@@ -91,10 +107,7 @@ class ZiGateSwitch(SwitchDevice):
     @property
     def is_on(self):
         """Return true if switch is on."""
-        a = self._device.get_attribute(self._endpoint, 6, 0)
-        if a:
-            return a.get('value', False)
-        return False
+        return self._is_on
 
     def turn_on(self, **kwargs):
         """Turn the switch on."""

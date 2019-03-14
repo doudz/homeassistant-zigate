@@ -56,7 +56,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                                        'for device '
                                        '{} {}').format(device,
                                                        attribute))
-                        entity = ZiGateSensor(device, attribute)
+                        entity = ZiGateSensor(hass, device, attribute)
                         devs.append(entity)
                         hass.data[DATA_ZIGATE_ATTRS][key] = entity
 
@@ -71,11 +71,12 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class ZiGateSensor(Entity):
     """Representation of a ZiGate sensor."""
 
-    def __init__(self, device, attribute):
+    def __init__(self, hass, device, attribute):
         """Initialize the sensor."""
         self._device = device
         self._attribute = attribute
         self._device_class = None
+        self._state = attribute.get('value', STATE_UNAVAILABLE)
         name = attribute.get('name')
         ieee = device.ieee or device.addr  # compatibility
         entity_id = 'zigate_{}_{}'.format(ieee,
@@ -88,6 +89,18 @@ class ZiGateSensor(Entity):
             self._device_class = DEVICE_CLASS_HUMIDITY
         elif 'luminosity' in name:
             self._device_class = DEVICE_CLASS_ILLUMINANCE
+        hass.bus.listen('zigate.attribute_updated', self._handle_event)
+
+    def _handle_event(self, call):
+        if (
+            self._device.ieee == call.data['ieee']
+            and self._attribute['endpoint'] == call.data['endpoint']
+            and self._attribute['cluster'] == call.data['cluster']
+            and self._attribute['attribute'] == call.data['attribute']
+        ):
+            _LOGGER.debug("Event received: %s", call.data)
+            self._state = call.data['value']
+            self.schedule_update_ha_state()
 
     @property
     def unique_id(self) -> str:
@@ -117,12 +130,7 @@ class ZiGateSensor(Entity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        a = self._device.get_attribute(self._attribute['endpoint'],
-                                       self._attribute['cluster'],
-                                       self._attribute['attribute'])
-        if a:
-            return a.get('value', STATE_UNAVAILABLE)
-        return STATE_UNAVAILABLE
+        return self._state
 
     @property
     def unit_of_measurement(self):
