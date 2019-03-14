@@ -207,14 +207,6 @@ def setup(hass, config):
         attribute = kwargs['attribute']
         _LOGGER.debug('Update attribute for device {} {}'.format(device,
                                                                  attribute))
-        key = '{}-{}-{}'.format(ieee,
-                                'light',
-                                attribute['endpoint'],
-                                )
-        entity = hass.data[DATA_ZIGATE_ATTRS].get(key)
-        if entity:
-            if entity.hass:
-                entity.schedule_update_ha_state()
         entity = hass.data[DATA_ZIGATE_DEVICES].get(ieee)
         if entity:
             if entity.hass:
