@@ -134,6 +134,18 @@ ACTION_ONOFF_SCHEMA = vol.Schema({
     vol.Optional('gradient'): cv.string,
 })
 
+OTA_LOAD_IMAGE_SCHEMA = vol.Schema({
+    vol.Required('imagepath'): cv.string,
+})
+
+OTA_IMAGE_NOTIFY_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Optional('destination_enpoint'): cv.string,
+    vol.Optional('payload_type'): cv.string,
+})
+
 
 def setup(hass, config):
     """Setup zigate platform."""
@@ -402,6 +414,19 @@ def setup(hass, config):
         if entity:
             entity.network_table = table
 
+    def ota_load_image(service):
+        ota_image_path = service.data.get('imagepath')
+        myzigate.ota_load_image(ota_image_path)
+
+    def ota_image_notify(service):
+        addr = _get_addr_from_service_request(service)
+        destination_endpoint = _to_int(service.data.get('destination_endpoint', '1'))
+        payload_type = _to_int(service.data.get('payload_type', '0'))
+        myzigate.ota_image_notify(addr, destination_endpoint, payload_type)
+
+    def get_ota_status(service):
+        myzigate.get_ota_status()
+
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
 
@@ -443,6 +468,12 @@ def setup(hass, config):
     hass.services.register(DOMAIN, 'action_onoff', action_onoff,
                            schema=ACTION_ONOFF_SCHEMA)
     hass.services.register(DOMAIN, 'build_network_table', build_network_table)
+
+    hass.services.register(DOMAIN, 'ota_load_image', ota_load_image,
+                           schema=OTA_LOAD_IMAGE_SCHEMA)
+    hass.services.register(DOMAIN, 'ota_image_notify', ota_image_notify,
+                           schema=OTA_IMAGE_NOTIFY_SCHEMA)
+    hass.services.register(DOMAIN, 'ota_get_status', get_ota_status)
 
     track_time_change(hass, refresh_devices_list,
                       hour=0, minute=0, second=0)
