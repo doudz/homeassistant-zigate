@@ -57,7 +57,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                                    'for device '
                                    '{} {}').format(device,
                                                    endpoint))
-                    entity = ZiGateLight(device, endpoint)
+                    entity = ZiGateLight(hass, device, endpoint)
                     devs.append(entity)
                     hass.data[DATA_ZIGATE_ATTRS][key] = entity
 
@@ -70,10 +70,14 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class ZiGateLight(Light):
     """Representation of a ZiGate light."""
 
-    def __init__(self, device, endpoint):
+    def __init__(self, hass, device, endpoint):
         """Initialize the light."""
         self._device = device
         self._endpoint = endpoint
+        self._is_on = False
+        a = self._device.get_attribute(endpoint, 6, 0)
+        if a:
+            self._is_on = a.get('value', False)
         ieee = device.ieee or device.addr  # compatibility
         entity_id = 'zigate_{}_{}'.format(ieee,
                                           endpoint)
@@ -92,6 +96,17 @@ class ZiGateLight(Light):
             elif action_type == zigate.ACTIONS_HUE:
                 supported_features.add(SUPPORT_COLOR)
         self._supported_features = reduce(ior, supported_features)
+        hass.bus.listen('zigate.attribute_updated', self._handle_event)
+
+    def _handle_event(self, call):
+        if (
+            self._device.ieee == call.data['ieee']
+            and self._endpoint == call.data['endpoint']
+        ):
+            _LOGGER.debug("Event received: %s", call.data)
+            if call.data['cluster'] == 6 and call.data['attribute'] == 0:
+                self._is_on = call.data['value']
+            self.schedule_update_ha_state()
 
     @property
     def should_poll(self) -> bool:
@@ -145,10 +160,7 @@ class ZiGateLight(Light):
     @property
     def is_on(self) -> bool:
         """Return true if light is on."""
-        a = self._device.get_attribute(self._endpoint, 6, 0)
-        if a:
-            return a.get('value', False)
-        return False
+        return self._is_on
 
     @property
     def supported_features(self) -> int:

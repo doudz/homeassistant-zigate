@@ -7,7 +7,6 @@ https://home-assistant.io/components/binary_sensor.zigate/
 import logging
 from homeassistant.components.binary_sensor import (BinarySensorDevice,
                                                     ENTITY_ID_FORMAT)
-from homeassistant.const import STATE_UNAVAILABLE, STATE_ON, STATE_OFF
 try:
     from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
     from homeassistant.components.zigate import DATA_ZIGATE_ATTRS
@@ -53,7 +52,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                                        'for device '
                                        '{} {}').format(device,
                                                        attribute))
-                        entity = ZiGateBinarySensor(device, attribute)
+                        entity = ZiGateBinarySensor(hass, device, attribute)
                         devs.append(entity)
                         hass.data[DATA_ZIGATE_ATTRS][key] = entity
 
@@ -67,11 +66,15 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class ZiGateBinarySensor(BinarySensorDevice):
     """representation of a ZiGate binary sensor."""
 
-    def __init__(self, device, attribute):
+    def __init__(self, hass, device, attribute):
         """Initialize the sensor."""
         self._device = device
         self._attribute = attribute
         self._device_class = None
+        if self._is_zone_status():
+            self._is_on = attribute.get('value', {}).get('alarm1', False)
+        else:
+            self._is_on = attribute.get('value', False)
         name = attribute.get('name')
         ieee = device.ieee or device.addr  # compatibility
         entity_id = 'zigate_{}_{}'.format(ieee,
@@ -87,6 +90,21 @@ class ZiGateBinarySensor(BinarySensorDevice):
             self._device_class = 'smoke'
         elif 'zone_status' in name:
             self._device_class = 'safety'
+        hass.bus.listen('zigate.attribute_updated', self._handle_event)
+
+    def _handle_event(self, call):
+        if (
+            self._device.ieee == call.data['ieee']
+            and self._attribute['endpoint'] == call.data['endpoint']
+            and self._attribute['cluster'] == call.data['cluster']
+            and self._attribute['attribute'] == call.data['attribute']
+        ):
+            _LOGGER.debug("Event received: %s", call.data)
+            if self._is_zone_status():
+                self._is_on = call.data['value'].get('alarm1', False)
+            else:
+                self._is_on = call.data['value']
+            self.schedule_update_ha_state()
 
     @property
     def device_class(self):
@@ -115,20 +133,7 @@ class ZiGateBinarySensor(BinarySensorDevice):
     @property
     def is_on(self):
         """Return true if the binary sensor is on."""
-        a = self._device.get_attribute(self._attribute['endpoint'],
-                                       self._attribute['cluster'],
-                                       self._attribute['attribute'])
-        if a:
-            value = a.get('value')
-            if self._is_zone_status():
-                return value.get('alarm1')
-            return value
-
-    @property
-    def state(self):
-        if self.is_on is None:
-            return STATE_UNAVAILABLE
-        return STATE_ON if self.is_on else STATE_OFF
+        return self._is_on
 
     @property
     def device_state_attributes(self):
