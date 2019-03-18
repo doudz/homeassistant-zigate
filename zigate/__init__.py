@@ -402,9 +402,6 @@ def setup(hass, config):
         if entity:
             entity.network_table = table
 
-    def build_network_map(service):
-        myzigate.build_network_map(hass.config.config_dir)
-
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
 
@@ -446,7 +443,6 @@ def setup(hass, config):
     hass.services.register(DOMAIN, 'action_onoff', action_onoff,
                            schema=ACTION_ONOFF_SCHEMA)
     hass.services.register(DOMAIN, 'build_network_table', build_network_table)
-    hass.services.register(DOMAIN, 'build_network_map', build_network_map)
 
     track_time_change(hass, refresh_devices_list,
                       hour=0, minute=0, second=0)

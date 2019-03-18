@@ -39,7 +39,7 @@ or
 ```
 # Enable ZiGate
 zigate:
-  port: /dev/ttyS0
+  port: /dev/ttyUSB0
   channel: 24
   enable_led : false
 
@@ -56,7 +56,17 @@ zigate:
 
 ```
 
-Currently it supports sensor, binary_sensor and switch and light
+If yo want to use PiZiGate, just add `gpio: true`. Other options are still available (channel, etc)
+
+```
+# Enable PiZiGate
+zigate:
+  gpio: true
+
+```
+
+
+Currently it supports sensor, binary_sensor and switch, light and cover
 
 ## How enable debug log
 
