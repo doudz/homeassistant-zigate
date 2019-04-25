@@ -261,3 +261,138 @@ ota_image_notify:
     payload_type:
       description: Optionnal payload type
       example: '0'
+
+view_scene:
+  description: >
+    View scene
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    enpoint:
+      description: Enpoint
+      example: '1'
+    group_addr:
+      description: Group addr
+      example: '0ab9'
+    scene:
+      description: Scene id (int)
+      example: '1'
+
+add_scene:
+  description: >
+    Add scene
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    enpoint:
+      description: Enpoint
+      example: '1'
+    group_addr:
+      description: Group addr
+      example: '0ab9'
+    scene:
+      description: Scene id (int)
+      example: '1'
+    name:
+      description: Scene name
+      example: 'Blue'
+    transition:
+      description: Transition (optionnal, default = 0)
+      example: '0'
+
+remove_scene:
+  description: >
+    Remove scene
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    enpoint:
+      description: Enpoint
+      example: '1'
+    group_addr:
+      description: Group addr
+      example: '0ab9'
+    scene:
+      description: Scene id (Optionnal) If not specified remove all scenes 
+      example: '1'
+
+store_scene:
+  description: >
+    Store scene
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    enpoint:
+      description: Enpoint
+      example: '1'
+    group_addr:
+      description: Group addr
+      example: '0ab9'
+    scene:
+      description: Scene id (int)
+      example: '1'
+
+recall_scene:
+  description: >
+    Recall scene
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    enpoint:
+      description: Enpoint
+      example: '1'
+    group_addr:
+      description: Group addr
+      example: '0ab9'
+    scene:
+      description: Scene id (int)
+      example: '1'
+
+scene_membership_request:
+  description: >
+    Scene Membership request
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    enpoint:
+      description: Enpoint
+      example: '1'
+    group_addr:
+      description: Group addr
+      example: '0ab9'
+
+copy_scene:
+  description: >
+    Copy scene
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    enpoint:
+      description: Enpoint
+      example: '1'
+    from_group_addr:
+      description: Source Group addr
+      example: '0ab9'
+    from_scene:
+      description: Source Scene id
+      example: '1'
+    to_group_addr:
+      description: Destination Group addr
+      example: '0ab9'
+    to_scene:
+      description: Destination Scene id
+      example: '1'

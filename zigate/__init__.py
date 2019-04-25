@@ -146,6 +146,72 @@ OTA_IMAGE_NOTIFY_SCHEMA = vol.Schema({
     vol.Optional('payload_type'): cv.string,
 })
 
+VIEW_SCENE_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Required('endpoint'): cv.string,
+    vol.Required('group_addr'): cv.string,
+    vol.Required('scene'): cv.string,
+})
+
+ADD_SCENE_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Required('endpoint'): cv.string,
+    vol.Required('group_addr'): cv.string,
+    vol.Required('scene'): cv.string,
+    vol.Required('name'): cv.string,
+    vol.Optional('transition'): cv.string,
+})
+
+REMOVE_SCENE_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Required('endpoint'): cv.string,
+    vol.Required('group_addr'): cv.string,
+    vol.Optional('scene'): cv.string,
+})
+
+STORE_SCENE_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Required('endpoint'): cv.string,
+    vol.Required('group_addr'): cv.string,
+    vol.Required('scene'): cv.string,
+})
+
+RECALL_SCENE_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Required('endpoint'): cv.string,
+    vol.Required('group_addr'): cv.string,
+    vol.Required('scene'): cv.string,
+})
+
+SCENE_MEMBERSHIP_REQUEST_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Required('endpoint'): cv.string,
+    vol.Required('group_addr'): cv.string,
+})
+
+COPY_SCENE_SCHEMA = vol.Schema({
+    vol.Optional(ADDR): cv.string,
+    vol.Optional(IEEE): cv.string,
+    vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Required('endpoint'): cv.string,
+    vol.Required('from_group_addr'): cv.string,
+    vol.Required('from_scene'): cv.string,
+    vol.Required('to_group_addr'): cv.string,
+    vol.Required('to_scene'): cv.string,
+})
+
 
 def setup(hass, config):
     """Setup zigate platform."""
@@ -427,6 +493,58 @@ def setup(hass, config):
     def get_ota_status(service):
         myzigate.get_ota_status()
 
+    def view_scene(service):
+        addr = _get_addr_from_service_request(service)
+        endpoint = _to_int(service.data.get('endpoint', '1'))
+        groupaddr = service.data.get('group_addr')
+        scene = service.data.get('scene')
+        myzigate.view_scene(addr, endpoint, groupaddr, scene)
+
+    def add_scene(service):
+        addr = _get_addr_from_service_request(service)
+        endpoint = _to_int(service.data.get('endpoint', '1'))
+        groupaddr = service.data.get('group_addr')
+        scene = service.data.get('scene')
+        name = service.data.get('scene_name')
+        transition = service.data.get('transition', '0')
+        myzigate.add_scene(addr, endpoint, groupaddr, scene, name, transition)
+
+    def remove_scene(service):
+        addr = _get_addr_from_service_request(service)
+        endpoint = _to_int(service.data.get('endpoint', '1'))
+        groupaddr = service.data.get('group_addr')
+        scene = service.data.get('scene', None)
+        myzigate.remove_scene(addr, endpoint, groupaddr, scene)
+
+    def store_scene(service):
+        addr = _get_addr_from_service_request(service)
+        endpoint = _to_int(service.data.get('endpoint', '1'))
+        groupaddr = service.data.get('group_addr')
+        scene = service.data.get('scene')
+        myzigate.store_scene(addr, endpoint, groupaddr, scene)
+
+    def recall_scene(service):
+        addr = _get_addr_from_service_request(service)
+        endpoint = _to_int(service.data.get('endpoint', '1'))
+        groupaddr = service.data.get('group_addr')
+        scene = service.data.get('scene')
+        myzigate.recall_scene(addr, endpoint, groupaddr, scene)
+
+    def scene_membership_request(service):
+        addr = _get_addr_from_service_request(service)
+        endpoint = _to_int(service.data.get('endpoint', '1'))
+        groupaddr = service.data.get('group_addr')
+        myzigate.scene_membership_request(addr, endpoint, groupaddr)
+
+    def copy_scene(service):
+        addr = _get_addr_from_service_request(service)
+        endpoint = _to_int(service.data.get('endpoint', '1'))
+        fromgroupaddr = service.data.get('from_group_addr')
+        fromscene = service.data.get('from_scene')
+        togroupaddr = service.data.get('to_group_addr')
+        toscene = service.data.get('to_scene')
+        myzigate.copy_scene(addr, endpoint, fromgroupaddr, fromscene, togroupaddr, toscene)
+
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
 
@@ -474,7 +592,20 @@ def setup(hass, config):
     hass.services.register(DOMAIN, 'ota_image_notify', ota_image_notify,
                            schema=OTA_IMAGE_NOTIFY_SCHEMA)
     hass.services.register(DOMAIN, 'ota_get_status', get_ota_status)
-
+    hass.services.register(DOMAIN, 'view_scene', view_scene,
+                           schema=VIEW_SCENE_SCHEMA)
+    hass.services.register(DOMAIN, 'add_scene', add_scene,
+                           schema=ADD_SCENE_SCHEMA)
+    hass.services.register(DOMAIN, 'remove_scene', remove_scene,
+                           schema=REMOVE_SCENE_SCHEMA)
+    hass.services.register(DOMAIN, 'store_scene', store_scene,
+                           schema=STORE_SCENE_SCHEMA)
+    hass.services.register(DOMAIN, 'recall_scene', recall_scene,
+                           schema=RECALL_SCENE_SCHEMA)
+    hass.services.register(DOMAIN, 'scene_membership_request', scene_membership_request,
+                           schema=SCENE_MEMBERSHIP_REQUEST_SCHEMA)
+    hass.services.register(DOMAIN, 'copy_scene', copy_scene,
+                           schema=COPY_SCENE_SCHEMA)
     track_time_change(hass, refresh_devices_list,
                       hour=0, minute=0, second=0)
 
