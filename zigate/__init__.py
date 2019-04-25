@@ -497,37 +497,39 @@ def setup(hass, config):
         addr = _get_addr_from_service_request(service)
         endpoint = _to_int(service.data.get('endpoint', '1'))
         groupaddr = service.data.get('group_addr')
-        scene = service.data.get('scene')
+        scene = _to_int(service.data.get('scene'))
         myzigate.view_scene(addr, endpoint, groupaddr, scene)
 
     def add_scene(service):
         addr = _get_addr_from_service_request(service)
         endpoint = _to_int(service.data.get('endpoint', '1'))
         groupaddr = service.data.get('group_addr')
-        scene = service.data.get('scene')
+        scene = _to_int(service.data.get('scene'))
         name = service.data.get('scene_name')
-        transition = service.data.get('transition', '0')
+        transition = _to_int(service.data.get('transition', '0'))
         myzigate.add_scene(addr, endpoint, groupaddr, scene, name, transition)
 
     def remove_scene(service):
         addr = _get_addr_from_service_request(service)
         endpoint = _to_int(service.data.get('endpoint', '1'))
         groupaddr = service.data.get('group_addr')
-        scene = service.data.get('scene', None)
+        scene = _to_int(service.data.get('scene', -1))
+        if scene == -1:
+            scene = None
         myzigate.remove_scene(addr, endpoint, groupaddr, scene)
 
     def store_scene(service):
         addr = _get_addr_from_service_request(service)
         endpoint = _to_int(service.data.get('endpoint', '1'))
         groupaddr = service.data.get('group_addr')
-        scene = service.data.get('scene')
+        scene = _to_int(service.data.get('scene'))
         myzigate.store_scene(addr, endpoint, groupaddr, scene)
 
     def recall_scene(service):
         addr = _get_addr_from_service_request(service)
         endpoint = _to_int(service.data.get('endpoint', '1'))
         groupaddr = service.data.get('group_addr')
-        scene = service.data.get('scene')
+        scene = _to_int(service.data.get('scene'))
         myzigate.recall_scene(addr, endpoint, groupaddr, scene)
 
     def scene_membership_request(service):
@@ -540,9 +542,9 @@ def setup(hass, config):
         addr = _get_addr_from_service_request(service)
         endpoint = _to_int(service.data.get('endpoint', '1'))
         fromgroupaddr = service.data.get('from_group_addr')
-        fromscene = service.data.get('from_scene')
+        fromscene = _to_int(service.data.get('from_scene'))
         togroupaddr = service.data.get('to_group_addr')
-        toscene = service.data.get('to_scene')
+        toscene = _to_int(service.data.get('to_scene'))
         myzigate.copy_scene(addr, endpoint, fromgroupaddr, fromscene, togroupaddr, toscene)
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
