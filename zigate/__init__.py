@@ -35,7 +35,8 @@ IEEE = 'ieee'
 SUPPORTED_PLATFORMS = ('sensor',
                        'binary_sensor',
                        'switch',
-                       'light')
+                       'light',
+                       'cover')
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
