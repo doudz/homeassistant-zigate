@@ -24,9 +24,6 @@ custom_components/
 To pair a new device, go in developer/services and call the 'zigate.permit\_join' service.
 You have 30 seconds to pair your device.
 
-# WARNING : Since commit [ddf141e](https://github.com/doudz/homeassistant-zigate/commit/ddf141ebb103eaa4f6d585b645262446fd77d202), you have to rename the file .zigate.json to zigate.json to avoid loosing your configuration !
-
-
 Configuration example :
 
 ```
@@ -65,8 +62,22 @@ zigate:
 
 ```
 
+# HASSIO
+
+If you're using HASS.io on Rpi3, you can have some trouble trying to use PiZiGate
+If needed, add the following line into config.txt (you have to access that on the SD card directly. Simply plug it into your PC and edit it there. The config.txt is not accessible from your Hass.io system, you may need to open the SD card on a Windows or Linux system.):
+
+`dtoverlay=pi3-miniuart-bt`
+
+Additionnally you might have to set the port, like /dev/ttyAMA0
+
+
+
 
 Currently it supports sensor, binary_sensor and switch, light and cover
+
+
+
 
 ## How enable debug log
 
