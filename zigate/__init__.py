@@ -226,11 +226,18 @@ def setup(hass, config):
     persistent_file = os.path.join(hass.config.config_dir,
                                    'zigate.json')
 
+    _LOGGER.debug('Port : %s', port)
+    _LOGGER.debug('Host : %s', host)
+    _LOGGER.debug('GPIO : %s', gpio)
+    _LOGGER.debug('Led : %s', enable_led)
+    _LOGGER.debug('Channel : %s', channel)
+
     myzigate = zigate.connect(port=port, host=host,
                               path=persistent_file,
                               auto_start=False,
                               gpio=gpio
                               )
+    _LOGGER.debug('ZiGate object created %s', myzigate)
 
     hass.data[DOMAIN] = myzigate
     hass.data[DATA_ZIGATE_DEVICES] = {}
