@@ -704,9 +704,7 @@ class ZiGateDeviceEntity(Entity):
     @property
     def device_state_attributes(self):
         """Return the device specific state attributes."""
-        attrs = {'battery_voltage': self._device.get_value('battery_voltage'),
-                 ATTR_BATTERY_LEVEL: int(self._device.battery_percent),
-                 'lqi_percent': int(self._device.lqi_percent),
+        attrs = {'lqi_percent': int(self._device.lqi_percent),
                  'type': self._device.get_value('type'),
                  'manufacturer': self._device.get_value('manufacturer'),
                  'receiver_on_when_idle': self._device.receiver_on_when_idle(),
@@ -715,6 +713,10 @@ class ZiGateDeviceEntity(Entity):
                  'discovery': self._device.discovery,
                  'groups': self._device.groups
                  }
+        if not self._device.receiver_on_when_idle():
+            attrs.update({'battery_voltage': self._device.get_value('battery_voltage'),
+                          ATTR_BATTERY_LEVEL: int(self._device.battery_percent),
+                          })
         attrs.update(self._device.info)
         return attrs
 

@@ -98,6 +98,12 @@ Some devices have the ability to change some parameters, for example on the Xiao
 
 In this example, the value is the sensiblity, it could be 0x01 for "high sens", 0x0B for "medium" and 0x15 for "low"
 
+## Battery level
+
+I recommand the following package to create a nice battery tab with alerts !
+[battery_alert.yaml](https://github.com/notoriousbdg/Home-AssistantConfig/blob/master/packages/battery_alert.yaml)
+
+
 ## custom panel
 
 You can add a custom panel to display the network map.
