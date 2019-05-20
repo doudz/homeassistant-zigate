@@ -36,7 +36,8 @@ SUPPORTED_PLATFORMS = ('sensor',
                        'binary_sensor',
                        'switch',
                        'light',
-                       'cover')
+                       'cover',
+                       'climate')
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({

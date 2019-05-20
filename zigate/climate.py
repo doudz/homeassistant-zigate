@@ -5,16 +5,10 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/climate.zigate/
 """
 import logging
-from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS, TEMP_FAHRENHEIT
+from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from homeassistant.components.climate import ClimateDevice, ENTITY_ID_FORMAT
-from homeassistant.components.climate.const import (
-    ATTR_TARGET_TEMP_HIGH, ATTR_TARGET_TEMP_LOW, SUPPORT_AUX_HEAT,
-    SUPPORT_AWAY_MODE, SUPPORT_FAN_MODE, SUPPORT_HOLD_MODE, SUPPORT_ON_OFF,
-    SUPPORT_OPERATION_MODE, SUPPORT_SWING_MODE, SUPPORT_TARGET_HUMIDITY,
-    SUPPORT_TARGET_HUMIDITY_HIGH, SUPPORT_TARGET_HUMIDITY_LOW,
-    SUPPORT_TARGET_TEMPERATURE, SUPPORT_TARGET_TEMPERATURE_HIGH,
-    SUPPORT_TARGET_TEMPERATURE_LOW)
+from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE
 
 SUPPORT_FLAGS = SUPPORT_TARGET_TEMPERATURE
 
@@ -154,7 +148,7 @@ class ZigateClimate(ClimateDevice):
 #         """Turn on."""
 #         self._on = True
 #         self.schedule_update_ha_state()
-# 
+#
 #     def turn_off(self):
 #         """Turn off."""
 #         self._on = False
