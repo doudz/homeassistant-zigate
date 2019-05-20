@@ -4,6 +4,8 @@ A new component to use the ZiGate (http://zigate.fr)
 [![Build Status](https://travis-ci.org/doudz/homeassistant-zigate.svg?branch=master)](https://travis-ci.org/doudz/homeassistant-zigate)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sebramage)
 
+Currently it supports sensor, binary_sensor and switch, light, cover and climate
+
 To install:
 - if not exists, create folder 'custom\_components' under your home assitant directory (beside configuration.yaml)
 - copy all the files in your hass folder, under 'custom\_components' like that :
@@ -16,7 +18,9 @@ custom_components/
     ├── switch.py
     ├── sensor.py
     ├── light.py
-    └── binary_sensor.py
+    ├── binary_sensor.py
+    ├── cover.py
+    └── climate.py
 ```
     
 - adapt your configuration.yaml
@@ -70,11 +74,6 @@ If needed, add the following line into config.txt (you have to access that on th
 `dtoverlay=pi3-miniuart-bt`
 
 Additionnally you might have to set the port, like /dev/ttyAMA0
-
-
-
-
-Currently it supports sensor, binary_sensor and switch, light and cover
 
 
 
