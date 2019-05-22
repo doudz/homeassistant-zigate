@@ -20,6 +20,12 @@ homeassistant:
       <<: *customize
       friendly_name: "ZiGate Commands"
       control: hidden
+      
+    group.all_zigate:
+      <<: *customize
+      friendly_name: "ZiGate"
+      control: hidden
+      hidden: false
 
 group:
   zigate_view:
