@@ -1,0 +1,56 @@
+
+homeassistant:
+  customize:
+    ################################################
+    ## Node Anchors
+    ################################################
+    package.node_anchors:
+      customize: &customize
+        package: 'zigate'
+
+    ################################################
+    ## Group
+    ################################################
+    group.zigate_view:
+      <<: *customize
+      friendly_name: "ZiGate"
+      icon: mdi:zigbee
+     
+    group.zigate_command:
+      <<: *customize
+      friendly_name: "ZiGate Commands"
+      control: hidden
+
+group:
+  zigate_view:
+    view: yes
+    entities:
+      - group.all_zigate
+      - group.zigate_command
+    
+  zigate_command:
+    control: hidden
+    entities:
+      - input_boolean.zigate_permit_join
+      
+  zigate_entities:
+    control: hidden
+
+input_boolean:
+  zigate_permit_join:
+    name: Permit Join
+
+automation:
+- alias: zigate_permit_join
+  trigger:
+  - entity_id: input_boolean.zigate_permit_join
+    from: 'off'
+    platform: state
+    to: 'on'
+  action:
+  - service: zigate.permit_join
+  - delay: '30'
+  - data:
+      entity_id: input_boolean.zigate_permit_join
+    service: input_boolean.turn_off
+
