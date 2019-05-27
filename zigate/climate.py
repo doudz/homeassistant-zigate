@@ -8,9 +8,9 @@ import logging
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from homeassistant.components.climate import ClimateDevice, ENTITY_ID_FORMAT
-from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE
+from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE, SUPPORT_AWAY_MODE
 
-SUPPORT_FLAGS = SUPPORT_TARGET_TEMPERATURE
+SUPPORT_FLAGS = SUPPORT_TARGET_TEMPERATURE | SUPPORT_AWAY_MODE
 
 try:
     from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
@@ -124,11 +124,36 @@ class ZigateClimate(ClimateDevice):
     @property
     def target_temperature(self):
         """Return the temperature we try to reach."""
+        if self.is_away_mode_on:
+            attr = 0x0014
+        else:
+            attr = 0x0012
         t = 0
-        a = self._device.get_attribute(self._endpoint, 0x0201, 0x0012)
+        a = self._device.get_attribute(self._endpoint, 0x0201, attr)
         if a:
             t = a.get('value', 0)
         return t
+
+    @property
+    def is_away_mode_on(self):
+        t = 1
+        a = self._device.get_attribute(self._endpoint, 0x0201, 0x0002)
+        if a:
+            t = a.get('value', t)
+        return t == 0
+
+    def turn_away_mode_on(self):
+        self.hass.data[ZIGATE_DOMAIN].write_attribute_request(self._device.addr,
+                                                              self._endpoint,
+                                                              0x0201,
+                                                              [(0x0002, 0x18, 0)])
+
+    def turn_away_mode_off(self):
+        self.hass.data[ZIGATE_DOMAIN].write_attribute_request(self._device.addr,
+                                                              self._endpoint,
+                                                              0x0201,
+                                                              [(0x0002, 0x18, 1)])
+
 
 #     @property
 #     def is_on(self):
@@ -139,10 +164,14 @@ class ZigateClimate(ClimateDevice):
         """Set new target temperatures."""
         if kwargs.get(ATTR_TEMPERATURE) is not None:
             temp = int(kwargs.get(ATTR_TEMPERATURE) * 100)
+            if self.is_away_mode_on:
+                attr = 0x0014
+            else:
+                attr = 0x0012
             self.hass.data[ZIGATE_DOMAIN].write_attribute_request(self._device.addr,
                                                                   self._endpoint,
                                                                   0x0201,
-                                                                  [(0x0012, 0x29, temp)])
+                                                                  [(attr, 0x29, temp)])
         self.schedule_update_ha_state()
 
 #     def turn_on(self):
