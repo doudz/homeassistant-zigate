@@ -5,7 +5,7 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/climate.zigate/
 """
 import logging
-from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
+from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS, PRECISION_TENTHS
 
 from homeassistant.components.climate import ClimateDevice, ENTITY_ID_FORMAT
 from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE
@@ -138,10 +138,11 @@ class ZigateClimate(ClimateDevice):
     def set_temperature(self, **kwargs):
         """Set new target temperatures."""
         if kwargs.get(ATTR_TEMPERATURE) is not None:
+            temp = int(kwargs.get(ATTR_TEMPERATURE) * 100)
             self.hass.data[ZIGATE_DOMAIN].write_attribute_request(self._device.addr,
                                                                   self._endpoint,
                                                                   0x0201,
-                                                                  [(0x0012, 0x29, kwargs.get(ATTR_TEMPERATURE))])
+                                                                  [(0x0012, 0x29, temp)])
         self.schedule_update_ha_state()
 
 #     def turn_on(self):
