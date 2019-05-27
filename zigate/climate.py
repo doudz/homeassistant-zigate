@@ -5,7 +5,7 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/climate.zigate/
 """
 import logging
-from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS, PRECISION_TENTHS
+from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from homeassistant.components.climate import ClimateDevice, ENTITY_ID_FORMAT
 from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE
