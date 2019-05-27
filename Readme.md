@@ -66,9 +66,23 @@ zigate:
 
 ```
 
+# Package
+
+Additionnally you could add the zigate package to have a new tab with all zigate devices and a "permit join" switch.
+
+To install, just copy the "packages" folder in your hass config folder and if needed add the following in your configuration.yaml
+
+```
+homeassistant:
+  packages: !include_dir_named packages
+```
+
+
+
 # HASSIO
 
-If you're using HASS.io on Rpi3, you can have some trouble trying to use PiZiGate
+If you're using HASS.io on Rpi3, you can have some trouble trying to use PiZiGate.
+
 If needed, add the following line into config.txt (you have to access that on the SD card directly. Simply plug it into your PC and edit it there. The config.txt is not accessible from your Hass.io system, you may need to open the SD card on a Windows or Linux system.):
 
 `dtoverlay=pi3-miniuart-bt`
