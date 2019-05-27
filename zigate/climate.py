@@ -154,7 +154,6 @@ class ZigateClimate(ClimateDevice):
                                                               0x0201,
                                                               [(0x0002, 0x18, 1)])
 
-
 #     @property
 #     def is_on(self):
 #         """Return true if the device is on."""
