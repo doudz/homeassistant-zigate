@@ -7,7 +7,7 @@ https://home-assistant.io/components/cover.zigate/
 import logging
 
 from homeassistant.components.cover import (
-    CoverDevice, ENTITY_ID_FORMAT)
+    CoverDevice, ENTITY_ID_FORMAT, SUPPORT_OPEN, SUPPORT_CLOSE, SUPPORT_STOP)
 try:
     from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
     from homeassistant.components.zigate import DATA_ZIGATE_ATTRS
@@ -47,7 +47,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                                    'for device '
                                    '{} {}').format(device,
                                                    endpoint))
-                    entity = ZiGateCover(device, endpoint)
+                    entity = ZiGateCover(hass, device, endpoint)
                     devs.append(entity)
                     hass.data[DATA_ZIGATE_ATTRS][key] = entity
 
@@ -60,7 +60,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class ZiGateCover(CoverDevice):
     """Representation of a ZiGate cover."""
 
-    def __init__(self, device, endpoint):
+    def __init__(self, hass, device, endpoint):
         """Initialize the cover."""
         self._device = device
         self._endpoint = endpoint
@@ -68,6 +68,17 @@ class ZiGateCover(CoverDevice):
         entity_id = 'zigate_{}_{}'.format(ieee,
                                           endpoint)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
+        self._pos = 100
+        self._available = True
+        hass.bus.listen('zigate.attribute_updated', self._handle_event)
+
+    def _handle_event(self, call):
+        if self._device.ieee == call.data['ieee'] and self._endpoint == call.data['endpoint']:
+            _LOGGER.debug("Attribute update received: %s", call.data)
+            if call.data['cluster'] == 258 and call.data['attribute'] == 8:
+                self._pos = call.data['value']
+
+            self.schedule_update_ha_state()
 
     @property
     def should_poll(self) -> bool:
@@ -113,3 +124,31 @@ class ZiGateCover(CoverDevice):
         self.hass.data[ZIGATE_DOMAIN].action_cover(self._device.addr,
                                                    self._endpoint,
                                                    0x02)
+
+    @property
+    def current_cover_position(self):
+        """Return the current position of the cover."""
+        _LOGGER.debug("current_cover_position")
+        attribute = self._device.get_attribute(self._endpoint, 0x0102, 0x0008)
+        _LOGGER.debug("attribute: %s", attribute)
+        if attribute:
+            self._pos = attribute.get('value', 100)
+        return self._pos
+
+    @property
+    def supported_features(self):
+        """Flag supported features."""
+        _LOGGER.debug("supported_features")
+        return SUPPORT_OPEN | SUPPORT_CLOSE | SUPPORT_STOP
+
+    @property
+    def available(self):
+        """Return True if entity is available."""
+        _LOGGER.debug("available")
+        return self._available   
+
+    @property
+    def is_closed(self):
+        """Return if the cover is closed."""
+        _LOGGER.debug("is_closed: %s", self._pos)
+        return self._pos == 0
