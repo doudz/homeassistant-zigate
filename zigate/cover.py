@@ -145,7 +145,7 @@ class ZiGateCover(CoverDevice):
     def available(self):
         """Return True if entity is available."""
         _LOGGER.debug("available")
-        return self._available   
+        return self._available
 
     @property
     def is_closed(self):
