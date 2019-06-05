@@ -24,7 +24,7 @@ import homeassistant.helpers.config_validation as cv
 
 _LOGGER = logging.getLogger(__name__)
 
-REQUIREMENTS = ['zigate==0.29.10']
+REQUIREMENTS = ['zigate==0.29.11']
 # REQUIREMENTS = ['https://github.com/doudz/zigate/archive/dev.zip#1.0.0']
 DEPENDENCIES = ['persistent_notification']
 
@@ -218,6 +218,10 @@ COPY_SCENE_SCHEMA = vol.Schema({
     vol.Required('to_group_addr'): cv.string,
     vol.Required('to_scene'): cv.string,
 })
+
+BUILD_NETWORK_TABLE_SCHEMA = vol.Schema({
+    vol.Optional('force'): cv.boolean,
+    })
 
 
 def setup(hass, config):
@@ -488,7 +492,7 @@ def setup(hass, config):
         myzigate.action_onoff(addr, endpoint, onoff, ontime, offtime, effect, gradient)
 
     def build_network_table(service):
-        table = myzigate.build_neighbours_table()
+        table = myzigate.build_neighbours_table(service.data.get('force', False))
         _LOGGER.debug('Neighbours table {}'.format(table))
         entity = hass.data[DATA_ZIGATE_DEVICES].get('zigate')
         if entity:
@@ -601,7 +605,8 @@ def setup(hass, config):
                            schema=REMOVE_GROUP_SCHEMA)
     hass.services.register(DOMAIN, 'action_onoff', action_onoff,
                            schema=ACTION_ONOFF_SCHEMA)
-    hass.services.register(DOMAIN, 'build_network_table', build_network_table)
+    hass.services.register(DOMAIN, 'build_network_table', build_network_table,
+                           schema=BUILD_NETWORK_TABLE_SCHEMA)
 
     hass.services.register(DOMAIN, 'ota_load_image', ota_load_image,
                            schema=OTA_LOAD_IMAGE_SCHEMA)
