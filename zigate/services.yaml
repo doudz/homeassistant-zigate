@@ -396,3 +396,11 @@ copy_scene:
     to_scene:
       description: Destination Scene id
       example: '1'
+      
+build_network_table:
+  description: >
+    Build a network table.
+  fields:
+    force:
+      description: Force rebuild the table instead of using cache
+      example: true
