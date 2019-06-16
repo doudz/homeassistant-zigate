@@ -47,16 +47,17 @@ input_boolean:
     name: Permit Join
 
 automation:
-- alias: zigate_permit_join
-  trigger:
-  - entity_id: input_boolean.zigate_permit_join
-    from: 'off'
-    platform: state
-    to: 'on'
-  action:
-  - service: zigate.permit_join
-  - delay: '30'
-  - data:
-      entity_id: input_boolean.zigate_permit_join
-    service: input_boolean.turn_off
+  - alias: zigate_permit_join
+    trigger:
+    - entity_id: input_boolean.zigate_permit_join
+      from: 'off'
+      platform: state
+      to: 'on'
+    condition: []
+    action:
+    - service: zigate.permit_join
+    - delay: '30'
+    - data:
+        entity_id: input_boolean.zigate_permit_join
+      service: input_boolean.turn_off
 
