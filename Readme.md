@@ -57,7 +57,7 @@ zigate:
 
 ```
 
-If yo want to use PiZiGate, just add `gpio: true`. Other options are still available (channel, etc)
+If you want to use PiZiGate, just add `gpio: true`. Other options are still available (channel, etc)
 
 ```
 # Enable PiZiGate
@@ -65,6 +65,15 @@ zigate:
   gpio: true
 
 ```
+
+If you're using Rpi3, you can have some trouble trying to use PiZiGate.
+If needed, add the following line into config.txt (If you're using Hass.io you have to access that on the SD card directly. Simply plug it into your PC and edit it there. The config.txt is not accessible from your Hass.io system, you may need to open the SD card on a Windows or Linux system.):
+
+```
+dtoverlay=pi3-miniuart-bt
+enable_uart=1
+```
+
 
 # Package
 
@@ -76,21 +85,6 @@ To install, just copy the "packages" folder in your hass config folder and if ne
 homeassistant:
   packages: !include_dir_named packages
 ```
-
-
-
-# HASSIO
-
-If you're using HASS.io on Rpi3, you can have some trouble trying to use PiZiGate.
-
-If needed, add the following line into config.txt (you have to access that on the SD card directly. Simply plug it into your PC and edit it there. The config.txt is not accessible from your Hass.io system, you may need to open the SD card on a Windows or Linux system.):
-
-`dtoverlay=pi3-miniuart-bt`
-
-Additionnally you might have to set the port, like /dev/ttyAMA0
-
-
-
 
 ## How enable debug log
 
