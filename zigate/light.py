@@ -13,12 +13,8 @@ from homeassistant.components.light import (
     SUPPORT_BRIGHTNESS, SUPPORT_COLOR_TEMP,
     SUPPORT_TRANSITION, ATTR_COLOR_TEMP,
     SUPPORT_COLOR, Light, ENTITY_ID_FORMAT)
-try:
-    from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
-    from homeassistant.components.zigate import DATA_ZIGATE_ATTRS
-except ImportError:  # temporary until official support
-    from custom_components.zigate import DOMAIN as ZIGATE_DOMAIN
-    from custom_components.zigate import DATA_ZIGATE_ATTRS
+from . import DOMAIN as ZIGATE_DOMAIN
+from . import DATA_ZIGATE_ATTRS
 
 _LOGGER = logging.getLogger(__name__)
 

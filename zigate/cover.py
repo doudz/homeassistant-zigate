@@ -8,12 +8,8 @@ import logging
 
 from homeassistant.components.cover import (
     CoverDevice, ENTITY_ID_FORMAT, SUPPORT_OPEN, SUPPORT_CLOSE, SUPPORT_STOP)
-try:
-    from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
-    from homeassistant.components.zigate import DATA_ZIGATE_ATTRS
-except ImportError:  # temporary until official support
-    from custom_components.zigate import DOMAIN as ZIGATE_DOMAIN
-    from custom_components.zigate import DATA_ZIGATE_ATTRS
+from . import DOMAIN as ZIGATE_DOMAIN
+from . import DATA_ZIGATE_ATTRS
 
 _LOGGER = logging.getLogger(__name__)
 

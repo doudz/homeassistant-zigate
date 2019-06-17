@@ -9,15 +9,9 @@ from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 
 from homeassistant.components.climate import ClimateDevice, ENTITY_ID_FORMAT
 from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE, SUPPORT_AWAY_MODE
-
+from . import DOMAIN as ZIGATE_DOMAIN
+from . import DATA_ZIGATE_ATTRS
 SUPPORT_FLAGS = SUPPORT_TARGET_TEMPERATURE | SUPPORT_AWAY_MODE
-
-try:
-    from homeassistant.components.zigate import DOMAIN as ZIGATE_DOMAIN
-    from homeassistant.components.zigate import DATA_ZIGATE_ATTRS
-except ImportError:  # temporary until official support
-    from custom_components.zigate import DOMAIN as ZIGATE_DOMAIN
-    from custom_components.zigate import DATA_ZIGATE_ATTRS
 
 _LOGGER = logging.getLogger(__name__)
 
