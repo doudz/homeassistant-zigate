@@ -165,7 +165,7 @@
         }        
 
         zigateDevicesStates.forEach(function (entity) {
-        	let entityIeee = entity.attributes.ieee;
+          let entityIeee = entity.attributes.ieee;
           let entityAddr = entity.attributes.addr;
           let entityMissing = entity.attributes.missing;
           
@@ -186,7 +186,7 @@
           	 node = _.merge(node, this._nodeCustomizations.zigate);
           }
 
-          if (entityMissing === true) {
+          if (entityMissing === true || entity.state == 'unknown') {
           	 node = _.merge(node, this._nodeCustomizations.missing);
           }
 

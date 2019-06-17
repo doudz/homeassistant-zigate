@@ -738,6 +738,6 @@ class ZiGateDeviceEntity(Entity):
         if self.state:
             last_24h = datetime.datetime.now() - datetime.timedelta(hours=24)
             last_24h = last_24h.strftime('%Y-%m-%d %H:%M:%S')
-            if self.state < last_24h:
+            if not self.state or self.state < last_24h:
                 return 'mdi:help'
         return 'mdi:access-point'
