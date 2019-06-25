@@ -110,7 +110,6 @@ class ZiGateLight(Light):
 
     def update(self):
         self.hass.data[ZIGATE_DOMAIN].read_attribute_request(self._device.addr, self._endpoint, 6, 0)
-        #self._device.refresh_device()
 
     @property
     def name(self) -> str:
