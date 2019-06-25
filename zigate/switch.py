@@ -88,7 +88,7 @@ class ZiGateSwitch(SwitchDevice):
     @property
     def should_poll(self):
         """No polling needed for a ZiGate switch."""
-        return self._device.assumed_state
+        return True
 
     def update(self):
         self._device.refresh_device()

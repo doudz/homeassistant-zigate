@@ -91,9 +91,11 @@ class ZigateClimate(ClimateDevice):
         return self._support_flags
 
     @property
-    def should_poll(self):
-        """Return the polling state."""
-        return False
+    def should_poll(self) -> bool:
+        return True
+
+    def update(self):
+        self._device.refresh_device()
 
     @property
     def name(self):
