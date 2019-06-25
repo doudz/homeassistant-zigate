@@ -411,10 +411,10 @@ def setup(hass, config):
     def refresh_device(service):
         addr = _get_addr_from_service_request(service)
         if addr:
-            myzigate.refresh_device(addr)
+            myzigate.refresh_device(addr, full=True)
         else:
             for device in myzigate.devices:
-                device.refresh_device()
+                device.refresh_device(full=True)
 
     def discover_device(service):
         addr = _get_addr_from_service_request(service)
