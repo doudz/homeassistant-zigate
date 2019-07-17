@@ -92,7 +92,7 @@ class ZigateClimate(ClimateDevice):
 
     @property
     def should_poll(self) -> bool:
-        return True
+        return False
 
     def update(self):
         self._device.refresh_device()

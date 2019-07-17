@@ -29,6 +29,8 @@ REQUIREMENTS = ['zigate==0.30.1']
 DEPENDENCIES = ['persistent_notification']
 
 DOMAIN = 'zigate'
+SCAN_INTERVAL = datetime.timedelta(seconds=60)
+
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
 ADDR = 'addr'
@@ -253,7 +255,8 @@ def setup(hass, config):
     hass.data[DATA_ZIGATE_DEVICES] = {}
     hass.data[DATA_ZIGATE_ATTRS] = {}
 
-    component = EntityComponent(_LOGGER, DOMAIN, hass, group_name=GROUP_NAME_ALL_ZIGATE)
+    component = EntityComponent(_LOGGER, DOMAIN, hass, SCAN_INTERVAL, GROUP_NAME_ALL_ZIGATE)
+    component.setup(config)
     entity = ZiGateComponentEntity(myzigate)
     hass.data[DATA_ZIGATE_DEVICES]['zigate'] = entity
     component.add_entities([entity])
@@ -696,7 +699,10 @@ class ZiGateDeviceEntity(Entity):
     @property
     def should_poll(self):
         """No polling."""
-        return False
+        return self._device.receiver_on_when_idle()
+
+    def update(self):
+        self._device.refresh_device()
 
     @property
     def name(self):
