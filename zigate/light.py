@@ -165,6 +165,8 @@ class ZiGateLight(Light):
 
     def turn_on(self, **kwargs):
         """Turn the switch on."""
+        self._is_on = True
+        self.schedule_update_ha_state()
         transition = 0
         if ATTR_TRANSITION in kwargs:
             transition = int(kwargs[ATTR_TRANSITION])
@@ -198,6 +200,8 @@ class ZiGateLight(Light):
 
     def turn_off(self, **kwargs):
         """Turn the device off."""
+        self._is_on = False
+        self.schedule_update_ha_state()
         transition = 0
         if ATTR_TRANSITION in kwargs:
             transition = int(kwargs[ATTR_TRANSITION])
@@ -208,6 +212,8 @@ class ZiGateLight(Light):
 
     def toggle(self, **kwargs):
         """Toggle the device"""
+        self._is_on = not self._is_on
+        self.schedule_update_ha_state()
         transition = 0
         if ATTR_TRANSITION in kwargs:
             transition = int(kwargs[ATTR_TRANSITION])
@@ -225,7 +231,3 @@ class ZiGateLight(Light):
             'ieee': self._device.ieee,
             'endpoint': self._endpoint,
         }
-
-#     @property
-#     def assumed_state(self)->bool:
-#         return self._device.assumed_state

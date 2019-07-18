@@ -106,18 +106,24 @@ class ZiGateSwitch(SwitchDevice):
 
     def turn_on(self, **kwargs):
         """Turn the switch on."""
+        self._is_on = True
+        self.schedule_update_ha_state()
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
                                                    self._endpoint,
                                                    1)
 
     def turn_off(self, **kwargs):
         """Turn the device off."""
+        self._is_on = False
+        self.schedule_update_ha_state()
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
                                                    self._endpoint,
                                                    0)
 
     def toggle(self, **kwargs):
         """Toggle the device"""
+        self._is_on = not self._is_on
+        self.schedule_update_ha_state()
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
                                                    self._endpoint,
                                                    2)
