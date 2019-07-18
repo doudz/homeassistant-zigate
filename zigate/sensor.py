@@ -9,6 +9,7 @@ from homeassistant.components.sensor import ENTITY_ID_FORMAT
 from homeassistant.const import (DEVICE_CLASS_HUMIDITY,
                                  DEVICE_CLASS_TEMPERATURE,
                                  DEVICE_CLASS_ILLUMINANCE,
+                                 DEVICE_CLASS_PRESSURE,
                                  STATE_UNAVAILABLE)
 from homeassistant.helpers.entity import Entity
 from . import DOMAIN as ZIGATE_DOMAIN
@@ -85,6 +86,8 @@ class ZiGateSensor(Entity):
             self._device_class = DEVICE_CLASS_HUMIDITY
         elif 'luminosity' in name:
             self._device_class = DEVICE_CLASS_ILLUMINANCE
+        elif 'pressure' in name:
+            self._device_class = DEVICE_CLASS_PRESSURE
         hass.bus.listen('zigate.attribute_updated', self._handle_event)
 
     def _handle_event(self, call):
