@@ -52,7 +52,8 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional(CONF_HOST): cv.string,
         vol.Optional('channel'): cv.positive_int,
         vol.Optional('gpio'): cv.boolean,
-        vol.Optional('enable_led'): cv.boolean
+        vol.Optional('enable_led'): cv.boolean,
+        vol.Optional('polling'): cv.boolean,
     })
 }, extra=vol.ALLOW_EXTRA)
 
@@ -234,6 +235,7 @@ def setup(hass, config):
     host = config[DOMAIN].get(CONF_HOST)
     gpio = config[DOMAIN].get('gpio', False)
     enable_led = config[DOMAIN].get('enable_led', True)
+    polling = config[DOMAIN].get('polling', True)
     channel = config[DOMAIN].get('channel')
     persistent_file = os.path.join(hass.config.config_dir,
                                    'zigate.json')
@@ -266,7 +268,7 @@ def setup(hass, config):
         _LOGGER.debug('Add device {}'.format(device))
         ieee = device.ieee or device.addr  # compatibility
         if ieee not in hass.data[DATA_ZIGATE_DEVICES]:
-            entity = ZiGateDeviceEntity(hass, device)
+            entity = ZiGateDeviceEntity(hass, device, polling)
             hass.data[DATA_ZIGATE_DEVICES][ieee] = entity
             component.add_entities([entity])
             if 'signal' in kwargs:
@@ -684,8 +686,9 @@ class ZiGateComponentEntity(Entity):
 class ZiGateDeviceEntity(Entity):
     '''Representation of ZiGate device'''
 
-    def __init__(self, hass, device):
+    def __init__(self, hass, device, polling=True):
         """Initialize the sensor."""
+        self._polling = polling
         self._device = device
         ieee = device.ieee or device.addr
         self.entity_id = '{}.{}'.format(DOMAIN, ieee)
@@ -699,7 +702,7 @@ class ZiGateDeviceEntity(Entity):
     @property
     def should_poll(self):
         """No polling."""
-        return self._device.receiver_on_when_idle()
+        return self._polling and self._device.receiver_on_when_idle()
 
     def update(self):
         self._device.refresh_device()
