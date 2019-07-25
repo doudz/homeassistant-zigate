@@ -24,11 +24,3 @@ matrix:
       script:
         - tox
         - python3 -m unittest
-    - python: 3.8-dev
-      dist: xenial
-      env: TOXENV=py38
-      install:
-        - pip install zigate[dev] homeassistant
-      script:
-        - tox
-        - python3 -m unittest
