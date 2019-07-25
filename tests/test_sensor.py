@@ -5,7 +5,7 @@ from homeassistant.components.sensor import DOMAIN
 
 class TestSensor(unittest.TestCase):
     def test_sensor(self):
-        from zigate import sensor
+        from zigate import sensor  # noqa
     
     
 if __name__ == '__main__':
