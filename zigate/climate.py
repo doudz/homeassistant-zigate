@@ -129,11 +129,11 @@ class ZigateClimate(ClimateDevice):
         if a:
             t = a.get('value', 0)
         return t
-    
+
     @property
     def preset_modes(self):
         return ['home', 'away']
-    
+
     @property
     def preset_mode(self):
         t = 1
