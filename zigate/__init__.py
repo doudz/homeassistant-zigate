@@ -731,7 +731,8 @@ class ZiGateDeviceEntity(Entity):
                  'missing': self._device.missing,
                  'generic_type': self._device.genericType,
                  'discovery': self._device.discovery,
-                 'groups': self._device.groups
+                 'groups': self._device.groups,
+                 'datecode': self._device.get_value('datecode')
                  }
         if not self._device.receiver_on_when_idle():
             attrs.update({'battery_voltage': self._device.get_value('battery_voltage'),
