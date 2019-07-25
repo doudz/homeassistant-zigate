@@ -751,3 +751,7 @@ class ZiGateDeviceEntity(Entity):
             if not self.state or self.state < last_24h:
                 return 'mdi:help'
         return 'mdi:access-point'
+
+    @property
+    def available(self):
+        return not self._device.missing
