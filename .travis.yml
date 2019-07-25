@@ -8,12 +8,14 @@ matrix:
         - pip install zigate[dev] homeassistant
       script:
         - tox
+        - python3 -m unittest
     - python: 3.6
       env: TOXENV=py36
       install:
         - pip install zigate[dev] homeassistant
       script:
         - tox
+        - python3 -m unittest
     - python: 3.7
       dist: xenial
       env: TOXENV=py37
@@ -21,6 +23,7 @@ matrix:
         - pip install zigate[dev] homeassistant
       script:
         - tox
+        - python3 -m unittest
     - python: 3.8
       dist: xenial
       env: TOXENV=py38
@@ -28,3 +31,4 @@ matrix:
         - pip install zigate[dev] homeassistant
       script:
         - tox
+        - python3 -m unittest
