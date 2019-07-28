@@ -3,6 +3,7 @@ A new component to use the ZiGate (http://zigate.fr)
 
 [![Build Status](https://travis-ci.org/doudz/homeassistant-zigate.svg?branch=master)](https://travis-ci.org/doudz/homeassistant-zigate)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sebramage)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
 
 Currently it supports sensor, binary_sensor and switch, light, cover and climate
 
