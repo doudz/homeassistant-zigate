@@ -4,7 +4,7 @@ import unittest
 
 class TestSwitch(unittest.TestCase):
     def test_switch(self):
-        from zigate import switch  # noqa
+        from custom_components.zigate import switch  # noqa
 
 
 if __name__ == '__main__':
