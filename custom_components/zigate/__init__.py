@@ -667,10 +667,13 @@ class ZiGateComponentEntity(Entity):
     @property
     def device_state_attributes(self):
         """Return the device specific state attributes."""
+        import zigate
         attrs = {'addr': self._device.addr,
                  'ieee': self._device.ieee,
                  'groups': self._device.groups,
-                 'network_table': self.network_table
+                 'network_table': self.network_table,
+                 'firmware_version': self._device.get_version_text(),
+                 'lib version': zigate.__version__
                  }
         return attrs
 
