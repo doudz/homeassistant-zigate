@@ -25,7 +25,7 @@ import homeassistant.helpers.config_validation as cv
 _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = 'zigate'
-SCAN_INTERVAL = datetime.timedelta(seconds=60)
+SCAN_INTERVAL = datetime.timedelta(seconds=120)
 
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
