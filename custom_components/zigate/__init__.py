@@ -262,8 +262,9 @@ def setup(hass, config):
     def device_added(**kwargs):
         device = kwargs['device']
         _LOGGER.debug('Add device {}'.format(device))
-        ieee = device.ieee or device.addr  # compatibility
+        ieee = device.ieee
         if ieee not in hass.data[DATA_ZIGATE_DEVICES]:
+            hass.data[DATA_ZIGATE_DEVICES][ieee] = None  # reserve
             entity = ZiGateDeviceEntity(hass, device, polling)
             hass.data[DATA_ZIGATE_DEVICES][ieee] = entity
             component.add_entities([entity])
@@ -277,7 +278,7 @@ def setup(hass, config):
     def device_removed(**kwargs):
         # component.async_remove_entity
         device = kwargs['device']
-        ieee = device.ieee or device.addr  # compatibility
+        ieee = device.ieee
         hass.components.persistent_notification.create(
             'The ZiGate device {}({}) is gone.'.format(device.ieee,
                                                        device.addr),
@@ -303,7 +304,7 @@ def setup(hass, config):
 
     def attribute_updated(**kwargs):
         device = kwargs['device']
-        ieee = device.ieee or device.addr  # compatibility
+        ieee = device.ieee
         attribute = kwargs['attribute']
         _LOGGER.debug('Update attribute for device {} {}'.format(device,
                                                                  attribute))
@@ -324,7 +325,7 @@ def setup(hass, config):
     def device_updated(**kwargs):
         device = kwargs['device']
         _LOGGER.debug('Update device {}'.format(device))
-        ieee = device.ieee or device.addr  # compatibility
+        ieee = device.ieee
         entity = hass.data[DATA_ZIGATE_DEVICES].get(ieee)
         if not entity:
             _LOGGER.debug('Device not found {}, adding it'.format(device))
@@ -361,10 +362,10 @@ def setup(hass, config):
         myzigate.start_auto_save()
         myzigate.set_led(enable_led)
         version = myzigate.get_version_text()
-        if version < '3.0f':
+        if version < '3.1a':
             hass.components.persistent_notification.create(
                 ('Your zigate firmware is outdated, '
-                 'Please upgrade to 3.0f or later !'),
+                 'Please upgrade to 3.1a or later !'),
                 title='ZiGate')
         # first load
         for device in myzigate.devices:
@@ -667,6 +668,8 @@ class ZiGateComponentEntity(Entity):
     @property
     def device_state_attributes(self):
         """Return the device specific state attributes."""
+        if not self._device.connection:
+            return {}
         import zigate
         attrs = {'addr': self._device.addr,
                  'ieee': self._device.ieee,
