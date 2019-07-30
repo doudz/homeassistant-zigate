@@ -75,6 +75,13 @@ dtoverlay=pi3-miniuart-bt
 enable_uart=1
 ```
 
+# Polling
+
+By default, the component will poll the state of any device available on idle (light, relay, etc) every 120sec
+To disable polling, add `polling: false` in config
+
+
+
 
 # Package
 
