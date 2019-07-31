@@ -638,8 +638,8 @@ class ZiGateComponentEntity(Entity):
         """Initialize the sensor."""
         self._device = myzigate
         self.entity_id = '{}.{}'.format(DOMAIN, 'zigate')
-     
-    @property   
+
+    @property
     def network_table(self):
         return self._device._neighbours_table_cache
 
