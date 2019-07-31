@@ -496,9 +496,6 @@ def setup(hass, config):
     def build_network_table(service):
         table = myzigate.build_neighbours_table(service.data.get('force', False))
         _LOGGER.debug('Neighbours table {}'.format(table))
-        entity = hass.data[DATA_ZIGATE_DEVICES].get('zigate')
-        if entity:
-            entity.network_table = table
 
     def ota_load_image(service):
         ota_image_path = service.data.get('imagepath')
@@ -641,7 +638,10 @@ class ZiGateComponentEntity(Entity):
         """Initialize the sensor."""
         self._device = myzigate
         self.entity_id = '{}.{}'.format(DOMAIN, 'zigate')
-        self.network_table = myzigate._neighbours_table_cache
+     
+    @property   
+    def network_table(self):
+        return self._device._neighbours_table_cache
 
     @property
     def should_poll(self):
