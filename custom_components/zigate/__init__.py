@@ -376,7 +376,7 @@ def setup(hass, config):
 
         hass.bus.fire('zigate.started')
 
-    def stop_zigate(service_event):
+    def stop_zigate(service=None):
         myzigate.save_state()
         myzigate.close()
 
@@ -563,6 +563,34 @@ def setup(hass, config):
         togroupaddr = service.data.get('to_group_addr')
         toscene = _to_int(service.data.get('to_scene'))
         myzigate.copy_scene(addr, endpoint, fromgroupaddr, fromscene, togroupaddr, toscene)
+        
+    def upgrade_firmware(service):
+        from zigate.flasher import flash
+        from zigate.firmware import download_latest
+        port = myzigate.connection._port
+        pizigate = False
+        if isinstance(myzigate, zigate.ZiGateGPIO):
+            pizigate = True
+        if myzigate._started and not pizigate:
+            msg = 'You should stop zigate first using service zigate.stop_zigate and put zigate in download mode.'
+            hass.components.persistent_notification.create(msg, title='ZiGate')
+            return
+        if pizigate:
+            stop_zigate()
+            myzigate.set_bootloader_mode()
+        backup_filename = 'zigate_backup_{:%Y%m%d%H%M%S}.bin'.format(datetime.datetime.now())
+        backup_filename = os.path.join(hass.config.config_dir, backup_filename)
+        flash(port, save=backup_filename)
+        msg = 'ZiGate backup created {}'.format(backup_filename)
+        hass.components.persistent_notification.create(msg, title='ZiGate')
+        latest_firmware = download_latest()
+        flash(port, write=latest_firmware)
+        if pizigate:
+            myzigate.set_running_mode()
+            start_zigate()
+        msg = 'ZiGate flashed with {}'.format(latest_firmware)
+        hass.components.persistent_notification.create(msg, title='ZiGate')
+        
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
@@ -626,6 +654,7 @@ def setup(hass, config):
                            schema=SCENE_MEMBERSHIP_REQUEST_SCHEMA)
     hass.services.register(DOMAIN, 'copy_scene', copy_scene,
                            schema=COPY_SCENE_SCHEMA)
+    hass.services.register(DOMAIN, 'upgrade_firmware', upgrade_firmware)
     track_time_change(hass, refresh_devices_list,
                       hour=0, minute=0, second=0)
 
