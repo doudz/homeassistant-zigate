@@ -563,7 +563,7 @@ def setup(hass, config):
         togroupaddr = service.data.get('to_group_addr')
         toscene = _to_int(service.data.get('to_scene'))
         myzigate.copy_scene(addr, endpoint, fromgroupaddr, fromscene, togroupaddr, toscene)
-        
+
     def upgrade_firmware(service):
         from zigate.flasher import flash
         from zigate.firmware import download_latest
@@ -590,7 +590,6 @@ def setup(hass, config):
             start_zigate()
         msg = 'ZiGate flashed with {}'.format(latest_firmware)
         hass.components.persistent_notification.create(msg, title='ZiGate')
-        
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
