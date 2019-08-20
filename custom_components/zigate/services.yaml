@@ -404,3 +404,16 @@ build_network_table:
     force:
       description: Force rebuild the table instead of using cache
       example: true
+
+upgrade_firmware:
+  description: >
+    Upgrade ZiGate firmware
+    If path is not provided, the latest firmware will be downloaded
+    If you're using PiZiGate, the process is fully automatic
+    If you're using USB ZiGate, you have to call zigate.stop_zigate first and put ZiGate in download mode
+    before calling this service
+  fields:
+    path:
+      description: Optionnal path to firmware file
+      example: '/home/pi/ZiGate_Coordinator.bin'
+

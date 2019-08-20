@@ -583,13 +583,20 @@ def setup(hass, config):
         flash(port, save=backup_filename)
         msg = 'ZiGate backup created {}'.format(backup_filename)
         hass.components.persistent_notification.create(msg, title='ZiGate')
-        latest_firmware = download_latest()
-        flash(port, write=latest_firmware)
+        firmware_path = service.data.get('path')
+        if not firmware_path:
+            firmware_path = download_latest()
+        flash(port, write=firmware_path)
+        msg = 'ZiGate flashed with {}'.format(firmware_path)
+        hass.components.persistent_notification.create(msg, title='ZiGate')
+        myzigate._version = None
         if pizigate:
             myzigate.set_running_mode()
             start_zigate()
-        msg = 'ZiGate flashed with {}'.format(latest_firmware)
-        hass.components.persistent_notification.create(msg, title='ZiGate')
+        else:
+            msg = 'Now you have to unplug/replug the ZiGate USB key and then call service zigate.start_zigate'
+            hass.components.persistent_notification.create(msg, title='ZiGate')
+        
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
