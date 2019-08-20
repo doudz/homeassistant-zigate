@@ -81,6 +81,12 @@ By default, the component will poll the state of any device available on idle (l
 To disable polling, add `polling: false` in config
 
 
+# Upgrade firmware
+
+You could upgrade the zigate firmware to the latest available release by calling zigate.upgrade_firmware.
+If you're using PiZigate the process is fully automatic
+If you're using USB ZiGate you have to put zigate in download mode first
+Always call zigate.stop_zigate before unplugging the USB ZiGate
 
 
 # Package
