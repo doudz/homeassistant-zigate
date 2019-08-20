@@ -596,7 +596,6 @@ def setup(hass, config):
         else:
             msg = 'Now you have to unplug/replug the ZiGate USB key and then call service zigate.start_zigate'
             hass.components.persistent_notification.create(msg, title='ZiGate')
-        
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
     hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
