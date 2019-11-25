@@ -158,4 +158,4 @@ Si vous souhaitez apporter une contribution à ce projet, nous vous suggérons d
 - https://github.com/firstcontributions/first-contributions/blob/master/README.md
 - https://github.com/firstcontributions/first-contributions/blob/master/github-desktop-tutorial.md
 
-Certains développeurs pourraient également être intéressés par des dons sous forme de matériel, tels que des modules ou des dispositifs Zigbee, et même si ces dons sont le plus souvent donnés sans aucune condition, cela pourrait dans de nombreux cas aider à motiver les développeurs et indirectement à améliorer le développement de ce projet.
+Certains développeurs pourraient également être intéressés par des dons sous forme de matériel, tels que des modules ou des dispositifs Zigbee, et même si ces dons sont le plus souvent donnés sans aucune condition, cela pourrait dans de nombreux cas motiver les développeurs et indirectement améliorer le développement de ce projet.
