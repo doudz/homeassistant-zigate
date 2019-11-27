@@ -16,7 +16,7 @@ from homeassistant.components.group import \
 from homeassistant.helpers.discovery import load_platform
 from homeassistant.helpers.event import track_time_change
 from homeassistant.const import (ATTR_BATTERY_LEVEL, CONF_PORT,
-                                 CONF_HOST,
+                                 CONF_HOST, CONF_SCAN_INTERVAL,
                                  ATTR_ENTITY_ID,
                                  EVENT_HOMEASSISTANT_START,
                                  EVENT_HOMEASSISTANT_STOP)
@@ -50,6 +50,7 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional('gpio'): cv.boolean,
         vol.Optional('enable_led'): cv.boolean,
         vol.Optional('polling'): cv.boolean,
+        vol.Optional(CONF_SCAN_INTERVAL): cv.positive_int,
     })
 }, extra=vol.ALLOW_EXTRA)
 
@@ -233,6 +234,8 @@ def setup(hass, config):
     enable_led = config[DOMAIN].get('enable_led', True)
     polling = config[DOMAIN].get('polling', True)
     channel = config[DOMAIN].get('channel')
+    scan_interval = config[DOMAIN].get(CONF_SCAN_INTERVAL, SCAN_INTERVAL)
+    
     persistent_file = os.path.join(hass.config.config_dir,
                                    'zigate.json')
 
@@ -253,7 +256,7 @@ def setup(hass, config):
     hass.data[DATA_ZIGATE_DEVICES] = {}
     hass.data[DATA_ZIGATE_ATTRS] = {}
 
-    component = EntityComponent(_LOGGER, DOMAIN, hass, SCAN_INTERVAL, GROUP_NAME_ALL_ZIGATE)
+    component = EntityComponent(_LOGGER, DOMAIN, hass, scan_interval, GROUP_NAME_ALL_ZIGATE)
     component.setup(config)
     entity = ZiGateComponentEntity(myzigate)
     hass.data[DATA_ZIGATE_DEVICES]['zigate'] = entity
