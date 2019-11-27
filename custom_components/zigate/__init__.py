@@ -51,6 +51,7 @@ CONFIG_SCHEMA = vol.Schema({
         vol.Optional('enable_led'): cv.boolean,
         vol.Optional('polling'): cv.boolean,
         vol.Optional(CONF_SCAN_INTERVAL): cv.positive_int,
+        vol.Optional('admin_panel'): cv.boolean,
     })
 }, extra=vol.ALLOW_EXTRA)
 
@@ -254,6 +255,7 @@ def setup(hass, config):
     polling = config[DOMAIN].get('polling', True)
     channel = config[DOMAIN].get('channel')
     scan_interval = config[DOMAIN].get(CONF_SCAN_INTERVAL, SCAN_INTERVAL)
+    admin_panel = config[DOMAIN].get('admin_panel', False)
 
     persistent_file = os.path.join(hass.config.config_dir,
                                    'zigate.json')
@@ -271,8 +273,9 @@ def setup(hass, config):
                               gpio=gpio
                               )
     _LOGGER.debug('ZiGate object created %s', myzigate)
-    _LOGGER.debug('Start ZiGate Admin Panel on port 9998')
-    myzigate.start_adminpanel()
+    if admin_panel:
+        _LOGGER.debug('Start ZiGate Admin Panel on port 9998')
+        myzigate.start_adminpanel()
 
     hass.data[DOMAIN] = myzigate
     hass.data[DATA_ZIGATE_DEVICES] = {}
