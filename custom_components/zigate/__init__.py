@@ -271,6 +271,8 @@ def setup(hass, config):
                               gpio=gpio
                               )
     _LOGGER.debug('ZiGate object created %s', myzigate)
+    _LOGGER.debug('Start ZiGate Admin Panel on port 9998')
+    myzigate.start_adminpanel()
 
     hass.data[DOMAIN] = myzigate
     hass.data[DATA_ZIGATE_DEVICES] = {}
