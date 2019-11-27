@@ -417,3 +417,53 @@ upgrade_firmware:
       description: Optionnal path to firmware file
       example: '/home/pi/ZiGate_Coordinator.bin'
 
+ias_warning:
+  description: >
+    Execute IAS warning
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    addr:
+      description: ZiGate address of the device or the group
+      example: 'af7d'
+    ieee:
+      description: IEEE address of the device.
+      example: '0123456789abcdef'
+    endpoint:
+      description: Device endpoint.
+      example: '1'
+    warning_mode:
+      description: Warning mode.
+      example: '0x18'
+    duration:
+      description: Duration in sec.
+      example: '5'
+    strobe_cycle:
+      description: Strobe cycle.
+      example: '1'
+    strobe_level:
+      description: Strobe level.
+      example: '1'
+
+ias_squawk:
+  description: >
+    Execute IAS squawk
+    You should provide the entity_id OR the addr OR the ieee.
+  fields:
+    entity_id:
+      description: The device entity_id to identify
+      example: 'zigate.0123456789abcdef'
+    addr:
+      description: ZiGate address of the device or the group
+      example: 'af7d'
+    ieee:
+      description: IEEE address of the device.
+      example: '0123456789abcdef'
+    endpoint:
+      description: Device endpoint.
+      example: '1'
+    squawk_mode_strobe_level:
+      description: squawk mode strobe level, strobe on and buzzer on = 139, strobe on = 11
+      example: '11'
