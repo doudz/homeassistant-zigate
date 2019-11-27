@@ -244,6 +244,7 @@ def setup(hass, config):
     _LOGGER.debug('GPIO : %s', gpio)
     _LOGGER.debug('Led : %s', enable_led)
     _LOGGER.debug('Channel : %s', channel)
+    _LOGGER.debug('Scan interval : %s', scan_interval)
 
     myzigate = zigate.connect(port=port, host=host,
                               path=persistent_file,
