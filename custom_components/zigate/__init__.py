@@ -235,7 +235,7 @@ def setup(hass, config):
     polling = config[DOMAIN].get('polling', True)
     channel = config[DOMAIN].get('channel')
     scan_interval = config[DOMAIN].get(CONF_SCAN_INTERVAL, SCAN_INTERVAL)
-    
+
     persistent_file = os.path.join(hass.config.config_dir,
                                    'zigate.json')
 
