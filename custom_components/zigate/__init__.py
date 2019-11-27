@@ -595,7 +595,7 @@ def setup(hass, config):
         strobe_cycle = _to_int(service.data.get('strobe_cycle', '1'))
         strobe_level = _to_int(service.data.get('strobe_level', '1'))
         myzigate.action_ias_warning(addr, endpoint, warning_mode, duration, strobe_cycle, strobe_level)
-    
+
     def ias_squawk(service):
         addr = _get_addr_from_service_request(service)
         endpoint = _to_int(service.data.get('endpoint', '1'))
