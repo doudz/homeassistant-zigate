@@ -448,7 +448,7 @@ ias_warning:
       example: 5
     strobe_cycle:
       description: Strobe cycle, 10% step.
-      example: 10'
+      example: 10
     strobe_level:
       description: Strobe level, low, medium, high, veryhigh
       example: 'low'
