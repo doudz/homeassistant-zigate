@@ -245,7 +245,6 @@ ACTION_IAS_SQUAWK_SCHEMA = vol.Schema({
     vol.Optional('mode'): cv.string,
     vol.Optional('strobe'): cv.boolean,
     vol.Optional('level'): cv.string,
-    
 })
 
 
