@@ -229,10 +229,12 @@ ACTION_IAS_WARNING_SCHEMA = vol.Schema({
     vol.Optional(IEEE): cv.string,
     vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
     vol.Required('endpoint'): cv.string,
-    vol.Required('warning_mode'): cv.positive_int,
-    vol.Required('duration'): cv.positive_int,
+    vol.Optional('mode'): cv.string,
+    vol.Optional('strobe'): cv.boolean,
+    vol.Optional('level'): cv.string,
+    vol.Optional('duration'): cv.positive_int,
     vol.Optional('strobe_cycle'): cv.positive_int,
-    vol.Optional('strobe_level'): cv.positive_int,
+    vol.Optional('strobe_level'): cv.string,
 })
 
 ACTION_IAS_SQUAWK_SCHEMA = vol.Schema({
@@ -240,7 +242,10 @@ ACTION_IAS_SQUAWK_SCHEMA = vol.Schema({
     vol.Optional(IEEE): cv.string,
     vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
     vol.Required('endpoint'): cv.string,
-    vol.Required('squawk_mode_strobe_level'): cv.positive_int,
+    vol.Optional('mode'): cv.string,
+    vol.Optional('strobe'): cv.boolean,
+    vol.Optional('level'): cv.string,
+    
 })
 
 
@@ -595,17 +600,21 @@ def setup(hass, config):
     def ias_warning(service):
         addr = _get_addr_from_service_request(service)
         endpoint = _to_int(service.data.get('endpoint', '1'))
-        warning_mode = _to_int(service.data.get('warning_mode', '0x18'))
-        duration = _to_int(service.data.get('duration', '5'))
-        strobe_cycle = _to_int(service.data.get('strobe_cycle', '1'))
-        strobe_level = _to_int(service.data.get('strobe_level', '1'))
-        myzigate.action_ias_warning(addr, endpoint, warning_mode, duration, strobe_cycle, strobe_level)
+        mode = service.data.get('mode', 'burglar')
+        strobe = service.data.get('strobe', True)
+        level = service.data.get('level', 'low')
+        duration = service.data.get('duration', 60)
+        strobe_cycle = service.data.get('strobe_cycle', 10)
+        strobe_level = service.data.get('strobe_level', 'low')
+        myzigate.action_ias_warning(addr, endpoint, mode, strobe, level, duration, strobe_cycle, strobe_level)
 
     def ias_squawk(service):
         addr = _get_addr_from_service_request(service)
         endpoint = _to_int(service.data.get('endpoint', '1'))
-        squawk_mode_strobe_level = _to_int(service.data.get('squawk_mode_strobe_level', '11'))
-        myzigate.action_ias_squawk(addr, endpoint, squawk_mode_strobe_level)
+        mode = service.data.get('mode', 'armed')
+        strobe = service.data.get('strobe', True)
+        level = service.data.get('level', 'low')
+        myzigate.action_ias_squawk(addr, endpoint, mode, strobe, level)
 
     def upgrade_firmware(service):
         from zigate.flasher import flash

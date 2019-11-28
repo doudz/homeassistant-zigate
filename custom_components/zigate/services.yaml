@@ -434,18 +434,24 @@ ias_warning:
     endpoint:
       description: Device endpoint.
       example: '1'
-    warning_mode:
-      description: Warning mode.
-      example: '0x18'
+    mode:
+      description: Warning mode stop, burglar, fire, emergency, policepanic, firepanic, emergencypanic
+      example: 'fire'
+    strobe:
+      description: enable strobe
+      example: true
+    level:
+      description: level low, medium, high, veryhigh
+      example: 'low'
     duration:
       description: Duration in sec.
-      example: '5'
+      example: 5
     strobe_cycle:
-      description: Strobe cycle.
-      example: '1'
+      description: Strobe cycle, 10% step.
+      example: 10'
     strobe_level:
-      description: Strobe level.
-      example: '1'
+      description: Strobe level, low, medium, high, veryhigh
+      example: 'low'
 
 ias_squawk:
   description: >
@@ -464,6 +470,12 @@ ias_squawk:
     endpoint:
       description: Device endpoint.
       example: '1'
-    squawk_mode_strobe_level:
-      description: squawk mode strobe level, strobe on and buzzer on = 139, strobe on = 11
-      example: '11'
+    mode:
+      description: squawk mode armed or disarmed
+      example: 'armed'
+    strobe:
+      description: enable strobe
+      example: true
+    level:
+      description: strobe level, low, medium, high, veryhigh
+      example: 'low'
