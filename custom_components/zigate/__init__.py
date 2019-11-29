@@ -555,7 +555,7 @@ def setup(hass, config):
         groupaddr = service.data.get('group_addr')
         scene = _to_int(service.data.get('scene'))
         name = service.data.get('scene_name')
-        transition = _to_int(service.data.get('transition', '1'))
+        transition = _to_int(service.data.get('transition', '0'))
         myzigate.add_scene(addr, endpoint, groupaddr, scene, name, transition)
 
     def remove_scene(service):

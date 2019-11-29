@@ -167,7 +167,7 @@ class ZiGateLight(Light):
         """Turn the switch on."""
         self._is_on = True
         self.schedule_update_ha_state()
-        transition = 1
+        transition = 0
         if ATTR_TRANSITION in kwargs:
             transition = int(kwargs[ATTR_TRANSITION])
         if ATTR_BRIGHTNESS in kwargs:
@@ -202,7 +202,7 @@ class ZiGateLight(Light):
         """Turn the device off."""
         self._is_on = False
         self.schedule_update_ha_state()
-        transition = 1
+        transition = 0
         if ATTR_TRANSITION in kwargs:
             transition = int(kwargs[ATTR_TRANSITION])
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
@@ -214,7 +214,7 @@ class ZiGateLight(Light):
         """Toggle the device"""
         self._is_on = not self._is_on
         self.schedule_update_ha_state()
-        transition = 1
+        transition = 0
         if ATTR_TRANSITION in kwargs:
             transition = int(kwargs[ATTR_TRANSITION])
         self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
