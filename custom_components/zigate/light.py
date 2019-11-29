@@ -71,6 +71,7 @@ class ZiGateLight(Light):
         self._device = device
         self._endpoint = endpoint
         self._is_on = False
+        self._brightness = 0
         a = self._device.get_attribute(endpoint, 6, 0)
         if a:
             self._is_on = a.get('value', False)
@@ -102,6 +103,8 @@ class ZiGateLight(Light):
             _LOGGER.debug("Event received: %s", call.data)
             if call.data['cluster'] == 6 and call.data['attribute'] == 0:
                 self._is_on = call.data['value']
+            if call.data['cluster'] == 8 and call.data['attribute'] == 0:
+                self._brightness = int(call.data['value'] * 255 / 100)
             self.schedule_update_ha_state()
 
     @property
@@ -128,10 +131,7 @@ class ZiGateLight(Light):
     @property
     def brightness(self) -> int:
         """Return the brightness of this light between 0..255."""
-        a = self._device.get_attribute(self._endpoint, 8, 0)
-        if a:
-            return int(a.get('value', 0) * 255 / 100)
-        return 0
+        return self._brightness
 
     @property
     def hs_color(self) -> tuple:
@@ -172,6 +172,7 @@ class ZiGateLight(Light):
             transition = int(kwargs[ATTR_TRANSITION])
         if ATTR_BRIGHTNESS in kwargs:
             brightness = kwargs[ATTR_BRIGHTNESS]
+            self._brightness = brightness
             brightness = int((brightness / 255) * 100)
             self.hass.data[ZIGATE_DOMAIN].action_move_level_onoff(self._device.addr,
                                                                   self._endpoint,
