@@ -92,6 +92,16 @@ You could upgrade the zigate firmware to the latest available release by calling
 - Always call zigate.stop_zigate before unplugging the USB ZiGate
 
 
+# Admin Panel
+
+ZiGate lib has now an embedded admin panel, to enable it, add `admin_panel: true` in config.
+
+```
+zigate:
+  admin_panel: true
+```
+
+
 # Package
 
 Additionnally you could add the zigate package to have a new tab with all zigate devices and a "permit join" switch.
