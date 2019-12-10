@@ -5,10 +5,10 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/climate.zigate/
 """
 import logging
-from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
+from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS 
 
 from homeassistant.components.climate import ClimateDevice, ENTITY_ID_FORMAT
-from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE, SUPPORT_PRESET_MODE
+from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE, SUPPORT_PRESET_MODE, HVAC_MODE_HEAT
 from . import DOMAIN as ZIGATE_DOMAIN
 from . import DATA_ZIGATE_ATTRS
 SUPPORT_FLAGS = SUPPORT_TARGET_TEMPERATURE | SUPPORT_PRESET_MODE
@@ -69,6 +69,7 @@ class ZigateClimate(ClimateDevice):
         hass.bus.listen('zigate.attribute_updated', self._handle_event)
 
         self._support_flags = SUPPORT_FLAGS
+        self._hvac_mode = HVAC_MODE_HEAT
 
     def _handle_event(self, call):
         if (
@@ -129,6 +130,17 @@ class ZigateClimate(ClimateDevice):
         if a:
             t = a.get('value', 0)
         return t
+    
+    @property
+    def hvac_mode(self):
+        return self._hvac_mode
+    
+    @property
+    def hvac_modes(self):
+        return [HVAC_MODE_HEAT,]
+    
+    def set_hvac_mode(self, hvac_mode):
+        self._hvac_mode = hvac_mode
 
     @property
     def preset_modes(self):
