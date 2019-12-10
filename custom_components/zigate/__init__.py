@@ -717,11 +717,11 @@ def setup(hass, config):
     hass.services.register(DOMAIN, 'upgrade_firmware', upgrade_firmware)
     track_time_change(hass, refresh_devices_list,
                       hour=0, minute=0, second=0)
-    
+
     if admin_panel:
         _LOGGER.debug('Start ZiGate Admin Panel on port 9998')
         myzigate.start_adminpanel(prefix='/zigateproxy')
-        
+
         hass.http.register_view(ZiGateAdminPanel())
         hass.http.register_view(ZiGateProxy())
         custom_panel_config = {
@@ -730,10 +730,10 @@ def setup(hass, config):
             "trust_external": False,
             "html_url": "/zigateadmin.html",
         }
-    
+
         config = {}
         config["_panel_custom"] = custom_panel_config
-    
+
         hass.components.frontend.async_register_built_in_panel(
             component_name="custom",
             sidebar_title='Zigate Admin',
