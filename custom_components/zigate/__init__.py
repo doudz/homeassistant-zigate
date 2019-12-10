@@ -10,6 +10,7 @@ import os
 import datetime
 import requests
 from aiohttp import web
+import zigate
 
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.helpers.entity import Entity
@@ -253,8 +254,6 @@ ACTION_IAS_SQUAWK_SCHEMA = vol.Schema({
 
 def setup(hass, config):
     """Setup zigate platform."""
-    import zigate
-
     port = config[DOMAIN].get(CONF_PORT)
     host = config[DOMAIN].get(CONF_HOST)
     gpio = config[DOMAIN].get('gpio', False)
