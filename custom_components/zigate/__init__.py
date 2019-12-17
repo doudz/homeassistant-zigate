@@ -759,6 +759,7 @@ class ZiGateAdminPanel(HomeAssistantView):
 
 class ZiGateProxy(HomeAssistantView):
     requires_auth = False
+    cors_allowed = True
     name = "zigateproxy"
     url = "/zigateproxy/{routename:.*}"
 
@@ -768,6 +769,8 @@ class ZiGateProxy(HomeAssistantView):
         headers = r.headers.copy()
         headers['Access-Control-Allow-Origin'] = '*'
         headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT'
+        headers['Cache-Control'] = 'no-cache'
+        headers['Pragma'] = 'no-cache'
         return web.Response(body=r.content, status=r.status_code, headers=headers)
 
 
