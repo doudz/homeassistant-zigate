@@ -765,12 +765,14 @@ class ZiGateProxy(HomeAssistantView):
 
     async def get(self, request, routename):
         """Handle ZiGate proxy requests."""
-        r = requests.get('http://localhost:9998/'+routename, params=request.query)
+        headers = {
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
+        }
+        r = requests.get('http://localhost:9998/'+routename, params=request.query, headers=headers)
         headers = r.headers.copy()
         headers['Access-Control-Allow-Origin'] = '*'
         headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT'
-        headers['Cache-Control'] = 'no-cache'
-        headers['Pragma'] = 'no-cache'
         return web.Response(body=r.content, status=r.status_code, headers=headers)
 
 
