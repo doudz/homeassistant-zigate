@@ -64,6 +64,7 @@ REFRESH_DEVICE_SCHEMA = vol.Schema({
     vol.Optional(ADDR): cv.string,
     vol.Optional(IEEE): cv.string,
     vol.Optional(ATTR_ENTITY_ID): cv.entity_id,
+    vol.Optional('full'): cv.boolean,
 })
 
 DISCOVER_DEVICE_SCHEMA = vol.Schema({
@@ -442,12 +443,13 @@ def setup(hass, config):
         return int(value)
 
     def refresh_device(service):
+        full = service.data.get('full', False)
         addr = _get_addr_from_service_request(service)
         if addr:
-            myzigate.refresh_device(addr, full=True)
+            myzigate.refresh_device(addr, full=full)
         else:
             for device in myzigate.devices:
-                device.refresh_device(full=True)
+                device.refresh_device(full=full)
 
     def discover_device(service):
         addr = _get_addr_from_service_request(service)
