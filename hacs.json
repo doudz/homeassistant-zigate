@@ -1,4 +1,5 @@
 {
     "name": "ZiGate",
-    "domains": ["binary_sensor", "climate", "cover", "light", "sensor", "switch"]
+    "domains": ["binary_sensor", "climate", "cover", "light", "sensor", "switch"],
+    "render_readme": true
 }
