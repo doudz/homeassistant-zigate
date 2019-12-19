@@ -138,25 +138,6 @@ I recommand the following package to create a nice battery tab with alerts !
 [battery_alert.yaml](https://github.com/notoriousbdg/Home-AssistantConfig/blob/master/packages/battery_alert.yaml)
 
 
-## custom panel
-
-You can add a custom panel to display the network map.
-To do so, copy the panels folder in your hass config folder like this :
-
-```
-panels/
-└── zigate.html
-```
-
-and the following in your configuration.yaml
-
-```yaml
-panel_custom:
-  - name: zigate
-    sidebar_title: ZiGate
-    sidebar_icon: mdi:zigbee
-```
-
 # How to contribute
 
 If you are looking to make a contribution to this project we suggest that you follow the steps in these guides:
