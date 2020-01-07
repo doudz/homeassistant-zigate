@@ -6,6 +6,7 @@ https://home-assistant.io/components/cover.zigate/
 """
 import logging
 
+from homeassistant.exceptions import PlatformNotReady
 from homeassistant.components.cover import (
     CoverDevice, ENTITY_ID_FORMAT, SUPPORT_OPEN, SUPPORT_CLOSE, SUPPORT_STOP)
 from . import DOMAIN as ZIGATE_DOMAIN

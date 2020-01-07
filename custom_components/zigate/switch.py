@@ -5,6 +5,8 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/switch.zigate/
 """
 import logging
+
+from homeassistant.exceptions import PlatformNotReady
 from homeassistant.components.switch import SwitchDevice, ENTITY_ID_FORMAT
 from . import DOMAIN as ZIGATE_DOMAIN
 from . import DATA_ZIGATE_ATTRS

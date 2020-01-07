@@ -8,6 +8,7 @@ import logging
 from functools import reduce
 from operator import ior
 
+from homeassistant.exceptions import PlatformNotReady
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS, ATTR_TRANSITION, ATTR_HS_COLOR,
     SUPPORT_BRIGHTNESS, SUPPORT_COLOR_TEMP,
@@ -15,7 +16,7 @@ from homeassistant.components.light import (
     SUPPORT_COLOR, Light, ENTITY_ID_FORMAT)
 from . import DOMAIN as ZIGATE_DOMAIN
 from . import DATA_ZIGATE_ATTRS
-from homeassistant.exceptions import PlatformNotReady
+
 
 _LOGGER = logging.getLogger(__name__)
 
