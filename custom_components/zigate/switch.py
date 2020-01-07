@@ -76,6 +76,8 @@ class ZiGateSwitch(SwitchDevice):
             _LOGGER.debug("Event received: %s", call.data)
             if call.data['cluster'] == 6 and call.data['attribute'] == 0:
                 self._is_on = call.data['value']
+            if not self.hass:
+                raise PlatformNotReady
             self.schedule_update_ha_state()
 
     @property

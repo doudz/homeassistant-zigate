@@ -100,6 +100,8 @@ class ZiGateBinarySensor(BinarySensorDevice):
                 self._is_on = call.data['value'].get('alarm1', False)
             else:
                 self._is_on = call.data['value']
+            if not self.hass:
+                raise PlatformNotReady
             self.schedule_update_ha_state()
 
     @property

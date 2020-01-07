@@ -73,7 +73,8 @@ class ZiGateCover(CoverDevice):
             _LOGGER.debug("Attribute update received: %s", call.data)
             if call.data['cluster'] == 258 and call.data['attribute'] == 8:
                 self._pos = call.data['value']
-
+            if not self.hass:
+                raise PlatformNotReady
             self.schedule_update_ha_state()
 
     @property

@@ -77,6 +77,8 @@ class ZigateClimate(ClimateDevice):
             and self._endpoint == call.data['endpoint']
         ):
             _LOGGER.debug("Event received: %s", call.data)
+            if not self.hass:
+                raise PlatformNotReady
             self.schedule_update_ha_state()
 
     @property

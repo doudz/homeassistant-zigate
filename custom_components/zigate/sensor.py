@@ -99,6 +99,8 @@ class ZiGateSensor(Entity):
         ):
             _LOGGER.debug("Event received: %s", call.data)
             self._state = call.data['value']
+            if not self.hass:
+                raise PlatformNotReady
             self.schedule_update_ha_state()
 
     @property
