@@ -36,7 +36,6 @@ DATA_ZIGATE_ATTRS = 'zigate_attributes'
 ADDR = 'addr'
 IEEE = 'ieee'
 
-GROUP_NAME_ALL_ZIGATE = 'all zigate'
 ENTITY_ID_ALL_ZIGATE = GROUP_ENTITY_ID_FORMAT.format('all_zigate')
 
 SUPPORTED_PLATFORMS = ('sensor',
@@ -285,7 +284,7 @@ def setup(hass, config):
     hass.data[DATA_ZIGATE_DEVICES] = {}
     hass.data[DATA_ZIGATE_ATTRS] = {}
 
-    component = EntityComponent(_LOGGER, DOMAIN, hass, scan_interval, GROUP_NAME_ALL_ZIGATE)
+    component = EntityComponent(_LOGGER, DOMAIN, hass, scan_interval)
     component.setup(config)
     entity = ZiGateComponentEntity(myzigate)
     hass.data[DATA_ZIGATE_DEVICES]['zigate'] = entity
