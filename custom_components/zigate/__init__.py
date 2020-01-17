@@ -13,6 +13,7 @@ from aiohttp import web
 import zigate
 
 from homeassistant.components.http import HomeAssistantView
+from homeassistant import config_entries
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.components.group import \
@@ -25,11 +26,9 @@ from homeassistant.const import (ATTR_BATTERY_LEVEL, CONF_PORT,
                                  EVENT_HOMEASSISTANT_START,
                                  EVENT_HOMEASSISTANT_STOP)
 import homeassistant.helpers.config_validation as cv
+from .const import DOMAIN, SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
-
-DOMAIN = 'zigate'
-SCAN_INTERVAL = 120
 
 DATA_ZIGATE_DEVICES = 'zigate_devices'
 DATA_ZIGATE_ATTRS = 'zigate_attributes'
@@ -261,7 +260,7 @@ def setup(hass, config):
     polling = config[DOMAIN].get('polling', True)
     channel = config[DOMAIN].get('channel')
     scan_interval = datetime.timedelta(seconds=config[DOMAIN].get(CONF_SCAN_INTERVAL, SCAN_INTERVAL))
-    admin_panel = config[DOMAIN].get('admin_panel', False)
+    admin_panel = config[DOMAIN].get('admin_panel', True)
 
     persistent_file = os.path.join(hass.config.config_dir,
                                    'zigate.json')
@@ -742,6 +741,12 @@ def setup(hass, config):
             config=config,
             require_admin=True,
         )
+
+    hass.async_create_task(
+        hass.config_entries.flow.async_init(
+            DOMAIN, context={"source": config_entries.SOURCE_IMPORT}, data={}
+        )
+    )
 
     return True
 

@@ -1,0 +1,3 @@
+
+DOMAIN = 'zigate'
+SCAN_INTERVAL = 120
