@@ -36,4 +36,3 @@ class ZiGateConfigFlow(config_entries.ConfigFlow):
         print('import ', import_info)
 
         return self.async_create_entry(title="configuration.yaml", data={})
-
