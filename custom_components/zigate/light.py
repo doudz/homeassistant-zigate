@@ -105,7 +105,7 @@ class ZiGateLight(Light):
             _LOGGER.debug("Event received: %s", call.data)
             if call.data['cluster'] == 6 and call.data['attribute'] == 0:
                 self._is_on = call.data['value']
-            if call.data['cluster'] == 8 and call.data['attribute'] == 0:
+            if call.data['cluster'] == 8 and call.data['attribute'] in (0, 17):
                 self._brightness = int(call.data['value'] * 255 / 100)
             if not self.hass:
                 raise PlatformNotReady
