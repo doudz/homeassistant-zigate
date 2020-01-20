@@ -1,0 +1,19 @@
+{
+  "config": {
+    "title": "ZiGate",
+    "step": {
+      "user": {
+        "title": "ZiGate",
+        "data": {
+          "port": "Port USB"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossible de se connecter à ZiGate."
+    },
+    "abort": {
+      "single_instance_allowed": "Une seule configuration de ZiGate est autorisée."
+    }
+  }
+}
