@@ -12,6 +12,7 @@ import requests
 from aiohttp import web
 import zigate
 
+from homeassistant.exceptions import PlatformNotReady
 from homeassistant.components.http import HomeAssistantView
 from homeassistant import config_entries
 from homeassistant.helpers.entity import Entity
@@ -885,6 +886,8 @@ class ZiGateDeviceEntity(Entity):
 
     def _handle_event(self, call):
         if self._device.ieee == call.data['ieee']:
+            if not self.hass:
+                raise PlatformNotReady
             self.schedule_update_ha_state()
 
     @property
