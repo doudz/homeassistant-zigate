@@ -14,7 +14,7 @@ import zigate
 
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.components.http import HomeAssistantView
-from homeassistant import config_entries
+# from homeassistant import config_entries
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.components.group import \
