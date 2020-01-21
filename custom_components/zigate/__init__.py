@@ -752,9 +752,9 @@ def setup(hass, config):
     return True
 
 
-async def async_setup_entry(hass, entry):
-    _LOGGER.warning('async_setup_entry not implemented yet for ZiGate')
-    return False
+# async def async_setup_entry(hass, entry):
+#     _LOGGER.warning('async_setup_entry not implemented yet for ZiGate')
+#     return False
 
 
 class ZiGateAdminPanel(HomeAssistantView):
