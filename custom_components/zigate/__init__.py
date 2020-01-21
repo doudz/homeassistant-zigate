@@ -743,18 +743,18 @@ def setup(hass, config):
             require_admin=True,
         )
 
-    hass.async_create_task(
-        hass.config_entries.flow.async_init(
-            DOMAIN, context={"source": config_entries.SOURCE_IMPORT}, data={}
-        )
-    )
+#     hass.async_create_task(
+#         hass.config_entries.flow.async_init(
+#             DOMAIN, context={"source": config_entries.SOURCE_IMPORT}, data={}
+#         )
+#     )
 
     return True
 
 
 async def async_setup_entry(hass, entry):
     _LOGGER.warning('async_setup_entry not implemented yet for ZiGate')
-    return True
+    return False
 
 
 class ZiGateAdminPanel(HomeAssistantView):
