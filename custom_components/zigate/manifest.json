@@ -5,5 +5,5 @@
   "dependencies": ["persistent_notification"],
   "codeowners": ["doudz"],
   "requirements": ["zigate==0.38.3"],
-  "config_flow": true
+  "config_flow": false
 }
