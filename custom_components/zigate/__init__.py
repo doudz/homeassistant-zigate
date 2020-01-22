@@ -764,7 +764,9 @@ class ZiGateAdminPanel(HomeAssistantView):
 
     async def get(self, request):
         """Handle ZiGate admin panel requests."""
-        return web.Response(text=base_panel)
+        response = web.Response(text=base_panel)
+        response.headers["Cache-Control"] = "max-age=0, must-revalidate"
+        return response
 
 
 class ZiGateProxy(HomeAssistantView):
@@ -791,7 +793,7 @@ class ZiGateProxy(HomeAssistantView):
 base_panel = '''
 <dom-module id='ha-panel-zigateadmin'>
   <template>
-    <iframe src="/zigateproxy/" style="width:99%; height:99%; border:0"></iframe>
+    <iframe src="/zigateproxy?q=%2F" style="width:99%; height:99%; border:0"></iframe>
   </template>
 </dom-module>
 
