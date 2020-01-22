@@ -771,15 +771,15 @@ class ZiGateProxy(HomeAssistantView):
     requires_auth = False
     cors_allowed = True
     name = "zigateproxy"
-    url = "/zigateproxy/{routename:.*}"
+    url = "/zigateproxy"
 
-    async def get(self, request, routename):
+    async def get(self, request):
         """Handle ZiGate proxy requests."""
         headers = {
             "Cache-Control": "no-cache",
             "Pragma": "no-cache"
         }
-        r = requests.get('http://localhost:9998/'+routename, params=request.query, headers=headers)
+        r = requests.get('http://localhost:9998'+request.query.get('q', '/'), headers=headers)
         headers = r.headers.copy()
         headers['Access-Control-Allow-Origin'] = '*'
         headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT'
