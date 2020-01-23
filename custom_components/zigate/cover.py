@@ -105,7 +105,7 @@ class ZiGateCover(CoverDevice):
         return {
             'addr': self._device.addr,
             'ieee': self._device.ieee,
-            'endpoint': self._endpoint,
+            'endpoint': '0x{:02x}'.format(self._endpoint),
         }
 
     def open_cover(self, **kwargs):

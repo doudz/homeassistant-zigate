@@ -185,3 +185,12 @@ class ZigateClimate(ClimateDevice):
                                                                   0x0201,
                                                                   [(attr, 0x29, temp)])
         self.schedule_update_ha_state()
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return {
+            'addr': self._device.addr,
+            'ieee': self._device.ieee,
+            'endpoint': '0x{:02x}'.format(self._endpoint),
+        }
