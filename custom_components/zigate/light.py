@@ -191,16 +191,15 @@ class ZiGateLight(Light):
                                                        self._endpoint,
                                                        1)
         if ATTR_HS_COLOR in kwargs:
+            h, s = kwargs[ATTR_HS_COLOR]
             if self.supported_features & SUPPORT_COLOR:
-                h, s = kwargs[ATTR_HS_COLOR]
                 x, y = color_util.color_hs_to_xy(h, s)
                 self.hass.data[ZIGATE_DOMAIN].action_move_colour(self._device.addr,
                                                                  self._endpoint,
-                                                                 int(x),
-                                                                 int(y),
+                                                                 x,
+                                                                 y,
                                                                  transition)
             elif self.supported_features & SUPPORT_HUE_COLOR:
-                h, s = kwargs[ATTR_HS_COLOR]
                 self.hass.data[ZIGATE_DOMAIN].action_move_hue_saturation(self._device.addr,
                                                                          self._endpoint,
                                                                          int(h),
