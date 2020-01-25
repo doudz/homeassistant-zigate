@@ -9,7 +9,7 @@ from homeassistant.const import (
 )
 
 
-from .const import (
+from ...const import (
     DOMAIN, 
     SUPPORTED_PLATFORMS,
     DATA_ZIGATE_DEVICES,
@@ -211,10 +211,10 @@ ACTION_IAS_SQUAWK_SCHEMA = vol.Schema({
 })
 
 
-class ZigateServices(hass, myzigate):
+class ZigateServices:
     """Initialize Zigate services."""
 
-    def __init__():
+    def __init__(hass, myzigate):
         self.hass = hass
         self.myzigate = myzigate
 
