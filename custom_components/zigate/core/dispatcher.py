@@ -1,6 +1,8 @@
 import logging
 import zigate
 
+from homeassistant.helpers.entity import Entity
+
 from ..const import (
     DOMAIN, 
     SUPPORTED_PLATFORMS,
@@ -9,9 +11,10 @@ from ..const import (
     ADDR,
     IEEE
 )
-from .. import ZiGateDeviceEntity
+from .entities import ZiGateDeviceEntity
 
 _LOGGER = logging.getLogger(__name__)
+
 
 class ZigateDispatcher:
     """Zigate dispatcher."""
