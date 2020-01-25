@@ -19,10 +19,11 @@ _LOGGER = logging.getLogger(__name__)
 class ZigateDispatcher:
     """Zigate dispatcher."""
 
-    def __init__(self, hass, component):
+    def __init__(self, hass, config, component):
         """Initialize dispatcher."""
 
         self.hass = hass
+        self.polling = config[DOMAIN].get('polling')
         self.component = component
         
         zigate.dispatcher.connect(self.device_added,
@@ -46,7 +47,7 @@ class ZigateDispatcher:
         ieee = device.ieee
         if ieee not in self.hass.data[DATA_ZIGATE_DEVICES]:
             self.hass.data[DATA_ZIGATE_DEVICES][ieee] = None  # reserve
-            entity = ZiGateDeviceEntity(self.hass, device, polling)
+            entity = ZiGateDeviceEntity(self.hass, device, self.polling)
             self.hass.data[DATA_ZIGATE_DEVICES][ieee] = entity
             self.component.add_entities([entity])
             if 'signal' in kwargs:
