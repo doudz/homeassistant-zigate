@@ -46,7 +46,7 @@ class ZiGateAdminPanel(HomeAssistantView):
 
     async def get(self, request):
         """Handle ZiGate admin panel requests."""
-        response = web.Response(text=base_panel)
+        response = web.Response(text=BASE_PANEL)
         response.headers["Cache-Control"] = "no-cache"
         return response
 
