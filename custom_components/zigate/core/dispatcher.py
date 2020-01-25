@@ -1,7 +1,7 @@
 import logging
 import zigate
 
-from ...const import (
+from ..const import (
     DOMAIN, 
     SUPPORTED_PLATFORMS,
     DATA_ZIGATE_DEVICES,
@@ -15,7 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 class ZigateDispatcher:
     """Zigate dispatcher."""
 
-    def __init__(hass, component):
+    def __init__(self, hass, component):
         """Initialize dispatcher."""
 
         self.hass = hass

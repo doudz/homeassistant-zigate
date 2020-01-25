@@ -90,10 +90,7 @@ def setup(hass, config):
     hass.data[DATA_ZIGATE_DEVICES]['zigate'] = entity
     component.add_entities([entity])
     ZigateDispatcher(hass, component)
-    zs = ZigateServices(hass, myzigate)
-
-    track_time_change(
-        hass, zs.refresh_devices_list, hour=0, minute=0, second=0)
+    ZigateServices(hass, config, myzigate)
 
     if admin_panel:
         _LOGGER.debug('Start ZiGate Admin Panel on port 9998')
