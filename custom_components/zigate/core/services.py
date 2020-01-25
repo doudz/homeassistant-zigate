@@ -214,6 +214,8 @@ ACTION_IAS_SQUAWK_SCHEMA = vol.Schema({
     vol.Optional('level'): cv.string,
 })
 
+_LOGGER = logging.getLogger(__name__)
+
 
 class ZigateServices:
     """Zigate services."""
@@ -225,9 +227,11 @@ class ZigateServices:
         self.myzigate = myzigate
         self.component = component
         
+        self.config = config
         self.channel = config[DOMAIN].get('channel')
         self.enable_led = config[DOMAIN].get('enable_led', True)
-
+        self.polling = config[DOMAIN].get('polling')
+               
         self.hass.bus.listen_once(EVENT_HOMEASSISTANT_START, self.start_zigate)
         self.hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, self.stop_zigate)
 
@@ -299,7 +303,7 @@ class ZigateServices:
         ieee = device.ieee
         if ieee not in self.hass.data[DATA_ZIGATE_DEVICES]:
             self.hass.data[DATA_ZIGATE_DEVICES][ieee] = None  # reserve
-            entity = ZiGateDeviceEntity(self.hass, device, polling)
+            entity = ZiGateDeviceEntity(self.hass, device, self.polling)
             self.hass.data[DATA_ZIGATE_DEVICES][ieee] = entity
             self.component.add_entities([entity])
             if 'signal' in kwargs:
@@ -334,7 +338,7 @@ class ZigateServices:
             self.device_added(device=device)
 
         for platform in SUPPORTED_PLATFORMS:
-            load_platform(self.hass, platform, DOMAIN, {}, config)
+            load_platform(self.hass, platform, DOMAIN, {}, self.config)
 
         self.hass.bus.fire('zigate.started')
 
