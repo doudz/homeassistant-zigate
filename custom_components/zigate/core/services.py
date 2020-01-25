@@ -12,8 +12,7 @@ from homeassistant.const import (
     EVENT_HOMEASSISTANT_STOP
 )
 
-from .dispatcher import device_added
-from .. import ZiGateDeviceEntity
+from .entities import ZiGateDeviceEntity
 from ..const import (
     DOMAIN, 
     SUPPORTED_PLATFORMS,
@@ -217,12 +216,15 @@ ACTION_IAS_SQUAWK_SCHEMA = vol.Schema({
 
 
 class ZigateServices:
-    """Initialize Zigate services."""
+    """Zigate services."""
 
     def __init__(self, hass, config, myzigate, component):
+        """Initialize services."""
+
         self.hass = hass
         self.myzigate = myzigate
         self.component = component
+        
         self.channel = config[DOMAIN].get('channel')
         self.enable_led = config[DOMAIN].get('enable_led', True)
 
@@ -291,6 +293,22 @@ class ZigateServices:
         track_time_change(
             self.hass, self.refresh_devices_list, hour=0, minute=0, second=0)
 
+    def device_added(self, **kwargs):
+        device = kwargs['device']
+        _LOGGER.debug('Add device {}'.format(device))
+        ieee = device.ieee
+        if ieee not in self.hass.data[DATA_ZIGATE_DEVICES]:
+            self.hass.data[DATA_ZIGATE_DEVICES][ieee] = None  # reserve
+            entity = ZiGateDeviceEntity(self.hass, device, polling)
+            self.hass.data[DATA_ZIGATE_DEVICES][ieee] = entity
+            self.component.add_entities([entity])
+            if 'signal' in kwargs:
+                self.hass.components.persistent_notification.create(
+                    ('A new ZiGate device "{}"'
+                     ' has been added !'
+                     ).format(device),
+                    title='ZiGate')
+
     def zigate_reset(self, service):
         self.myzigate.reset()
 
@@ -313,7 +331,7 @@ class ZigateServices:
                 title='ZiGate')
         # first load
         for device in self.myzigate.devices:
-            device_added(device=device)
+            self.device_added(device=device)
 
         for platform in SUPPORTED_PLATFORMS:
             load_platform(self.hass, platform, DOMAIN, {}, config)
