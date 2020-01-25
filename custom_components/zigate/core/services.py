@@ -222,6 +222,7 @@ class ZigateServices:
         self.hass = hass
         self.myzigate = myzigate
         self.channel = config[DOMAIN].get('channel')
+        self.enable_led = config[DOMAIN].get('enable_led', True)
 
         self.hass.bus.listen_once(EVENT_HOMEASSISTANT_START, self.start_zigate)
         self.hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, self.stop_zigate)
@@ -301,7 +302,7 @@ class ZigateServices:
     def start_zigate(self, service_event=None):
         self.myzigate.autoStart(self.channel)
         self.myzigate.start_auto_save()
-        self.myzigate.set_led(enable_led)
+        self.myzigate.set_led(self.enable_led)
         version = self.myzigate.get_version_text()
         if version < '3.1a':
             self.hass.components.persistent_notification.create(
