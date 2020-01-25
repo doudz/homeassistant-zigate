@@ -105,7 +105,7 @@ class ZiGateConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             self.id = myzigate.ieee
             myzigate.save_state()
             myzigate.close()
-        except :
+        except:
             _LOGGER.debug("Zigate not found")
             errors["base"] = "cannot_connect"
 
