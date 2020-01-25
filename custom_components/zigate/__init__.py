@@ -86,7 +86,7 @@ def setup(hass, config):
     entity = ZiGateComponentEntity(myzigate)
     hass.data[DATA_ZIGATE_DEVICES]['zigate'] = entity
     component.add_entities([entity])
-    ZigateDispatcher(hass, component)
+    ZigateDispatcher(hass, config, component)
     ZigateServices(hass, config, myzigate, component)
 
     if admin_panel:
