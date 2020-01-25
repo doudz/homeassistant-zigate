@@ -9,6 +9,7 @@ from ..const import (
     ADDR,
     IEEE
 )
+from .. import ZiGateDeviceEntity
 
 _LOGGER = logging.getLogger(__name__)
 
