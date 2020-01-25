@@ -11,7 +11,7 @@ import datetime
 import zigate
 
 import homeassistant.helpers.config_validation as cv
-from homeassistant import config_entries
+#from homeassistant import config_entries
 from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.components.group import \
     ENTITY_ID_FORMAT as GROUP_ENTITY_ID_FORMAT
@@ -121,3 +121,8 @@ def setup(hass, config):
     #~ )
 
     return True
+
+
+# async def async_setup_entry(hass, entry):
+#     _LOGGER.warning('async_setup_entry not implemented yet for ZiGate')
+#     return False

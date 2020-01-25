@@ -6,7 +6,7 @@ from homeassistant.components.http import HomeAssistantView
 BASE_PANEL = '''
 <dom-module id='ha-panel-zigateadmin'>
   <template>
-    <iframe src="/zigateproxy/" style="width:99%; height:99%; border:0"></iframe>
+    <iframe src="/zigateproxy?q=%2F" style="width:99%; height:99%; border:0"></iframe>
   </template>
 </dom-module>
 
@@ -46,22 +46,24 @@ class ZiGateAdminPanel(HomeAssistantView):
 
     async def get(self, request):
         """Handle ZiGate admin panel requests."""
-        return web.Response(text=BASE_PANEL)
+        response = web.Response(text=base_panel)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
 
 
 class ZiGateProxy(HomeAssistantView):
     requires_auth = False
     cors_allowed = True
     name = "zigateproxy"
-    url = "/zigateproxy/{routename:.*}"
+    url = "/zigateproxy"
 
-    async def get(self, request, routename):
+    async def get(self, request):
         """Handle ZiGate proxy requests."""
         headers = {
             "Cache-Control": "no-cache",
             "Pragma": "no-cache"
         }
-        r = requests.get('http://localhost:9998/'+routename, params=request.query, headers=headers)
+        r = requests.get('http://localhost:9998'+request.query.get('q', '/'), headers=headers)
         headers = r.headers.copy()
         headers['Access-Control-Allow-Origin'] = '*'
         headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT'
