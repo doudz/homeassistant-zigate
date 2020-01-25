@@ -12,7 +12,8 @@ from homeassistant.const import (
     EVENT_HOMEASSISTANT_STOP
 )
 
-
+from .dispatcher import device_added
+from .. import ZiGateDeviceEntity
 from ..const import (
     DOMAIN, 
     SUPPORTED_PLATFORMS,
