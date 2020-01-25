@@ -219,9 +219,10 @@ ACTION_IAS_SQUAWK_SCHEMA = vol.Schema({
 class ZigateServices:
     """Initialize Zigate services."""
 
-    def __init__(self, hass, config, myzigate):
+    def __init__(self, hass, config, myzigate, component):
         self.hass = hass
         self.myzigate = myzigate
+        self.component = component
         self.channel = config[DOMAIN].get('channel')
         self.enable_led = config[DOMAIN].get('enable_led', True)
 
@@ -336,7 +337,7 @@ class ZigateServices:
         ieee = service.data.get(IEEE)
         addr = service.data.get(ADDR)
         if entity_id:
-            entity = component.get_entity(entity_id)
+            entity = self.component.get_entity(entity_id)
             if entity:
                 addr = entity._device.addr
         elif ieee:

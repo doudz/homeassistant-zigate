@@ -88,7 +88,7 @@ def setup(hass, config):
     hass.data[DATA_ZIGATE_DEVICES]['zigate'] = entity
     component.add_entities([entity])
     ZigateDispatcher(hass, component)
-    ZigateServices(hass, config, myzigate)
+    ZigateServices(hass, config, myzigate, component)
 
     if admin_panel:
         _LOGGER.debug('Start ZiGate Admin Panel on port 9998')
