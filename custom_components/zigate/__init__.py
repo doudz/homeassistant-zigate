@@ -117,11 +117,11 @@ def setup(hass, config):
             require_admin=True,
         )
 
-    hass.async_create_task(
-        hass.config_entries.flow.async_init(
-            DOMAIN, context={"source": config_entries.SOURCE_IMPORT}, data={}
-        )
-    )
+    #~ hass.async_create_task(
+        #~ hass.config_entries.flow.async_init(
+            #~ DOMAIN, context={"source": config_entries.SOURCE_IMPORT}, data={}
+        #~ )
+    #~ )
 
     return True
 
