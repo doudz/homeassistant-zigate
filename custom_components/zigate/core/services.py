@@ -1,6 +1,10 @@
+import logging
+import voluptuous as vol
 from zigate.flasher import flash
 from zigate.firmware import download_latest
 
+import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.event import track_time_change
 from homeassistant.helpers.discovery import load_platform
 from homeassistant.const import (
     ATTR_ENTITY_ID,
@@ -9,7 +13,7 @@ from homeassistant.const import (
 )
 
 
-from ...const import (
+from ..const import (
     DOMAIN, 
     SUPPORTED_PLATFORMS,
     DATA_ZIGATE_DEVICES,
@@ -214,12 +218,13 @@ ACTION_IAS_SQUAWK_SCHEMA = vol.Schema({
 class ZigateServices:
     """Initialize Zigate services."""
 
-    def __init__(hass, myzigate):
+    def __init__(self, hass, config, myzigate):
         self.hass = hass
         self.myzigate = myzigate
+        self.channel = config[DOMAIN].get('channel')
 
-        self.hass.bus.listen_once(EVENT_HOMEASSISTANT_START, start_zigate)
-        self.hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, stop_zigate)
+        self.hass.bus.listen_once(EVENT_HOMEASSISTANT_START, self.start_zigate)
+        self.hass.bus.listen_once(EVENT_HOMEASSISTANT_STOP, self.stop_zigate)
 
         self.hass.services.register(DOMAIN, 'refresh_devices_list', self.refresh_devices_list)
         self.hass.services.register(DOMAIN, 'generate_templates', self.generate_templates)
@@ -280,6 +285,9 @@ class ZigateServices:
             schema=COPY_SCENE_SCHEMA)
         self.hass.services.register(DOMAIN, 'upgrade_firmware', self.upgrade_firmware)        
 
+        track_time_change(
+            self.hass, self.refresh_devices_list, hour=0, minute=0, second=0)
+
     def zigate_reset(self, service):
         self.myzigate.reset()
 
@@ -291,7 +299,7 @@ class ZigateServices:
         self.myzigate.cleanup_devices()
 
     def start_zigate(self, service_event=None):
-        self.myzigate.autoStart(channel)
+        self.myzigate.autoStart(self.channel)
         self.myzigate.start_auto_save()
         self.myzigate.set_led(enable_led)
         version = self.myzigate.get_version_text()
