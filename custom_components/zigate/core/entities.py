@@ -1,6 +1,7 @@
 import datetime
 import zigate
 
+from homeassistant.exceptions import PlatformNotReady
 from homeassistant.helpers.entity import Entity
 from homeassistant.const import ATTR_BATTERY_LEVEL
 
@@ -85,6 +86,8 @@ class ZiGateDeviceEntity(Entity):
 
     def _handle_event(self, call):
         if self._device.ieee == call.data['ieee']:
+            if not self.hass:
+                raise PlatformNotReady
             self.schedule_update_ha_state()
 
     @property
