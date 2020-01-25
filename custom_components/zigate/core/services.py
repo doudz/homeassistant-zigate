@@ -1,4 +1,6 @@
 import logging
+import os
+import datetime
 import voluptuous as vol
 from zigate.flasher import flash
 from zigate.firmware import download_latest
