@@ -1,3 +1,4 @@
+import datetime
 import zigate
 
 from homeassistant.helpers.entity import Entity
