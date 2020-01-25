@@ -96,7 +96,7 @@ class ZigateDispatcher:
         entity = self.hass.data[DATA_ZIGATE_DEVICES].get(ieee)
         if not entity:
             _LOGGER.debug('Device not found {}, adding it'.format(device))
-            device_added(device=device)
+            self.device_added(device=device)
         event_data = {}
         event_data['ieee'] = device.ieee
         event_data['addr'] = device.addr
