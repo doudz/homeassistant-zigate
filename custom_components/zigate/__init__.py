@@ -8,8 +8,6 @@ import logging
 import voluptuous as vol
 import os
 import datetime
-import requests
-from aiohttp import web
 import zigate
 
 from homeassistant import config_entries

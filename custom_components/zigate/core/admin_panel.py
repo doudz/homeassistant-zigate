@@ -1,3 +1,6 @@
+import requests
+from aiohttp import web
+
 from homeassistant.components.http import HomeAssistantView
 
 BASE_PANEL = '''
