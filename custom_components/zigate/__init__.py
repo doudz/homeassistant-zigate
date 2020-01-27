@@ -285,7 +285,7 @@ def setup(hass, config):
     hass.data[DATA_ZIGATE_ATTRS] = {}
 
     component = EntityComponent(_LOGGER, DOMAIN, hass, scan_interval)
-    component.setup(config)
+#     component.setup(config)
     entity = ZiGateComponentEntity(myzigate)
     hass.data[DATA_ZIGATE_DEVICES]['zigate'] = entity
     component.add_entities([entity])
