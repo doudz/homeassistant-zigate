@@ -864,7 +864,6 @@ class ZiGateComponentEntity(Entity):
         """Return the device specific state attributes."""
         if not self._device.connection:
             return {}
-        import zigate
         attrs = {'addr': self._device.addr,
                  'ieee': self._device.ieee,
                  'groups': self._device.groups,
