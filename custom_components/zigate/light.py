@@ -15,13 +15,13 @@ from homeassistant.components.light import (
     SUPPORT_BRIGHTNESS, SUPPORT_COLOR_TEMP,
     SUPPORT_TRANSITION, ATTR_COLOR_TEMP,
     SUPPORT_COLOR, Light, ENTITY_ID_FORMAT)
+import zigate
 from . import DOMAIN as ZIGATE_DOMAIN
 from . import DATA_ZIGATE_ATTRS
 
 
 _LOGGER = logging.getLogger(__name__)
 
-DEPENDENCIES = ['zigate']
 SUPPORT_HUE_COLOR = 64
 
 
@@ -31,7 +31,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         return
 
     myzigate = hass.data[ZIGATE_DOMAIN]
-    import zigate
     LIGHT_ACTIONS = [zigate.ACTIONS_LEVEL,
                      zigate.ACTIONS_COLOR,
                      zigate.ACTIONS_TEMPERATURE,

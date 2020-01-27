@@ -14,12 +14,11 @@ from homeassistant.const import (DEVICE_CLASS_HUMIDITY,
                                  DEVICE_CLASS_PRESSURE,
                                  STATE_UNAVAILABLE)
 from homeassistant.helpers.entity import Entity
+import zigate
 from . import DOMAIN as ZIGATE_DOMAIN
 from . import DATA_ZIGATE_ATTRS
 
 _LOGGER = logging.getLogger(__name__)
-
-DEPENDENCIES = ['zigate']
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -62,7 +61,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         add_devices(devs)
 
     sync_attributes()
-    import zigate
     zigate.dispatcher.connect(sync_attributes,
                               zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
