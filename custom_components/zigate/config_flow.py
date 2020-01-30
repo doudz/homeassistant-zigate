@@ -52,9 +52,6 @@ class ZiGateConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if self._async_current_entries():
             return self.async_abort(reason="single_instance_allowed")
 
-        if self.hass.data.get(DOMAIN):
-            return self.async_abort(reason="single_instance_allowed")
-
         if user_input is not None and bool(user_input):
             if user_input.get("usb") or (user_input.get("host") is None and user_input.get("port")):
                 return await self.async_step_usb(user_input)
@@ -95,7 +92,7 @@ class ZiGateConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
         if user_input is None:
             return await self.async_step_user()
-        _LOGGER.debug(user_input)
+
         myzigate = zigate.connect(
             host=user_input.get("host", None),
             port=user_input.get("port", None),
@@ -103,12 +100,10 @@ class ZiGateConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             auto_start=False,
             gpio=user_input.get("gpio", None)
         )
-        _LOGGER.debug(myzigate)
         myzigate.autoStart()
         self.id = myzigate.ieee
         myzigate.save_state()
         myzigate.close()
-        _LOGGER.debug(myzigate.ieee)
         if self.id is not None:
             return self.async_create_entry(
                 title=DOMAIN,
