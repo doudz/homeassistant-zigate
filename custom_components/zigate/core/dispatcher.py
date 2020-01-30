@@ -1,16 +1,7 @@
 import logging
 import zigate
 
-from homeassistant.helpers.entity import Entity
-
-from ..const import (
-    DOMAIN, 
-    SUPPORTED_PLATFORMS,
-    DATA_ZIGATE_DEVICES,
-    DATA_ZIGATE_ATTRS,
-    ADDR,
-    IEEE
-)
+from ..const import DOMAIN, DATA_ZIGATE_DEVICES
 from .entities import ZiGateDeviceEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -25,21 +16,21 @@ class ZigateDispatcher:
         self.hass = hass
         self.polling = config[DOMAIN].get('polling')
         self.component = component
-        
-        zigate.dispatcher.connect(self.device_added,
-            zigate.ZIGATE_DEVICE_ADDED, weak=False)
-        zigate.dispatcher.connect(self.device_removed,
-            zigate.ZIGATE_DEVICE_REMOVED, weak=False)
-        zigate.dispatcher.connect(self.device_need_discovery,
-            zigate.ZIGATE_DEVICE_NEED_DISCOVERY, weak=False)
-        zigate.dispatcher.connect(self.attribute_updated,
-            zigate.ZIGATE_ATTRIBUTE_UPDATED, weak=False)
-        zigate.dispatcher.connect(self.device_updated,
-            zigate.ZIGATE_DEVICE_UPDATED, weak=False)
-        zigate.dispatcher.connect(self.device_updated,
-            zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
-        zigate.dispatcher.connect(self.device_updated,
-            zigate.ZIGATE_DEVICE_ADDRESS_CHANGED, weak=False)
+
+        zigate.dispatcher.connect(
+            self.device_added, zigate.ZIGATE_DEVICE_ADDED, weak=False)
+        zigate.dispatcher.connect(
+            self.device_removed, zigate.ZIGATE_DEVICE_REMOVED, weak=False)
+        zigate.dispatcher.connect(
+            self.device_need_discovery, zigate.ZIGATE_DEVICE_NEED_DISCOVERY, weak=False)
+        zigate.dispatcher.connect(
+            self.attribute_updated, zigate.ZIGATE_ATTRIBUTE_UPDATED, weak=False)
+        zigate.dispatcher.connect(
+            self.device_updated, zigate.ZIGATE_DEVICE_UPDATED, weak=False)
+        zigate.dispatcher.connect(
+            self.device_updated, zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
+        zigate.dispatcher.connect(
+            self.device_updated, zigate.ZIGATE_DEVICE_ADDRESS_CHANGED, weak=False)
 
     def device_added(self, **kwargs):
         device = kwargs['device']
@@ -81,8 +72,7 @@ class ZigateDispatcher:
         device = kwargs['device']
         ieee = device.ieee
         attribute = kwargs['attribute']
-        _LOGGER.debug('Update attribute for device {} {}'.format(device,
-                                                                 attribute))
+        _LOGGER.debug(f'Update attribute for device {device} {attribute}')
         entity = self.hass.data[DATA_ZIGATE_DEVICES].get(ieee)
         event_data = attribute.copy()
         if type(event_data.get('type')) == type:

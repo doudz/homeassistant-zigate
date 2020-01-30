@@ -58,7 +58,6 @@ def setup(hass, config):
     host = config[DOMAIN].get(CONF_HOST)
     gpio = config[DOMAIN].get('gpio', False)
     enable_led = config[DOMAIN].get('enable_led', True)
-    polling = config[DOMAIN].get('polling', True)
     channel = config[DOMAIN].get('channel')
     scan_interval = datetime.timedelta(seconds=config[DOMAIN].get(CONF_SCAN_INTERVAL, SCAN_INTERVAL))
     admin_panel = config[DOMAIN].get('admin_panel', True)

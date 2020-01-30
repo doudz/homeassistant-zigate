@@ -70,5 +70,3 @@ class ZiGateProxy(HomeAssistantView):
         headers['Cache-Control'] = 'no-cache'
         headers['Pragma'] = 'no-cache'
         return web.Response(body=r.content, status=r.status_code, headers=headers)
-
-

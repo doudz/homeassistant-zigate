@@ -10,7 +10,7 @@ from ..const import DOMAIN
 
 class ZiGateComponentEntity(Entity):
     '''Representation of ZiGate Key.'''
-    
+
     def __init__(self, myzigate):
         """Initialize the sensor."""
         self._device = myzigate
