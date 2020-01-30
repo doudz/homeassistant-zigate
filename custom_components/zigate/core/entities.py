@@ -4,12 +4,12 @@ import zigate
 from homeassistant.helpers.entity import Entity
 from homeassistant.const import ATTR_BATTERY_LEVEL
 
-from ..const import DOMAIN
+from .const import DOMAIN, ZIGATE_ID
 
 
 class ZiGateComponentEntity(Entity):
     '''Representation of ZiGate Key.'''
-    
+
     def __init__(self, myzigate):
         """Initialize the sensor."""
         self._device = myzigate
@@ -42,6 +42,17 @@ class ZiGateComponentEntity(Entity):
         return self._device.ieee
 
     @property
+    def device_info(self):
+        return {
+            "identifiers": {(DOMAIN, self.unique_id)},
+            "name": self.name,
+            "manufacturer": "Zigate",
+            "model": "PiZigate",
+            "sw_version": self._device.get_version_text(),
+            "via_device": (DOMAIN, self.unique_id),
+        }
+
+    @property
     def device_state_attributes(self):
         """Return the device specific state attributes."""
         if not self._device.connection:
@@ -65,12 +76,12 @@ class ZiGateDeviceEntity(Entity):
 
     def __init__(self, hass, device, polling=True):
         """Initialize the sensor."""
+        self.hass = hass
         self._polling = polling
         self._device = device
         ieee = device.ieee or device.addr
         self.entity_id = '{}.{}'.format(DOMAIN, ieee)
-        hass.bus.listen('zigate.attribute_updated', self._handle_event)
-        hass.bus.listen('zigate.device_updated', self._handle_event)
+        self.zigate_id = self.hass.data[ZIGATE_ID]
 
     def _handle_event(self, call):
         if self._device.ieee == call.data['ieee']:
@@ -97,6 +108,21 @@ class ZiGateDeviceEntity(Entity):
     @property
     def unique_id(self) -> str:
         return self._device.ieee
+
+    @property
+    def device_id(self):
+        """Return the ID of the physical device this sensor is part of."""
+        return self.unique_id
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {(DOMAIN, self.unique_id)},
+            "name": str(self._device),
+            "manufacturer": self._device.get_value('manufacturer'),
+            "model": self._device.get_value('type'),
+            "via_device": (DOMAIN, self.zigate_id),
+        }
 
     @property
     def device_state_attributes(self):
@@ -132,3 +158,8 @@ class ZiGateDeviceEntity(Entity):
     @property
     def available(self):
         return not self._device.missing
+
+    async def async_added_to_hass(self):
+        """Connect dispatcher."""
+        self.hass.bus.async_listen('zigate.attribute_updated', self._handle_event)
+        self.hass.bus.async_listen('zigate.device_updated', self._handle_event)

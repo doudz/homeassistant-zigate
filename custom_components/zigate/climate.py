@@ -5,17 +5,51 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/climate.zigate/
 """
 import logging
+import zigate
 
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 from homeassistant.components.climate import ClimateDevice, ENTITY_ID_FORMAT
 from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE, SUPPORT_PRESET_MODE, HVAC_MODE_HEAT
-import zigate
-from . import DOMAIN as ZIGATE_DOMAIN
-from . import DATA_ZIGATE_ATTRS
+from .core.const import DATA_ZIGATE_ATTRS, DOMAIN as DOMAIN
+
 SUPPORT_FLAGS = SUPPORT_TARGET_TEMPERATURE | SUPPORT_PRESET_MODE
 
 _LOGGER = logging.getLogger(__name__)
+
+
+async def async_setup_entry(hass, config, async_add_entities):
+    """Set up the ZiGate sensors."""
+
+    myzigate = hass.data[DOMAIN]
+
+    def sync_attributes():
+        devs = []
+        for device in myzigate.devices:
+            ieee = device.ieee or device.addr  # compatibility
+            actions = device.available_actions()
+            if not any(actions.values()):
+                continue
+            for endpoint, action_type in actions.items():
+                if [zigate.ACTIONS_THERMOSTAT] == action_type:
+                    key = '{}-{}-{}'.format(ieee,
+                                            'climate',
+                                            endpoint
+                                            )
+                    if key in hass.data[DATA_ZIGATE_ATTRS]:
+                        continue
+                    _LOGGER.debug(('Creating climate '
+                                   'for device '
+                                   '{} {}').format(device,
+                                                   endpoint))
+                    entity = ZigateClimate(hass, device, endpoint)
+                    devs.append(entity)
+                    hass.data[DATA_ZIGATE_ATTRS][key] = entity
+
+        async_add_entities(devs)
+    sync_attributes()
+    zigate.dispatcher.connect(sync_attributes,
+                              zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
@@ -23,7 +57,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     if discovery_info is None:
         return
 
-    myzigate = hass.data[ZIGATE_DOMAIN]
+    myzigate = hass.data[DOMAIN]
 
     def sync_attributes():
         devs = []
@@ -59,13 +93,14 @@ class ZigateClimate(ClimateDevice):
 
     def __init__(self, hass, device, endpoint):
         """Initialize the ZiGate climate."""
+
+        self.hass = hass
         self._device = device
         self._endpoint = endpoint
         ieee = device.ieee or device.addr  # compatibility
         entity_id = 'zigate_{}_{}'.format(ieee,
                                           endpoint)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
-        hass.bus.listen('zigate.attribute_updated', self._handle_event)
 
         self._support_flags = SUPPORT_FLAGS
         self._hvac_mode = HVAC_MODE_HEAT
@@ -160,15 +195,19 @@ class ZigateClimate(ClimateDevice):
     def set_preset_mode(self, preset_mode: str):
         """Set new preset mode."""
         if preset_mode == 'away':
-            self.hass.data[ZIGATE_DOMAIN].write_attribute_request(self._device.addr,
-                                                                  self._endpoint,
-                                                                  0x0201,
-                                                                  [(0x0002, 0x18, 0)])
+            self.hass.data[DOMAIN].write_attribute_request(
+                self._device.addr,
+                self._endpoint,
+                0x0201,
+                [(0x0002, 0x18, 0)]
+            )
         else:
-            self.hass.data[ZIGATE_DOMAIN].write_attribute_request(self._device.addr,
-                                                                  self._endpoint,
-                                                                  0x0201,
-                                                                  [(0x0002, 0x18, 1)])
+            self.hass.data[DOMAIN].write_attribute_request(
+                self._device.addr,
+                self._endpoint,
+                0x0201,
+                [(0x0002, 0x18, 1)]
+            )
 
     def set_temperature(self, **kwargs):
         """Set new target temperatures."""
@@ -178,10 +217,12 @@ class ZigateClimate(ClimateDevice):
                 attr = 0x0014
             else:
                 attr = 0x0012
-            self.hass.data[ZIGATE_DOMAIN].write_attribute_request(self._device.addr,
-                                                                  self._endpoint,
-                                                                  0x0201,
-                                                                  [(attr, 0x29, temp)])
+            self.hass.data[DOMAIN].write_attribute_request(
+                self._device.addr,
+                self._endpoint,
+                0x0201,
+                [(attr, 0x29, temp)]
+            )
         self.schedule_update_ha_state()
 
     @property
@@ -192,3 +233,17 @@ class ZigateClimate(ClimateDevice):
             'ieee': self._device.ieee,
             'endpoint': '0x{:02x}'.format(self._endpoint),
         }
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {(DOMAIN, self.unique_id), (DOMAIN, self._device.ieee)},
+            "manufacturer": self._device.get_value('manufacturer'),
+            "model": self._device.get_value('type'),
+            "name": str(self._device),
+            "via_device": (DOMAIN, self._device.ieee),
+        }
+
+    async def async_added_to_hass(self):
+        """Connect dispatcher."""
+        self.hass.bus.async_listen('zigate.attribute_updated', self._handle_event)

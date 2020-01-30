@@ -5,6 +5,7 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/light.zigate/
 """
 import logging
+import zigate
 from functools import reduce
 from operator import ior
 
@@ -15,14 +16,52 @@ from homeassistant.components.light import (
     SUPPORT_BRIGHTNESS, SUPPORT_COLOR_TEMP,
     SUPPORT_TRANSITION, ATTR_COLOR_TEMP,
     SUPPORT_COLOR, Light, ENTITY_ID_FORMAT)
-import zigate
-from . import DOMAIN as ZIGATE_DOMAIN
-from . import DATA_ZIGATE_ATTRS
 
+from .core.const import DATA_ZIGATE_ATTRS, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 SUPPORT_HUE_COLOR = 64
+
+
+async def async_setup_entry(hass, config, async_add_entities):
+    """Set up the ZiGate sensors."""
+
+    myzigate = hass.data[DOMAIN]
+
+    LIGHT_ACTIONS = [zigate.ACTIONS_LEVEL,
+                     zigate.ACTIONS_COLOR,
+                     zigate.ACTIONS_TEMPERATURE,
+                     zigate.ACTIONS_HUE,
+                     ]
+
+    def sync_attributes():
+        devs = []
+        for device in myzigate.devices:
+            ieee = device.ieee or device.addr  # compatibility
+            actions = device.available_actions()
+            if not any(actions.values()):
+                continue
+            for endpoint, action_type in actions.items():
+                if any(i in action_type for i in LIGHT_ACTIONS):
+                    key = '{}-{}-{}'.format(ieee,
+                                            'light',
+                                            endpoint
+                                            )
+                    if key in hass.data[DATA_ZIGATE_ATTRS]:
+                        continue
+                    _LOGGER.debug(('Creating light '
+                                   'for device '
+                                   '{} {}').format(device,
+                                                   endpoint))
+                    entity = ZiGateLight(hass, device, endpoint)
+                    devs.append(entity)
+                    hass.data[DATA_ZIGATE_ATTRS][key] = entity
+
+        async_add_entities(devs)
+    sync_attributes()
+    zigate.dispatcher.connect(sync_attributes,
+                              zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -30,7 +69,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
-    myzigate = hass.data[ZIGATE_DOMAIN]
+    myzigate = hass.data[DOMAIN]
+
     LIGHT_ACTIONS = [zigate.ACTIONS_LEVEL,
                      zigate.ACTIONS_COLOR,
                      zigate.ACTIONS_TEMPERATURE,
@@ -71,6 +111,7 @@ class ZiGateLight(Light):
 
     def __init__(self, hass, device, endpoint):
         """Initialize the light."""
+        self.hass = hass
         self._device = device
         self._endpoint = endpoint
         self._is_on = False
@@ -96,7 +137,6 @@ class ZiGateLight(Light):
             elif action_type == zigate.ACTIONS_HUE:
                 supported_features.add(SUPPORT_HUE_COLOR)
         self._supported_features = reduce(ior, supported_features)
-        hass.bus.listen('zigate.attribute_updated', self._handle_event)
 
     def _handle_event(self, call):
         if (
@@ -179,53 +219,50 @@ class ZiGateLight(Light):
             brightness = kwargs[ATTR_BRIGHTNESS]
             self._brightness = brightness
             brightness = round((brightness / 255) * 100) or 1
-            self.hass.data[ZIGATE_DOMAIN].action_move_level_onoff(self._device.addr,
+            self.hass.data[DOMAIN].action_move_level_onoff(self._device.addr,
                                                                   self._endpoint,
                                                                   1,
                                                                   brightness,
                                                                   transition
                                                                   )
         else:
-            self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
-                                                       self._endpoint,
-                                                       1)
+            self.hass.data[DOMAIN].action_onoff(
+                self._device.addr,
+                self._endpoint,
+                1
+            )
         if ATTR_HS_COLOR in kwargs:
             h, s = kwargs[ATTR_HS_COLOR]
             if self.supported_features & SUPPORT_COLOR:
                 x, y = color_util.color_hs_to_xy(h, s)
-                self.hass.data[ZIGATE_DOMAIN].action_move_colour(self._device.addr,
-                                                                 self._endpoint,
-                                                                 x,
-                                                                 y,
-                                                                 transition)
+                self.hass.data[DOMAIN].action_move_colour(
+                    self._device.addr, self._endpoint, x, y, transition
+                )
             elif self.supported_features & SUPPORT_HUE_COLOR:
-                self.hass.data[ZIGATE_DOMAIN].action_move_hue_saturation(self._device.addr,
-                                                                         self._endpoint,
-                                                                         int(h),
-                                                                         int(s),
-                                                                         transition)
+                self.hass.data[DOMAIN].action_move_hue_saturation(
+                    self._device.addr,
+                    self._endpoint,
+                    int(h),
+                    int(s),
+                    transition)
         elif ATTR_COLOR_TEMP in kwargs:
             temp = kwargs[ATTR_COLOR_TEMP]
-            self.hass.data[ZIGATE_DOMAIN].action_move_temperature(self._device.addr,
-                                                                  self._endpoint,
-                                                                  int(temp),
-                                                                  transition)
+            self.hass.data[DOMAIN].action_move_temperature(
+                self._device.addr, self._endpoint, int(temp), transition)
 
     def turn_off(self, **kwargs):
         """Turn the device off."""
         self._is_on = False
         self.schedule_update_ha_state()
-        self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
-                                                   self._endpoint,
-                                                   0)
+        self.hass.data[DOMAIN].action_onoff(
+            self._device.addr, self._endpoint, 0)
 
     def toggle(self, **kwargs):
         """Toggle the device"""
         self._is_on = not self._is_on
         self.schedule_update_ha_state()
-        self.hass.data[ZIGATE_DOMAIN].action_onoff(self._device.addr,
-                                                   self._endpoint,
-                                                   2)
+        self.hass.data[DOMAIN].action_onoff(
+            self._device.addr, self._endpoint, 2)
 
     @property
     def device_state_attributes(self):
@@ -235,3 +272,17 @@ class ZiGateLight(Light):
             'ieee': self._device.ieee,
             'endpoint': '0x{:02x}'.format(self._endpoint),
         }
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {(DOMAIN, self.unique_id), (DOMAIN, self._device.ieee)},
+            "manufacturer": self._device.get_value('manufacturer'),
+            "model": self._device.get_value('type'),
+            "name": str(self._device),
+            "via_device": (DOMAIN, self._device.ieee),
+        }
+
+    async def async_added_to_hass(self):
+        """Connect dispatcher."""
+        self.hass.bus.async_listen('zigate.attribute_updated', self._handle_event)

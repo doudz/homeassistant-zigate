@@ -5,6 +5,7 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/sensor.zigate/
 """
 import logging
+import zigate
 
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.components.sensor import ENTITY_ID_FORMAT
@@ -14,11 +15,52 @@ from homeassistant.const import (DEVICE_CLASS_HUMIDITY,
                                  DEVICE_CLASS_PRESSURE,
                                  STATE_UNAVAILABLE)
 from homeassistant.helpers.entity import Entity
-import zigate
-from . import DOMAIN as ZIGATE_DOMAIN
-from . import DATA_ZIGATE_ATTRS
+
+from .core.const import DATA_ZIGATE_ATTRS, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+
+
+async def async_setup_entry(hass, config, async_add_entities):
+    """Set up the ZiGate sensors."""
+
+    myzigate = hass.data[DOMAIN]
+
+    def sync_attributes(**kwargs):
+        devs = []
+        for device in myzigate.devices:
+            ieee = device.ieee or device.addr  # compatibility
+            actions = device.available_actions()
+            if any(actions.values()):
+                continue
+            for attribute in device.attributes:
+                if attribute['cluster'] < 5:
+                    continue
+                if 'name' in attribute:
+                    key = '{}-{}-{}-{}'.format(ieee,
+                                               attribute['endpoint'],
+                                               attribute['cluster'],
+                                               attribute['attribute'],
+                                               )
+                    value = attribute.get('value')
+                    if value is None:
+                        continue
+                    if key in hass.data[DATA_ZIGATE_ATTRS]:
+                        continue
+                    if type(value) not in (bool, dict):
+                        _LOGGER.debug(('Creating sensor '
+                                       'for device '
+                                       '{} {}').format(device,
+                                                       attribute))
+                        entity = ZiGateSensor(hass, device, attribute)
+                        devs.append(entity)
+                        hass.data[DATA_ZIGATE_ATTRS][key] = entity
+
+        async_add_entities(devs)
+
+    sync_attributes()
+    zigate.dispatcher.connect(sync_attributes,
+                              zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -26,7 +68,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
-    myzigate = hass.data[ZIGATE_DOMAIN]
+    myzigate = hass.data[DOMAIN]
 
     def sync_attributes(**kwargs):
         devs = []
@@ -70,6 +112,7 @@ class ZiGateSensor(Entity):
 
     def __init__(self, hass, device, attribute):
         """Initialize the sensor."""
+        self.hass = hass
         self._device = device
         self._attribute = attribute
         self._device_class = None
@@ -88,7 +131,6 @@ class ZiGateSensor(Entity):
             self._device_class = DEVICE_CLASS_ILLUMINANCE
         elif 'pressure' in name:
             self._device_class = DEVICE_CLASS_PRESSURE
-        hass.bus.listen('zigate.attribute_updated', self._handle_event)
 
     def _handle_event(self, call):
         if (
@@ -152,3 +194,17 @@ class ZiGateSensor(Entity):
         if isinstance(self.state, dict):
             attrs.update(state)
         return attrs
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {(DOMAIN, self.unique_id), (DOMAIN, self._device.ieee)},
+            "manufacturer": self._device.get_value('manufacturer'),
+            "model": self._device.get_value('type'),
+            "name": str(self._device),
+            "via_device": (DOMAIN, self._device.ieee),
+        }
+
+    async def async_added_to_hass(self):
+        """Connect dispatcher."""
+        self.hass.bus.async_listen('zigate.attribute_updated', self._handle_event)

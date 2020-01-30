@@ -5,15 +5,48 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/cover.zigate/
 """
 import logging
+import zigate
 
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.components.cover import (
     CoverDevice, ENTITY_ID_FORMAT, SUPPORT_OPEN, SUPPORT_CLOSE, SUPPORT_STOP)
-import zigate
-from . import DOMAIN as ZIGATE_DOMAIN
-from . import DATA_ZIGATE_ATTRS
+from .core.const import DATA_ZIGATE_ATTRS, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+
+
+async def async_setup_entry(hass, config, async_add_entities):
+    """Set up the ZiGate sensors."""
+
+    myzigate = hass.data[DOMAIN]
+
+    def sync_attributes():
+        devs = []
+        for device in myzigate.devices:
+            ieee = device.ieee or device.addr  # compatibility
+            actions = device.available_actions()
+            if not any(actions.values()):
+                continue
+            for endpoint, action_type in actions.items():
+                if [zigate.ACTIONS_COVER] == action_type:
+                    key = '{}-{}-{}'.format(ieee,
+                                            'cover',
+                                            endpoint
+                                            )
+                    if key in hass.data[DATA_ZIGATE_ATTRS]:
+                        continue
+                    _LOGGER.debug(('Creating cover '
+                                   'for device '
+                                   '{} {}').format(device,
+                                                   endpoint))
+                    entity = ZiGateCover(hass, device, endpoint)
+                    devs.append(entity)
+                    hass.data[DATA_ZIGATE_ATTRS][key] = entity
+
+        async_add_entities(devs)
+    sync_attributes()
+    zigate.dispatcher.connect(sync_attributes,
+                              zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -21,7 +54,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     if discovery_info is None:
         return
 
-    myzigate = hass.data[ZIGATE_DOMAIN]
+    myzigate = hass.data[DOMAIN]
 
     def sync_attributes():
         devs = []
@@ -57,15 +90,14 @@ class ZiGateCover(CoverDevice):
 
     def __init__(self, hass, device, endpoint):
         """Initialize the cover."""
+        self.hass = hass
         self._device = device
         self._endpoint = endpoint
         ieee = device.ieee or device.addr  # compatibility
-        entity_id = 'zigate_{}_{}'.format(ieee,
-                                          endpoint)
+        entity_id = 'zigate_{}_{}'.format(ieee, endpoint)
         self.entity_id = ENTITY_ID_FORMAT.format(entity_id)
         self._pos = 100
         self._available = True
-        hass.bus.listen('zigate.attribute_updated', self._handle_event)
 
     def _handle_event(self, call):
         if self._device.ieee == call.data['ieee'] and self._endpoint == call.data['endpoint']:
@@ -107,19 +139,16 @@ class ZiGateCover(CoverDevice):
         }
 
     def open_cover(self, **kwargs):
-        self.hass.data[ZIGATE_DOMAIN].action_cover(self._device.addr,
-                                                   self._endpoint,
-                                                   0x00)
+        self.hass.data[DOMAIN].action_cover(
+            self._device.addr, self._endpoint, 0x00)
 
     def close_cover(self, **kwargs):
-        self.hass.data[ZIGATE_DOMAIN].action_cover(self._device.addr,
-                                                   self._endpoint,
-                                                   0x01)
+        self.hass.data[DOMAIN].action_cover(
+            self._device.addr, self._endpoint, 0x01)
 
     def stop_cover(self, **kwargs):
-        self.hass.data[ZIGATE_DOMAIN].action_cover(self._device.addr,
-                                                   self._endpoint,
-                                                   0x02)
+        self.hass.data[DOMAIN].action_cover(
+            self._device.addr, self._endpoint, 0x02)
 
     @property
     def current_cover_position(self):
@@ -148,3 +177,17 @@ class ZiGateCover(CoverDevice):
         """Return if the cover is closed."""
         _LOGGER.debug("is_closed: %s", self._pos)
         return self._pos == 0
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {(DOMAIN, self.unique_id), (DOMAIN, self._device.ieee)},
+            "manufacturer": self._device.get_value('manufacturer'),
+            "model": self._device.get_value('type'),
+            "name": str(self._device),
+            "via_device": (DOMAIN, self._device.ieee),
+        }
+
+    async def async_added_to_hass(self):
+        """Connect dispatcher."""
+        self.hass.bus.async_listen('zigate.attribute_updated', self._handle_event)
