@@ -1,0 +1,48 @@
+{
+  "config": {
+    "title": "ZiGate",
+    "step": {
+      "user": {
+        "title": "ZiGate",
+	"description": "Merci de sélectionner un seul équipement",
+        "data": {
+	  "usb": "ZiGate USB",
+	  "wifi": "ZiGate Wifi",
+	  "gpio": "PiZygate"
+        }
+      },
+      "usb": {
+        "title": "ZiGate USB",
+        "data": {
+	  "port": "USB Device path"
+        }
+      },
+      "wifi": {
+        "title": "ZiGate Wifi",
+        "data": {
+	  "host": "Adresse IP",
+	  "port": "Port"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Impossible de se connecter à ZiGate.",
+      "single_instance_allowed": "Une seule configuration de ZiGate est autorisée."
+    }
+  },
+  "options": {
+    "step": {
+        "init": {
+            "title": "Options",
+            "description": "Select options",
+            "data": {
+                "enable_led": "Activation LED",
+                "polling": "Activation du polling",
+                "channel": "Cannal Zigbee",
+                "scan_interval": "Scan interval",
+                "admin_panel": "Affichier le panneau d'administration"
+            }
+        }
+    }
+  }  
+}
