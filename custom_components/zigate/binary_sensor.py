@@ -10,6 +10,7 @@ import zigate
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.components.binary_sensor import (BinarySensorDevice,
                                                     ENTITY_ID_FORMAT)
+
 from .core.const import DATA_ZIGATE_ATTRS, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)

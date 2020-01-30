@@ -10,6 +10,7 @@ import zigate
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.components.cover import (
     CoverDevice, ENTITY_ID_FORMAT, SUPPORT_OPEN, SUPPORT_CLOSE, SUPPORT_STOP)
+
 from .core.const import DATA_ZIGATE_ATTRS, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
