@@ -9,12 +9,11 @@ import logging
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.components.binary_sensor import (BinarySensorDevice,
                                                     ENTITY_ID_FORMAT)
+import zigate
 from . import DOMAIN as ZIGATE_DOMAIN
 from . import DATA_ZIGATE_ATTRS
 
 _LOGGER = logging.getLogger(__name__)
-
-DEPENDENCIES = ['zigate']
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -56,7 +55,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
         add_devices(devs)
     sync_attributes()
-    import zigate
     zigate.dispatcher.connect(sync_attributes,
                               zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 

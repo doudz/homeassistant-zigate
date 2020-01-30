@@ -36,7 +36,7 @@ discover_device:
     ieee:
       description: IEEE address of the device.
       example: '0123456789abcdef'
-      
+
 remove_device:
   description: >
     Remove a device.
@@ -51,7 +51,7 @@ remove_device:
     ieee:
       description: IEEE address of the device.
       example: '0123456789abcdef'
-      
+
 identify_device:
   description: >
     Automatically identify a device's destination endpoint.
@@ -78,7 +78,7 @@ raw_command:
     data:
       description: Payload in hex format.
       example: '02af7d010101'
-     
+
 read_attribute:
   description: >
     Read attribute from device
@@ -103,9 +103,9 @@ read_attribute:
       description: Attribute ID to read.
       example: '0xFF0D'
     manufacturer_code:
-      description: Optionnal Manufacturer Code.
+      description: Optional Manufacturer Code.
       example: '0x115F'
-      
+
 write_attribute:
   description: >
     Read attribute from device
@@ -136,7 +136,7 @@ write_attribute:
       description: Attribute type to write.
       example: '0x20'
     manufacturer_code:
-      description: Optionnal Manufacturer Code.
+      description: Optional Manufacturer Code.
       example: '0x115F'
 
 add_group:
@@ -156,8 +156,8 @@ add_group:
       description: Device endpoint.
       example: '1'
     group_addr:
-      description: Optionnal Group addr, if not specified, generate a random addr.
-      example: '0ab9'    
+      description: Optional Group addr, if not specified, generate a random addr.
+      example: '0ab9'
 
 remove_group:
   description: >
@@ -178,7 +178,7 @@ remove_group:
       description: Device endpoint.
       example: '1'
     group_addr:
-      description: Optionnal Group addr, if not specified remove all groups.
+      description: Optional Group addr, if not specified remove all groups.
       example: '0ab9'
 
 get_group_membership:
@@ -218,7 +218,7 @@ action_onoff:
       description: 0=Off 1=On 2=Toggle
       example: '1'
     endpoint:
-      description: Device endpoint (Optionnal for group addr).
+      description: Device endpoint (Optional for group addr).
       example: '1'
     on_time:
       description: timed on in sec
@@ -256,10 +256,10 @@ ota_image_notify:
       description: IEEE address of the device.
       example: '0123456789abcdef'
     destination_enpoint:
-      description: Optionnal destination enpoint
+      description: Optional destination enpoint
       example: '1'
     payload_type:
-      description: Optionnal payload type
+      description: Optional payload type
       example: '0'
 
 view_scene:
@@ -301,7 +301,7 @@ add_scene:
       description: Scene name
       example: 'Blue'
     transition:
-      description: Transition (optionnal, default = 0)
+      description: Transition (optional, default = 0)
       example: '0'
 
 remove_scene:
@@ -319,7 +319,7 @@ remove_scene:
       description: Group addr
       example: '0ab9'
     scene:
-      description: Scene id (Optionnal) If not specified remove all scenes 
+      description: Scene id (Optional) If not specified remove all scenes
       example: '1'
 
 store_scene:
@@ -396,7 +396,7 @@ copy_scene:
     to_scene:
       description: Destination Scene id
       example: '1'
-      
+
 build_network_table:
   description: >
     Build a network table.
@@ -414,7 +414,7 @@ upgrade_firmware:
     before calling this service
   fields:
     path:
-      description: Optionnal path to firmware file
+      description: Optional path to firmware file
       example: '/home/pi/ZiGate_Coordinator.bin'
 
 ias_warning:

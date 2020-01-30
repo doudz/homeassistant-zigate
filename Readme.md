@@ -23,7 +23,7 @@ custom_components/
     ├── cover.py
     └── climate.py
 ```
-    
+
 - adapt your configuration.yaml
 
 To pair a new device, go in developer/services and call the 'zigate.permit\_join' service.
@@ -49,7 +49,7 @@ zigate:
 
 or
 if you want to use Wifi ZiGate (or usb zigate forwarded with ser2net for example)
-Port is optionnal, default is 9999 
+Port is optional, default is 9999
 
 ```
 # Enable ZiGate Wifi
