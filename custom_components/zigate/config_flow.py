@@ -100,10 +100,15 @@ class ZiGateConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             auto_start=False,
             gpio=user_input.get("gpio", None)
         )
-        myzigate.autoStart()
-        self.id = myzigate.ieee
-        myzigate.save_state()
-        myzigate.close()
+        try:
+            myzigate.autoStart()
+            self.id = myzigate.ieee
+            myzigate.save_state()
+            myzigate.close()
+        except :
+            _LOGGER.debug("Zigate not found")
+            errors["base"] = "cannot_connect"
+
         if self.id is not None:
             return self.async_create_entry(
                 title=DOMAIN,
@@ -113,7 +118,7 @@ class ZiGateConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     "port": user_input.get("port", None),
                     "gpio": user_input.get("gpio", None)
                 },
-                )
+            )
 
         errors["base"] = "cannot_connect"
         return self.async_show_form(step_id="user", errors=errors)
