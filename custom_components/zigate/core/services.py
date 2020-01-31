@@ -321,7 +321,9 @@ class ZigateServices:
             entity_registry = await self.hass.helpers.entity_registry.async_get_registry()
             entity = entity_registry.async_get(entity_id)
             if entity:
-                addr = entity._device.addr
+                device = self.myzigate.get_device_from_ieee(entity.unique_id)
+                if device:
+                    addr = device.addr
         elif ieee:
             device = self.myzigate.get_device_from_ieee(ieee)
             if device:
