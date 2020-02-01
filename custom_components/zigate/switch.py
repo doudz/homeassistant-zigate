@@ -44,7 +44,6 @@ async def async_setup_entry(hass, config, async_add_entities):
     )
 
 
-def setup_platform(hass, config, add_devices, discovery_info=None):
     """Set up the ZiGate sensors."""
     if discovery_info is None:
         return

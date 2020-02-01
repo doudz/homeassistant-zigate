@@ -53,7 +53,6 @@ async def async_setup_entry(hass, config, async_add_entities):
                               zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
     """Set up the zigate climate devices."""
     if discovery_info is None:
         return
