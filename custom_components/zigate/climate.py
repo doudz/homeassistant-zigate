@@ -53,41 +53,6 @@ async def async_setup_entry(hass, config, async_add_entities):
                               zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
-    """Set up the zigate climate devices."""
-    if discovery_info is None:
-        return
-
-    myzigate = hass.data[DOMAIN]
-
-    def sync_attributes():
-        devs = []
-        for device in myzigate.devices:
-            ieee = device.ieee or device.addr  # compatibility
-            actions = device.available_actions()
-            if not any(actions.values()):
-                continue
-            for endpoint, action_type in actions.items():
-                if [zigate.ACTIONS_THERMOSTAT] == action_type:
-                    key = '{}-{}-{}'.format(ieee,
-                                            'climate',
-                                            endpoint
-                                            )
-                    if key in hass.data[DATA_ZIGATE_ATTRS]:
-                        continue
-                    _LOGGER.debug(('Creating climate '
-                                   'for device '
-                                   '{} {}').format(device,
-                                                   endpoint))
-                    entity = ZigateClimate(hass, device, endpoint)
-                    devs.append(entity)
-                    hass.data[DATA_ZIGATE_ATTRS][key] = entity
-
-        add_entities(devs)
-    sync_attributes()
-    zigate.dispatcher.connect(sync_attributes,
-                              zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
-
-
 class ZigateClimate(ClimateDevice):
     """Representation of a Zigate climate device."""
 

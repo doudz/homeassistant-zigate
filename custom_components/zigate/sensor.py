@@ -63,49 +63,6 @@ async def async_setup_entry(hass, config, async_add_entities):
                               zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
-    """Set up the ZiGate sensors."""
-    if discovery_info is None:
-        return
-
-    myzigate = hass.data[DOMAIN]
-
-    def sync_attributes(**kwargs):
-        devs = []
-        for device in myzigate.devices:
-            ieee = device.ieee or device.addr  # compatibility
-            actions = device.available_actions()
-            if any(actions.values()):
-                continue
-            for attribute in device.attributes:
-                if attribute['cluster'] < 5:
-                    continue
-                if 'name' in attribute:
-                    key = '{}-{}-{}-{}'.format(ieee,
-                                               attribute['endpoint'],
-                                               attribute['cluster'],
-                                               attribute['attribute'],
-                                               )
-                    value = attribute.get('value')
-                    if value is None:
-                        continue
-                    if key in hass.data[DATA_ZIGATE_ATTRS]:
-                        continue
-                    if type(value) not in (bool, dict):
-                        _LOGGER.debug(('Creating sensor '
-                                       'for device '
-                                       '{} {}').format(device,
-                                                       attribute))
-                        entity = ZiGateSensor(hass, device, attribute)
-                        devs.append(entity)
-                        hass.data[DATA_ZIGATE_ATTRS][key] = entity
-
-        add_devices(devs)
-
-    sync_attributes()
-    zigate.dispatcher.connect(sync_attributes,
-                              zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
-
-
 class ZiGateSensor(Entity):
     """Representation of a ZiGate sensor."""
 

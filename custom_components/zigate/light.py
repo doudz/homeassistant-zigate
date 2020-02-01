@@ -64,47 +64,6 @@ async def async_setup_entry(hass, config, async_add_entities):
                               zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
-    """Set up the ZiGate sensors."""
-    if discovery_info is None:
-        return
-
-    myzigate = hass.data[DOMAIN]
-
-    LIGHT_ACTIONS = [zigate.ACTIONS_LEVEL,
-                     zigate.ACTIONS_COLOR,
-                     zigate.ACTIONS_TEMPERATURE,
-                     zigate.ACTIONS_HUE,
-                     ]
-
-    def sync_attributes():
-        devs = []
-        for device in myzigate.devices:
-            ieee = device.ieee or device.addr  # compatibility
-            actions = device.available_actions()
-            if not any(actions.values()):
-                continue
-            for endpoint, action_type in actions.items():
-                if any(i in action_type for i in LIGHT_ACTIONS):
-                    key = '{}-{}-{}'.format(ieee,
-                                            'light',
-                                            endpoint
-                                            )
-                    if key in hass.data[DATA_ZIGATE_ATTRS]:
-                        continue
-                    _LOGGER.debug(('Creating light '
-                                   'for device '
-                                   '{} {}').format(device,
-                                                   endpoint))
-                    entity = ZiGateLight(hass, device, endpoint)
-                    devs.append(entity)
-                    hass.data[DATA_ZIGATE_ATTRS][key] = entity
-
-        add_devices(devs)
-    sync_attributes()
-    zigate.dispatcher.connect(sync_attributes,
-                              zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
-
-
 class ZiGateLight(Light):
     """Representation of a ZiGate light."""
 
