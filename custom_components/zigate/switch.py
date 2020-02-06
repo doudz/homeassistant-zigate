@@ -32,7 +32,7 @@ async def async_setup_entry(hass, config, async_add_entities):
                     key = '{}-{}-{}'.format(ieee, 'switch', endpoint)
                     if key in hass.data[DATA_ZIGATE_ATTRS]:
                         continue
-                    _LOGGER.debug("Creating switch for device {} {}".format(device,endpoint))
+                    _LOGGER.debug("Creating switch for device {} {}".format(device, endpoint))
                     entity = ZiGateSwitch(hass, device, endpoint)
                     devs.append(entity)
                     hass.data[DATA_ZIGATE_ATTRS][key] = entity
