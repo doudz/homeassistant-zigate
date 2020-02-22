@@ -9,18 +9,20 @@ from functools import reduce
 from operator import ior
 
 from homeassistant.exceptions import PlatformNotReady
+import homeassistant.util.color as color_util
 from homeassistant.components.light import (
     ATTR_BRIGHTNESS, ATTR_TRANSITION, ATTR_HS_COLOR,
     SUPPORT_BRIGHTNESS, SUPPORT_COLOR_TEMP,
     SUPPORT_TRANSITION, ATTR_COLOR_TEMP,
     SUPPORT_COLOR, Light, ENTITY_ID_FORMAT)
+import zigate
 from . import DOMAIN as ZIGATE_DOMAIN
 from . import DATA_ZIGATE_ATTRS
 
 
 _LOGGER = logging.getLogger(__name__)
 
-DEPENDENCIES = ['zigate']
+SUPPORT_HUE_COLOR = 64
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -29,7 +31,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         return
 
     myzigate = hass.data[ZIGATE_DOMAIN]
-    import zigate
     LIGHT_ACTIONS = [zigate.ACTIONS_LEVEL,
                      zigate.ACTIONS_COLOR,
                      zigate.ACTIONS_TEMPERATURE,
@@ -93,7 +94,7 @@ class ZiGateLight(Light):
             elif action_type == zigate.ACTIONS_TEMPERATURE:
                 supported_features.add(SUPPORT_COLOR_TEMP)
             elif action_type == zigate.ACTIONS_HUE:
-                supported_features.add(SUPPORT_COLOR)
+                supported_features.add(SUPPORT_HUE_COLOR)
         self._supported_features = reduce(ior, supported_features)
         hass.bus.listen('zigate.attribute_updated', self._handle_event)
 
@@ -190,11 +191,19 @@ class ZiGateLight(Light):
                                                        1)
         if ATTR_HS_COLOR in kwargs:
             h, s = kwargs[ATTR_HS_COLOR]
-            self.hass.data[ZIGATE_DOMAIN].action_move_hue_saturation(self._device.addr,
-                                                                     self._endpoint,
-                                                                     int(h),
-                                                                     int(s),
-                                                                     transition)
+            if self.supported_features & SUPPORT_COLOR:
+                x, y = color_util.color_hs_to_xy(h, s)
+                self.hass.data[ZIGATE_DOMAIN].action_move_colour(self._device.addr,
+                                                                 self._endpoint,
+                                                                 x,
+                                                                 y,
+                                                                 transition)
+            elif self.supported_features & SUPPORT_HUE_COLOR:
+                self.hass.data[ZIGATE_DOMAIN].action_move_hue_saturation(self._device.addr,
+                                                                         self._endpoint,
+                                                                         int(h),
+                                                                         int(s),
+                                                                         transition)
         elif ATTR_COLOR_TEMP in kwargs:
             temp = kwargs[ATTR_COLOR_TEMP]
             self.hass.data[ZIGATE_DOMAIN].action_move_temperature(self._device.addr,
@@ -224,5 +233,5 @@ class ZiGateLight(Light):
         return {
             'addr': self._device.addr,
             'ieee': self._device.ieee,
-            'endpoint': self._endpoint,
+            'endpoint': '0x{:02x}'.format(self._endpoint),
         }

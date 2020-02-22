@@ -40,7 +40,7 @@ To integrate the ZiGate component in Home Assistant, add the following section t
 
 or
 if you want to use Wifi ZiGate (or usb zigate forwarded with ser2net for example)
-Port is optionnal, default is 9999 
+Port is optional, default is 9999
 
 ```yaml
 # Enable ZiGate Wifi

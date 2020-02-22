@@ -10,13 +10,12 @@ from homeassistant.exceptions import PlatformNotReady
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
 from homeassistant.components.climate import ClimateDevice, ENTITY_ID_FORMAT
 from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE, SUPPORT_PRESET_MODE, HVAC_MODE_HEAT
+import zigate
 from . import DOMAIN as ZIGATE_DOMAIN
 from . import DATA_ZIGATE_ATTRS
 SUPPORT_FLAGS = SUPPORT_TARGET_TEMPERATURE | SUPPORT_PRESET_MODE
 
 _LOGGER = logging.getLogger(__name__)
-
-DEPENDENCIES = ['zigate']
 
 
 def setup_platform(hass, config, add_entities, discovery_info=None):
@@ -25,7 +24,6 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         return
 
     myzigate = hass.data[ZIGATE_DOMAIN]
-    import zigate
 
     def sync_attributes():
         devs = []
@@ -185,3 +183,12 @@ class ZigateClimate(ClimateDevice):
                                                                   0x0201,
                                                                   [(attr, 0x29, temp)])
         self.schedule_update_ha_state()
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return {
+            'addr': self._device.addr,
+            'ieee': self._device.ieee,
+            'endpoint': '0x{:02x}'.format(self._endpoint),
+        }

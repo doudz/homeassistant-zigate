@@ -8,12 +8,11 @@ import logging
 
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.components.switch import SwitchDevice, ENTITY_ID_FORMAT
+import zigate
 from . import DOMAIN as ZIGATE_DOMAIN
 from . import DATA_ZIGATE_ATTRS
 
 _LOGGER = logging.getLogger(__name__)
-
-DEPENDENCIES = ['zigate']
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -22,7 +21,6 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
         return
 
     myzigate = hass.data[ZIGATE_DOMAIN]
-    import zigate
 
     def sync_attributes():
         devs = []
@@ -138,7 +136,7 @@ class ZiGateSwitch(SwitchDevice):
         return {
             'addr': self._device.addr,
             'ieee': self._device.ieee,
-            'endpoint': self._endpoint
+            'endpoint': '0x{:02x}'.format(self._endpoint),
         }
 
 #     @property

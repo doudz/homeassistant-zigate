@@ -285,7 +285,7 @@ def setup(hass, config):
     hass.data[DATA_ZIGATE_ATTRS] = {}
 
     component = EntityComponent(_LOGGER, DOMAIN, hass, scan_interval)
-    component.setup(config)
+#     component.setup(config)
     entity = ZiGateComponentEntity(myzigate)
     hass.data[DATA_ZIGATE_DEVICES]['zigate'] = entity
     component.add_entities([entity])
@@ -864,7 +864,6 @@ class ZiGateComponentEntity(Entity):
         """Return the device specific state attributes."""
         if not self._device.connection:
             return {}
-        import zigate
         attrs = {'addr': self._device.addr,
                  'ieee': self._device.ieee,
                  'groups': self._device.groups,
