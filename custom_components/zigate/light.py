@@ -177,7 +177,7 @@ class ZiGateLight(Light):
         if ATTR_BRIGHTNESS in kwargs:
             brightness = kwargs[ATTR_BRIGHTNESS]
             self._brightness = brightness
-            brightness = int((brightness / 255) * 100)
+            brightness = round((brightness / 255) * 100) or 1
             self.hass.data[ZIGATE_DOMAIN].action_move_level_onoff(self._device.addr,
                                                                   self._endpoint,
                                                                   1,
