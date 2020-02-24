@@ -618,7 +618,7 @@ def setup(hass, config):
     def upgrade_firmware(service):
         from zigate.flasher import flash
         from zigate.firmware import download_latest
-        port = myzigate.connection._port
+        port = myzigate._port
         pizigate = False
         if isinstance(myzigate, zigate.ZiGateGPIO):
             pizigate = True

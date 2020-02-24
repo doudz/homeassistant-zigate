@@ -4,5 +4,5 @@
   "documentation": "https://github.com/doudz/homeassistant-zigate/blob/master/Readme.md",
   "dependencies": ["persistent_notification"],
   "codeowners": ["doudz"],
-  "requirements": ["zigate==0.38.6"]
+  "requirements": ["zigate==0.38.7"]
 }
