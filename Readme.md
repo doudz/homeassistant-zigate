@@ -87,8 +87,8 @@ You can adjust the polling by setting `scan_interval` in config (default to 120)
 # Upgrade firmware
 
 You could upgrade the zigate firmware to the latest available release by calling `zigate.upgrade_firmware`.
-- If you're using PiZigate the process is fully automatic
-- If you're using USB ZiGate you have to put zigate in download mode first
+- If you're using PiZigate or ZiGate DIN the process is fully automatic
+- If you're using USB TTL ZiGate you have to put zigate in download mode first
 - Always call zigate.stop_zigate before unplugging the USB ZiGate
 
 
