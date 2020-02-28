@@ -566,7 +566,7 @@ class ZigateServices:
         self.myzigate.action_ias_squawk(addr, endpoint, mode, strobe, level)
 
     async def upgrade_firmware(self, service):
-        port = self.myzigate.connection._port
+        port = self.myzigate._port
         pizigate = False
         if isinstance(self.myzigate, ZiGateGPIO):
             pizigate = True
