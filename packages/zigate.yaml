@@ -19,28 +19,23 @@ homeassistant:
     group.zigate_command:
       <<: *customize
       friendly_name: "ZiGate Commands"
-      control: hidden
       
     group.all_zigate:
       <<: *customize
       friendly_name: "ZiGate"
-      control: hidden
       hidden: false
 
 group:
   zigate_view:
-    view: yes
     entities:
       - group.all_zigate
       - group.zigate_command
     
   zigate_command:
-    control: hidden
     entities:
       - input_boolean.zigate_permit_join
       
   zigate_entities:
-    control: hidden
 
 input_boolean:
   zigate_permit_join:
