@@ -7,7 +7,7 @@ https://home-assistant.io/components/binary_sensor.zigate/
 import logging
 
 from homeassistant.exceptions import PlatformNotReady
-from homeassistant.components.binary_sensor import (BinarySensorDevice,
+from homeassistant.components.binary_sensor import (BinarySensorEntity,
                                                     ENTITY_ID_FORMAT)
 import zigate
 from . import DOMAIN as ZIGATE_DOMAIN
@@ -59,7 +59,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                               zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
-class ZiGateBinarySensor(BinarySensorDevice):
+class ZiGateBinarySensor(BinarySensorEntity):
     """representation of a ZiGate binary sensor."""
 
     def __init__(self, hass, device, attribute):
