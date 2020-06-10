@@ -7,7 +7,7 @@ https://home-assistant.io/components/switch.zigate/
 import logging
 
 from homeassistant.exceptions import PlatformNotReady
-from homeassistant.components.switch import SwitchDevice, ENTITY_ID_FORMAT
+from homeassistant.components.switch import SwitchEntity, ENTITY_ID_FORMAT
 import zigate
 from . import DOMAIN as ZIGATE_DOMAIN
 from . import DATA_ZIGATE_ATTRS
@@ -51,7 +51,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                               zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
-class ZiGateSwitch(SwitchDevice):
+class ZiGateSwitch(SwitchEntity):
     """Representation of a ZiGate switch."""
 
     def __init__(self, hass, device, endpoint):

@@ -8,7 +8,7 @@ import logging
 
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.components.cover import (
-    CoverDevice, ENTITY_ID_FORMAT, SUPPORT_OPEN, SUPPORT_CLOSE, SUPPORT_STOP)
+    CoverEntity, ENTITY_ID_FORMAT, SUPPORT_OPEN, SUPPORT_CLOSE, SUPPORT_STOP)
 import zigate
 from . import DOMAIN as ZIGATE_DOMAIN
 from . import DATA_ZIGATE_ATTRS
@@ -52,7 +52,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                               zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
-class ZiGateCover(CoverDevice):
+class ZiGateCover(CoverEntity):
     """Representation of a ZiGate cover."""
 
     def __init__(self, hass, device, endpoint):

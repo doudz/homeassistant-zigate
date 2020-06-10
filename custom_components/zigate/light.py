@@ -14,7 +14,7 @@ from homeassistant.components.light import (
     ATTR_BRIGHTNESS, ATTR_TRANSITION, ATTR_HS_COLOR,
     SUPPORT_BRIGHTNESS, SUPPORT_COLOR_TEMP,
     SUPPORT_TRANSITION, ATTR_COLOR_TEMP,
-    SUPPORT_COLOR, Light, ENTITY_ID_FORMAT)
+    SUPPORT_COLOR, LightEntity, ENTITY_ID_FORMAT)
 import zigate
 from . import DOMAIN as ZIGATE_DOMAIN
 from . import DATA_ZIGATE_ATTRS
@@ -66,7 +66,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                               zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
-class ZiGateLight(Light):
+class ZiGateLight(LightEntity):
     """Representation of a ZiGate light."""
 
     def __init__(self, hass, device, endpoint):
