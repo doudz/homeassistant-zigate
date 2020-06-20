@@ -1,7 +1,5 @@
 """ZiGate Admin panel proxy."""
 import aiohttp
-import voluptuous as vol
-
 from homeassistant.components.http import HomeAssistantView
 
 
