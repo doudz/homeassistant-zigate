@@ -8,12 +8,9 @@ import logging
 import voluptuous as vol
 import os
 import datetime
-import requests
-from aiohttp import web
 import zigate
 
 from homeassistant.exceptions import PlatformNotReady
-from homeassistant.components.http import HomeAssistantView
 # from homeassistant import config_entries
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import EntityComponent
@@ -28,6 +25,8 @@ from homeassistant.const import (ATTR_BATTERY_LEVEL, CONF_PORT,
                                  EVENT_HOMEASSISTANT_STOP)
 import homeassistant.helpers.config_validation as cv
 from .const import DOMAIN, SCAN_INTERVAL
+from .adminpanel import adminpanel_setup
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -720,28 +719,8 @@ def setup(hass, config):
 
     if admin_panel:
         _LOGGER.debug('Start ZiGate Admin Panel on port 9998')
-        myzigate.start_adminpanel(prefix='/zigateproxy')
-
-        hass.http.register_view(ZiGateAdminPanel())
-        hass.http.register_view(ZiGateProxy())
-        custom_panel_config = {
-            "name": "zigateadmin",
-            "embed_iframe": False,
-            "trust_external": False,
-            "html_url": "/zigateadmin.html",
-        }
-
-        config = {}
-        config["_panel_custom"] = custom_panel_config
-
-        hass.components.frontend.async_register_built_in_panel(
-            component_name="custom",
-            sidebar_title='Zigate Admin',
-            sidebar_icon='mdi:zigbee',
-            frontend_url_path="zigateadmin",
-            config=config,
-            require_admin=True,
-        )
+        myzigate.start_adminpanel(mount='/zigateproxy')
+        adminpanel_setup(hass, 'zigateproxy')
 
 #     hass.async_create_task(
 #         hass.config_entries.flow.async_init(
@@ -755,75 +734,6 @@ def setup(hass, config):
 # async def async_setup_entry(hass, entry):
 #     _LOGGER.warning('async_setup_entry not implemented yet for ZiGate')
 #     return False
-
-
-class ZiGateAdminPanel(HomeAssistantView):
-    requires_auth = False
-    name = "zigateadmin"
-    url = "/zigateadmin.html"
-
-    async def get(self, request):
-        """Handle ZiGate admin panel requests."""
-        response = web.Response(text=base_panel)
-        response.headers["Cache-Control"] = "no-cache"
-        return response
-
-
-class ZiGateProxy(HomeAssistantView):
-    requires_auth = False
-    cors_allowed = True
-    name = "zigateproxy"
-    url = "/zigateproxy"
-
-    async def get(self, request):
-        """Handle ZiGate proxy requests."""
-        headers = {
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache"
-        }
-        r = requests.get('http://localhost:9998'+request.query.get('q', '/'), headers=headers)
-        headers = r.headers.copy()
-        headers['Access-Control-Allow-Origin'] = '*'
-        headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, PUT'
-        headers['Cache-Control'] = 'no-cache'
-        headers['Pragma'] = 'no-cache'
-        return web.Response(body=r.content, status=r.status_code, headers=headers)
-
-
-base_panel = '''
-<dom-module id='ha-panel-zigateadmin'>
-  <template>
-    <iframe src="/zigateproxy?q=%2F" style="width:99%; height:99%; border:0"></iframe>
-  </template>
-</dom-module>
-
-<script>
-class HaPanelZiGateadmin extends Polymer.Element {
-  static get is() { return 'ha-panel-zigateadmin'; }
-
-  static get properties() {
-    return {
-      // Home Assistant object
-      hass: Object,
-      // If should render in narrow mode
-      narrow: {
-        type: Boolean,
-        value: false,
-      },
-      // If sidebar is currently shown
-      showMenu: {
-        type: Boolean,
-        value: false,
-      },
-      // Home Assistant panel info
-      // panel.config contains config passed to register_panel serverside
-      panel: Object
-    };
-  }
-}
-customElements.define(HaPanelZiGateadmin.is, HaPanelZiGateadmin);
-</script>
-'''
 
 
 class ZiGateComponentEntity(Entity):
