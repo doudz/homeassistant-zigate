@@ -8,7 +8,7 @@ import logging
 
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.const import ATTR_TEMPERATURE, TEMP_CELSIUS
-from homeassistant.components.climate import ClimateDevice, ENTITY_ID_FORMAT
+from homeassistant.components.climate import ClimateEntity, ENTITY_ID_FORMAT
 from homeassistant.components.climate.const import SUPPORT_TARGET_TEMPERATURE, SUPPORT_PRESET_MODE, HVAC_MODE_HEAT
 import zigate
 from . import DOMAIN as ZIGATE_DOMAIN
@@ -54,7 +54,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
                               zigate.ZIGATE_ATTRIBUTE_ADDED, weak=False)
 
 
-class ZigateClimate(ClimateDevice):
+class ZigateClimate(ClimateEntity):
     """Representation of a Zigate climate device."""
 
     def __init__(self, hass, device, endpoint):
