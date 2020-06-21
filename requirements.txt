@@ -1,0 +1,2 @@
+zigate[dev]
+homeassistant>=0.110
