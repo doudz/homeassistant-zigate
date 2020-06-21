@@ -2,6 +2,7 @@
 A new component to use the ZiGate (http://zigate.fr)
 
 [![Build Status](https://travis-ci.com/doudz/homeassistant-zigate.svg?branch=master)](https://travis-ci.com/doudz/homeassistant-zigate)
+![Tests](https://github.com/doudz/homeassistant-zigate/workflows/Tests/badge.svg)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sebramage)
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-green.svg)](https://github.com/custom-components/hacs)
 
