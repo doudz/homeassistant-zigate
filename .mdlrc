@@ -1,1 +1,2 @@
+rules "~MD041"
 style "markdownlint.rb"
