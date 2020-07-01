@@ -11,9 +11,7 @@ logo: home-assistant.png
 ha_category: Other
 ---
 
-
-The `zigate` component allows you to use the ZiGate module (http://www.zigate.fr)
-
+The `zigate` component allows you to use the ZiGate module (<http://www.zigate.fr>)
 
 Available ZiGate platforms:
 
