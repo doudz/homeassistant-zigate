@@ -70,7 +70,7 @@ class ZiGateCover(CoverEntity):
     def _handle_event(self, call):
         if self._device.ieee == call.data['ieee'] and self._endpoint == call.data['endpoint']:
             _LOGGER.debug("Attribute update received: %s", call.data)
-            if call.data['cluster'] == 258 and call.data['attribute'] == 8:
+            if call.data['cluster'] == 0x0102 and call.data['attribute'] == 8:
                 self._pos = call.data['value']
             if not self.hass:
                 raise PlatformNotReady
