@@ -1,5 +1,6 @@
 {
     "name": "ZiGate",
-    "domains": ["binary_sensor", "climate", "cover", "light", "sensor", "switch"],
+    "domains": ["binary_sensor", "climate", "cover", "light", "sensor", "switch", "lock"],
+    "iot_class": ["Local Push"],
     "render_readme": true
 }
