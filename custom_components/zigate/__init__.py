@@ -42,7 +42,8 @@ SUPPORTED_PLATFORMS = ('sensor',
                        'switch',
                        'light',
                        'cover',
-                       'climate')
+                       'climate',
+                       'lock')
 
 CONFIG_SCHEMA = vol.Schema({
     DOMAIN: vol.Schema({
