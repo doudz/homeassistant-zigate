@@ -2,6 +2,7 @@
   "domain": "zigate",
   "name": "ZiGate",
   "documentation": "https://github.com/doudz/homeassistant-zigate/blob/master/Readme.md",
+  "issue_tracker": "https://github.com/doudz/homeassistant-zigate/issues",
   "dependencies": ["persistent_notification"],
   "codeowners": ["doudz"],
   "requirements": ["zigate==0.40.3"]
