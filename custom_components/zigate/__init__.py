@@ -863,3 +863,15 @@ class ZiGateDeviceEntity(Entity):
     @property
     def available(self):
         return not self._device.missing
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {
+                (DOMAIN, self.unique_id)
+            },
+            "name": self.name,
+            "manufacturer": self._device.get_value('manufacturer'),
+            "model": self._device.get_value('type'),
+            "sw_version": self._device.get_value('datecode')
+        }
