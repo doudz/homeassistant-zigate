@@ -5,6 +5,7 @@ A new component to use the ZiGate (<http://zigate.fr>)
 ![Tests](https://github.com/doudz/homeassistant-zigate/workflows/Tests/badge.svg)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://paypal.me/sebramage)
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-green.svg)](https://github.com/custom-components/hacs)
+[![Donate with Bitcoin](https://en.cryptobadges.io/badge/small/3DHvPBWyf5Vsp485tGFu7WfYSd6r5qgZdH)](https://en.cryptobadges.io/donate/3DHvPBWyf5Vsp485tGFu7WfYSd6r5qgZdH)
 
 Currently it supports sensor, binary_sensor and switch, light, cover and climate
 
