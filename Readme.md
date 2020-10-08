@@ -26,7 +26,7 @@ custom_components/
     ├── cover.py
     └── climate.py
 ```
-
+- restart your Home Assistant, so that it installs requirements
 - adapt your configuration.yaml
 
 To pair a new device, go in developer/services and call the 'zigate.permit\_join' service.
