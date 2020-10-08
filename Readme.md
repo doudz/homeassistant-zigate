@@ -68,6 +68,9 @@ If you want to use PiZiGate, just add `gpio: true`. Other options are still avai
 # Enable PiZiGate
 zigate:
   gpio: true
+  port: /dev/ttyAMA0
+  # Regarding the raspberry
+  #port: /dev/serial0
 
 ```
 
