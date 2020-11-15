@@ -101,6 +101,8 @@ You could upgrade the zigate firmware to the latest available release by calling
 ## Admin Panel
 
 ZiGate lib has now an embedded admin panel, to enable it, add `admin_panel: true` in config.
+To access the admin you need to open another browser to addresse http://[ip_address]:9998
+Integration of the admin panel in HA has been disabled because of security issue
 
 ```yaml
 zigate:

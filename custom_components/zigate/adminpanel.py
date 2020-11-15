@@ -6,7 +6,7 @@ from homeassistant.components.http import HomeAssistantView
 class PanelProxy(HomeAssistantView):
     """Reverse Proxy View."""
 
-    requires_auth = False
+    requires_auth = True
     cors_allowed = True
     name = "panelproxy"
 

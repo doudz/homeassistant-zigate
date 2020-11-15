@@ -720,8 +720,9 @@ def setup(hass, config):
 
     if admin_panel:
         _LOGGER.debug('Start ZiGate Admin Panel on port 9998')
-        myzigate.start_adminpanel(mount='/zigateproxy')
-        adminpanel_setup(hass, 'zigateproxy')
+        myzigate.start_adminpanel()
+        # myzigate.start_adminpanel(mount='/zigateproxy')
+        # adminpanel_setup(hass, 'zigateproxy')
 
 #     hass.async_create_task(
 #         hass.config_entries.flow.async_init(
