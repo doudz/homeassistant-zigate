@@ -1,9 +1,12 @@
 # ZiGate component for Home Assistant
 
-
+***
 # :warning: Since Home Assistant 0.118 this integration is deprecated !
-I recommand using ZHA integration instead with ZiGate firmware 3.1d
-
+# I recommand ZHA integration instead with ZiGate firmware 3.1d
+more informations : 
+- https://www.home-assistant.io/integrations/zha/
+- https://github.com/zigpy/zigpy-zigate
+***
 
 A new component to use the ZiGate (<http://zigate.fr>)
 
