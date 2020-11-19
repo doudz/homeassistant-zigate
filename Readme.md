@@ -1,5 +1,10 @@
 # ZiGate component for Home Assistant
 
+
+# :warning: Since Home Assistant 0.118 this integration is deprecated !
+I recommand using ZHA integration instead with ZiGate firmware 3.1d
+
+
 A new component to use the ZiGate (<http://zigate.fr>)
 
 ![Tests](https://github.com/doudz/homeassistant-zigate/workflows/Tests/badge.svg)
